@@ -170,7 +170,7 @@
                             <div class="order-header">
                                 <div>
                                     <div class="order-id">Đơn #${order.id}</div>
-                                    <div class="shop-name">🏪 ${fn:escapeXml(shopNames[order.shopId])}</div>
+                                    <div class="shop-name">🏪 ${fn:escapeXml(order.shopName)}</div>
                                 </div>
                                 <span class="badge badge-success">✓ Hoàn thành</span>
                             </div>
@@ -192,7 +192,7 @@
 
                             <div class="btn-flex-group">
                                 <c:choose>
-                                    <c:when test="${feedbackShop[order.id]}">
+                                    <c:when test="${order.feedbackShop}">
                                         <span class="badge badge-neutral">✓ Đã đánh giá shop</span>
                                     </c:when>
                                     <c:otherwise>

@@ -15,8 +15,8 @@ public class UserAddressDAOImpl implements UserAddressDAO {
     @Override
     public List<UserAddress> findByAccountId(long accountId) {
         List<UserAddress> list = new ArrayList<>();
-        String sql = "SELECT id, user_id, label, address, receiver_name, receiver_phone, is_default, is_deleted, created_at, locationX, locationY " +
-                     "FROM User_Addresses WHERE user_id = ? AND is_deleted = 0 ORDER BY is_default DESC, id ASC";
+        String sql = "SELECT id, account_id, label, full_address, receiver_name, receiver_phone, is_default, created_at, locationX, locationY " +
+                     "FROM User_Addresses WHERE account_id = ? AND is_deleted = 0 ORDER BY is_default DESC, id ASC";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, accountId);
@@ -31,7 +31,7 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public UserAddress findById(long id) {
-        String sql = "SELECT id, user_id, label, address, receiver_name, receiver_phone, is_default, is_deleted, created_at, locationX, locationY " +
+        String sql = "SELECT id, account_id, label, full_address, receiver_name, receiver_phone, is_default, created_at, locationX, locationY " +
                      "FROM User_Addresses WHERE id = ? AND is_deleted = 0";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -47,7 +47,7 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public boolean create(UserAddress a) {
-        String sql = "INSERT INTO User_Addresses (user_id, label, address, receiver_name, receiver_phone, is_default, locationX, locationY) " +
+        String sql = "INSERT INTO User_Addresses (account_id, label, full_address, receiver_name, receiver_phone, is_default, locationX, locationY) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -76,8 +76,8 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public boolean update(UserAddress a) {
-        String sql = "UPDATE User_Addresses SET label = ?, address = ?, receiver_name = ?, receiver_phone = ?, locationX = ?, locationY = ? " +
-                     "WHERE id = ? AND user_id = ? AND is_deleted = 0";
+        String sql = "UPDATE User_Addresses SET label = ?, full_address = ?, receiver_name = ?, receiver_phone = ?, locationX = ?, locationY = ? " +
+                     "WHERE id = ? AND account_id = ? AND is_deleted = 0";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setNString(1, a.getLabel());
@@ -145,9 +145,9 @@ public class UserAddressDAOImpl implements UserAddressDAO {
     private UserAddress map(ResultSet rs) throws SQLException {
         UserAddress a = new UserAddress();
         a.setId(rs.getLong("id"));
-        a.setUserId(rs.getLong("user_id"));
+        a.setUserId(rs.getLong("account_id"));
         a.setLabel(rs.getString("label"));
-        a.setAddress(rs.getString("address"));
+        a.setAddress(rs.getString("full_address"));
         a.setReceiverName(rs.getString("receiver_name"));
         a.setReceiverPhone(rs.getString("receiver_phone"));
         a.setDefault(rs.getBoolean("is_default"));

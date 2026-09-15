@@ -651,7 +651,7 @@ public class AccountDAOImpl implements AccountDAO {
 
     @Override
     public int countPendingShopAccounts() {
-        String sql = "SELECT COUNT(*) FROM Accounts WHERE role_id = 2 AND (status IS NULL OR LOWER(status) != 'active') AND is_deleted = 0";
+        String sql = "SELECT COUNT(*) FROM Accounts WHERE role_id = 2 AND (status IS NULL OR status <> 'ACTIVE') AND is_deleted = 0";
         try (Connection con = DBUtil.getConnection();
              PreparedStatement pst = con.prepareStatement(sql);
              ResultSet rs = pst.executeQuery()) {
@@ -667,7 +667,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findTop5PendingShopAccounts() {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT TOP 5 * FROM Accounts WHERE role_id = 2 AND (status IS NULL OR LOWER(status) != 'active') AND is_deleted = 0 ORDER BY created_at DESC";
+        String sql = "SELECT TOP 5 * FROM Accounts WHERE role_id = 2 AND (status IS NULL OR status <> 'ACTIVE') AND is_deleted = 0 ORDER BY created_at DESC";
         try (Connection con = DBUtil.getConnection();
              PreparedStatement pst = con.prepareStatement(sql);
              ResultSet rs = pst.executeQuery()) {
@@ -683,7 +683,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findPendingShipperAccounts() {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT * FROM Accounts WHERE role_id = 4 AND LOWER(status) = 'pending' AND is_deleted = 0 ORDER BY created_at DESC";
+        String sql = "SELECT * FROM Accounts WHERE role_id = 4 AND status = 'PENDING' AND is_deleted = 0 ORDER BY created_at DESC";
         try (Connection con = DBUtil.getConnection();
              PreparedStatement pst = con.prepareStatement(sql);
              ResultSet rs = pst.executeQuery()) {
@@ -699,7 +699,7 @@ public class AccountDAOImpl implements AccountDAO {
     @Override
     public List<Account> findOnlineShippers() {
         List<Account> list = new ArrayList<>();
-        String sql = "SELECT * FROM Accounts WHERE role_id = 4 AND LOWER(status) = 'active' AND is_deleted = 0 AND is_online = 1 ORDER BY full_name ASC";
+        String sql = "SELECT * FROM Accounts WHERE role_id = 4 AND status = 'ACTIVE' AND is_deleted = 0 AND is_online = 1 ORDER BY full_name ASC";
         try (Connection con = DBUtil.getConnection();
              PreparedStatement pst = con.prepareStatement(sql);
              ResultSet rs = pst.executeQuery()) {

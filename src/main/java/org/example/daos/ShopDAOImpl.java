@@ -20,7 +20,7 @@ public class ShopDAOImpl implements ShopDAO {
 
 
     private static final String SELECT_ALL = "SELECT * FROM Shops WHERE is_deleted = 0";
-    private static final String SELECT_PENDING = "SELECT * FROM Shops WHERE is_deleted = 0 AND LOWER(status) = 'pending' ORDER BY created_at DESC";
+    private static final String SELECT_PENDING = "SELECT * FROM Shops WHERE is_deleted = 0 AND status = 'PENDING' ORDER BY created_at DESC";
     private static final String SELECT_BY_ID = "SELECT * FROM Shops WHERE id = ? AND is_deleted = 0";
     private static final String SELECT_BY_OWNER_ID = "SELECT TOP 1 * FROM Shops WHERE owner_id = ? AND is_deleted = 0 ORDER BY id DESC";
 

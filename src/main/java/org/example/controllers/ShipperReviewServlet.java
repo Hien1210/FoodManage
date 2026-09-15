@@ -6,16 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.example.daos.*;
+import org.example.daos.ShipperReviewDAO;
+import org.example.daos.ShipperReviewDAOImpl;
 import org.example.models.Account;
-import org.example.models.Order;
-import org.example.models.Shop;
+import org.example.models.ShipperReviewOrder;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Trang "Đánh giá & Báo cáo" của Shipper
@@ -24,9 +21,7 @@ import java.util.stream.Collectors;
 @WebServlet("/shipper/danh-gia")
 public class ShipperReviewServlet extends HttpServlet {
 
-    private final OrderDAO    orderDAO    = new OrderDAOImpl();
-    private final FeedbackDAO feedbackDAO = new FeedbackDAOImpl();
-    private final ShopDAO     shopDAO     = new ShopDAOImpl();
+    private final ShipperReviewDAO shipperReviewDAO = new ShipperReviewDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -40,29 +35,10 @@ public class ShipperReviewServlet extends HttpServlet {
             return;
         }
 
-        // Lấy tất cả đơn của shipper, lọc chỉ lấy DONE
-        List<Order> doneOrders = orderDAO.findByShipperId(account.getId())
-                .stream()
-                .filter(o -> "DONE".equalsIgnoreCase(o.getStaTus()))
-                .collect(Collectors.toList());
-
-        // Tên shop và trạng thái feedback
-        Map<Long, String>  shopNames      = new HashMap<>();
-        Map<Long, Boolean> feedbackShop   = new HashMap<>();
-
-        for (Order o : doneOrders) {
-            long shopId = o.getShopId();
-            if (!shopNames.containsKey(shopId)) {
-                Shop shop = shopDAO.selectShopById(shopId);
-                shopNames.put(shopId, shop != null ? shop.getShopName() : "Shop #" + shopId);
-            }
-            feedbackShop.put(o.getId(),
-                    feedbackDAO.existsByOrderAndType(o.getId(), "SHIPPER", "SHOP"));
-        }
+        // One query filters completed orders, joins the shop name and checks feedback.
+        List<ShipperReviewOrder> doneOrders = shipperReviewDAO.findCompletedOrders(account.getId());
 
         req.setAttribute("doneOrders",   doneOrders);
-        req.setAttribute("shopNames",    shopNames);
-        req.setAttribute("feedbackShop", feedbackShop);
         req.setAttribute("tenShipper",   account.getFullName() != null ? account.getFullName() : account.getUserName());
         req.getRequestDispatcher("/shipper/danhGia.jsp").forward(req, resp);
     }

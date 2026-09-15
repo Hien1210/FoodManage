@@ -10,6 +10,23 @@
 USE POB;
 GO
 
+-- Kiem tra bo chi muc hieu nang toan he thong (migration_database_performance.sql).
+SELECT v.index_name,
+       CASE WHEN i.index_id IS NULL THEN 'THIEU' ELSE 'OK' END AS trang_thai
+FROM (VALUES
+    ('IX_Accounts_Role_Status_CreatedAt'), ('IX_Accounts_OnlineActiveShipper'),
+    ('IX_Shops_Status_Deleted_CreatedAt'), ('IX_Products_Shop_Deleted_Id'),
+    ('IX_Products_PendingReview'), ('IX_Orders_User_UpdatedAt'),
+    ('IX_Orders_Shop_Status_CreatedAt'), ('IX_Orders_CreatedAt'),
+    ('IX_Orders_Shipper_Status_UpdatedAt'), ('IX_Feedbacks_Target_Reviewer_CreatedAt'),
+    ('IX_Feedbacks_PendingReview'), ('IX_Notifications_Account_Read_CreatedAt'),
+    ('IX_Complaints_Account_CreatedAt'), ('IX_ShopWalletTx_Shop_CreatedAt'),
+    ('IX_AuditLogs_Account_CreatedAt')
+) v(index_name)
+LEFT JOIN sys.indexes i ON i.name = v.index_name
+ORDER BY trang_thai DESC, v.index_name;
+GO
+
 SELECT loai, doi_tuong, migration_file,
        CASE
            WHEN loai = 'BANG' AND OBJECT_ID(doi_tuong) IS NOT NULL THEN 'OK'

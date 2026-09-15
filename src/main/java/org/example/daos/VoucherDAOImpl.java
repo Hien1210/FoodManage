@@ -98,7 +98,9 @@ public class VoucherDAOImpl implements VoucherDAO {
 
     @Override
     public Voucher findByCode(String code) {
-        String sql = "SELECT * FROM Vouchers WHERE LOWER(code) = LOWER(?)";
+        // UQ_Voucher_Code uses the database collation (case-insensitive in the POB schema),
+        // so do not wrap the indexed column in LOWER().
+        String sql = "SELECT * FROM Vouchers WHERE code = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, code);

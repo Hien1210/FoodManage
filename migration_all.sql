@@ -961,3 +961,28 @@ ALTER TABLE [Orders] ADD CONSTRAINT CK_Orders_Status
         'CANCELLED'
     ));
 GO
+
+-- =============================================================
+-- Nguon: migration_database_performance.sql
+-- =============================================================
+-- Chay script migration_database_performance.sql rieng de tao bo chi muc toi uu toan he thong.
+-- Khong lap lai o day: file migration_all duoc dung cho khoi tao schema, con chi muc nen duoc
+-- ap dung co chu dong tren DB dang van hanh de co the theo doi thoi gian va dung luong.
+-- Sau khi khoi tao/cap nhat schema, chay them migration_relationship_integrity.sql de bat buoc
+-- cac lien ket du lieu va trigger kiem tra quan he nghiep vu.
+
+-- =============================================================
+-- Nguon: migration_shipper_review_performance.sql
+-- =============================================================
+-- Toi uu /shipper/danh-gia: loc don DONE cua mot shipper, sap xep moi nhat.
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE object_id = OBJECT_ID(N'dbo.Orders')
+      AND name = N'IX_Orders_Shipper_Status_UpdatedAt'
+)
+BEGIN
+    CREATE INDEX IX_Orders_Shipper_Status_UpdatedAt
+        ON dbo.Orders (shipper_id, status, updated_at DESC)
+        INCLUDE (shop_id, receiver_name, receiver_phone, shipping_address, total_price);
+END
+GO
