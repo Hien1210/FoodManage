@@ -10,23 +10,23 @@
     <title>Khiếu nại đơn hàng - FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
     <style>
         :root {
-            --bg:         #FFFBF8;
+            --bg:         #FFF9F2;
             --surface:    #FFFFFF;
             --surface-lt: #FFF4EC;
-            --gold:       #FF5A1F;
-            --gold-hover: #E14A0F;
-            --text:       #241C15;
-            --muted:      #8A7B6C;
+            --gold:       #FF3B1F;
+            --gold-hover: #E02A10;
+            --text:       #2D2421;
+            --muted:      #635752;
             --border:     #F1E4D6;
-            --font-h: 'Plus Jakarta Sans', sans-serif;
+            --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
             --font-b: 'Plus Jakarta Sans', sans-serif;
             --tr: all 0.3s ease;
-            --shadow: 0 14px 34px rgba(60,30,10,.14);
+            --shadow: 0 14px 34px rgba(99,44,20,.14);
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-b); background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -47,7 +47,7 @@
         .logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .logo h1 { font-family: var(--font-h); font-size: 1.55rem; letter-spacing: -.5px; }
         .logo span { color: var(--gold); }
-        .logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,90,31,.4)); }
+        .logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,59,31,.4)); }
         .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-links a { font-size: .86rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
         .nav-links a:hover, .nav-links a.active { color: var(--gold); }
@@ -59,7 +59,7 @@
             color: #FFF; font-size: 14px; font-weight: 800;
             border: none; cursor: pointer; font-family: var(--font-b);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 22px rgba(255,90,31,.3);
+            box-shadow: 0 8px 22px rgba(255,59,31,.3);
         }
         .avatar-dropdown {
             position: absolute; top: calc(100% + 12px); right: 0;
@@ -97,14 +97,28 @@
         .alert-success { background: #EAFBF1; border-color: #BBF0CF; color: #15803D; }
         .alert-danger  { background: #FEECEF; border-color: #FBD0D8; color: #E11D48; }
 
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 4px 18px rgba(60,30,10,.06); padding: 22px; margin-bottom: 20px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 4px 18px rgba(99,44,20,.06); padding: 24px; margin-bottom: 20px; }
+        .card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .card-head .ic { width: 42px; height: 42px; border-radius: 12px; background: #FFF2F0; color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .card-head h3 { margin: 0; font-family: var(--font-h); font-size: 1.05rem; color: var(--text); }
+        .card-head p { margin: 2px 0 0; font-size: .78rem; color: var(--muted); font-weight: 500; }
         .card h3 { margin-top: 0; font-size: 16px; color: var(--text); }
+
+        /* MINI STATUS TIMELINE */
+        .cx-timeline { display: flex; align-items: center; gap: 4px; margin: 12px 0; }
+        .cx-step { display: flex; align-items: center; gap: 4px; flex: 1; }
+        .cx-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; background: var(--border); color: var(--muted); }
+        .cx-line { flex: 1; height: 2px; background: var(--border); }
+        .cx-step.done .cx-dot { background: #15803D; color: #fff; }
+        .cx-step.done .cx-line { background: #15803D; }
+        .cx-step.current .cx-dot { background: var(--gold); color: #fff; box-shadow: 0 0 0 3px rgba(255,59,31,.18); }
+        .cx-step.rejected .cx-dot { background: #DC2626; color: #fff; }
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
         .form-group input, .form-group textarea { width: 100%; padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface-lt); color: var(--text); font-size: 13.5px; font-family: var(--font-b); }
         .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--gold); background: var(--surface); }
         .form-group textarea { min-height: 110px; resize: vertical; }
-        .btn-submit { padding: 11px 24px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--gold), #E14A0F); color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 8px 22px rgba(255,90,31,.32); }
+        .btn-submit { padding: 11px 24px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--gold), #E02A10); color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 8px 22px rgba(255,59,31,.32); }
         .btn-submit:hover { filter: brightness(1.05); }
 
         .complaint-item { padding: 16px; border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; background: var(--surface-lt); }
@@ -212,7 +226,10 @@
 
     <c:if test="${not empty order}">
         <div class="card">
-            <h3>📝 Gửi khiếu nại cho đơn #${order.id}</h3>
+            <div class="card-head">
+                <span class="ic"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                <div><h3>Gửi khiếu nại cho đơn #${order.id}</h3><p>Admin sẽ xem xét và phản hồi trực tiếp trong mục này</p></div>
+            </div>
             <form method="post" action="${pageContext.request.contextPath}/khieu-nai">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                 <input type="hidden" name="orderId" value="${order.id}"/>
@@ -230,7 +247,10 @@
     </c:if>
 
     <div class="card">
-        <h3>📋 Khiếu nại của tôi</h3>
+        <div class="card-head">
+            <span class="ic"><i class="fa-solid fa-comments"></i></span>
+            <div><h3>Khiếu nại của tôi</h3><p><c:out value="${fn:length(complaints)}"/> khiếu nại đã gửi</p></div>
+        </div>
         <c:choose>
             <c:when test="${empty complaints}">
                 <p style="color:var(--muted);font-size:13.5px;">Bạn chưa gửi khiếu nại nào. Vào <a href="${pageContext.request.contextPath}/user/donhang" style="color:var(--gold);font-weight:700;">Đơn hàng của tôi</a> để chọn đơn cần khiếu nại.</p>
@@ -251,6 +271,11 @@
                                     <c:otherwise>❌ Từ chối</c:otherwise>
                                 </c:choose>
                             </span>
+                        </div>
+                        <div class="cx-timeline">
+                            <div class="cx-step done"><div class="cx-dot">1</div><div class="cx-line"></div></div>
+                            <div class="cx-step ${c.status eq 'PENDING' ? 'current' : 'done'}"><div class="cx-dot">2</div><div class="cx-line"></div></div>
+                            <div class="cx-step ${c.status eq 'RESOLVED' ? 'done' : c.status eq 'REJECTED' ? 'rejected' : c.status eq 'PROCESSING' ? 'current' : ''}"><div class="cx-dot">3</div></div>
                         </div>
                         <div class="complaint-content"><c:out value="${c.content}"/></div>
                         <c:if test="${not empty c.adminReply}">

@@ -32,7 +32,7 @@ public class IndexServlet extends HttpServlet {
     private final ProductImageDAO productImageDAO = new ProductImageDAOImpl();
     private final FeedbackDAO feedbackDAO = new FeedbackDAOImpl();
 
-    private static final int FEATURED_LIMIT = 3;
+    private static final int FEATURED_LIMIT = 6;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

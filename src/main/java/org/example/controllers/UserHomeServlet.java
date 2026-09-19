@@ -22,6 +22,7 @@ public class UserHomeServlet extends HttpServlet {
     private final NotificationDAO notificationDAO = new NotificationDAOImpl();
     private final ProductDAO productDAO = new ProductDAOImpl();
     private final ProductImageDAO productImageDAO = new ProductImageDAOImpl();
+    private final AccountDAO accountDAO = new AccountDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -81,6 +82,7 @@ public class UserHomeServlet extends HttpServlet {
 
         req.setAttribute("shops", activeShops);
         req.setAttribute("account", account);
+        req.setAttribute("loyaltyPoints", accountDAO.getLoyaltyPoints(account.getId()));
         req.setAttribute("unreadNotifCount", notificationDAO.countUnread(account.getId()));
         req.setAttribute("shopProductsJson", shopProductsIndex.toString());
         req.getRequestDispatcher("/user/trangnguoidung.jsp").forward(req, resp);

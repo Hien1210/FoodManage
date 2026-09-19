@@ -5,14 +5,14 @@
  */
 
 :root {
-    /* ===== Màu thương hiệu ===== */
-    --primary:        #FF5A1F;
-    --primary-dark:   #E14A0F;
-    --primary-darker: #C13F0C;
-    --primary-light:  #FFF1E8;
+    /* ===== Màu thương hiệu (đồng bộ theo bộ thiết kế Stitch — xem CRUD_DA_LAM.md) ===== */
+    --primary:        #FF3B1F;
+    --primary-dark:   #E02A10;
+    --primary-darker: #C4340C;
+    --primary-light:  #FFF2F0;
     --primary-lighter:#FFF8F3;
-    --primary-border: #FFD3B8;
-    --accent-gold:    #FFB020;
+    --primary-border: #FFC7BE;
+    --accent-gold:    #FFB300;
     --accent-green:   #16A34A;
     --accent-green-lt:#EAFBF1;
     --accent-blue:    #2563EB;
@@ -21,28 +21,31 @@
     --danger-lt:      #FEECEF;
 
     /* ===== Nền & chữ ===== */
-    --bg:        #FFFBF8;
+    --bg:        #FFF9F2;
     --surface:   #FFFFFF;
     --surface-alt: #FFF4EC;
-    --text:      #241C15;
-    --text-2:    #4A3C30;
-    --muted:     #8A7B6C;
+    --text:      #2D2421;
+    --text-2:    #4A3934;
+    --muted:     #635752;
     --border:    #F1E4D6;
 
     /* ===== Khác ===== */
+    --font-display: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
     --font-b: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --radius-sm: 10px;
     --radius-md: 16px;
     --radius-lg: 22px;
     --radius-xl: 28px;
     --tr: all .25s cubic-bezier(.4,0,.2,1);
-    --shadow-sm: 0 2px 10px rgba(60,30,10,.06);
-    --shadow-md: 0 10px 30px rgba(60,30,10,.10);
-    --shadow-lg: 0 20px 55px rgba(60,30,10,.16);
-    --glow-primary: 0 8px 22px rgba(255,90,31,.32);
+    --shadow-sm: 0 4px 16px rgba(99,44,20,.06);
+    --shadow-md: 0 12px 28px rgba(99,44,20,.12);
+    --shadow-lg: 0 16px 36px rgba(99,44,20,.16);
+    --glow-primary: 0 8px 20px rgba(255,59,31,.35);
 }
 
 .ut-scope, .ut-scope body { font-family: var(--font-b); }
+.ut-scope h1, .ut-scope h2, .ut-scope h3,
+.ut-scope .ut-headline, .ut-scope .ut-logo, .ut-scope .ut-price { font-family: var(--font-display); font-weight: 700; }
 
 /* ============ RESET nhẹ (mỗi trang đã có * reset riêng, phần này chỉ bổ sung) ============ */
 .ut-scope a { transition: var(--tr); }

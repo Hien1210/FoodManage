@@ -10,44 +10,46 @@
     <title>${shop.shopName} – FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        h1, h2, h3, .m-section-title, .shop-hero h1, .shop-hero h2 { font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
         body {
             font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-            background: #FFFBF8;
-            color: #241C15;
+            background: #FFF9F2;
+            color: #2D2421;
             min-height: 100vh;
             padding-bottom: 80px;
         }
         a { text-decoration: none; color: inherit; }
 
         :root {
-            --primary: #FF5A1F;
+            --primary: #FF3B1F;
             --primary-hover: #FF7A47;
-            --primary-light: #FFF1E8;
-            --primary-light-border: #FFD3B8;
+            --primary-light: #FFF2F0;
+            --primary-light-border: #FFC7BE;
             --primary-dark-text: #B23D0E;
-            --secondary: #FFB020;
-            --accent-pink: #FF5A1F;
+            --secondary: #FFB300;
+            --accent-pink: #FF3B1F;
             --white: #ffffff;
-            --bg-page: #FFFBF8;
+            --bg-page: #FFF9F2;
             --bg-panel: #FFFFFF;
             --bg-panel-solid: #FFFFFF;
             --bg-input: #FFF4EC;
             --border-color: #F1E4D6;
-            --text-main: #241C15;
+            --text-main: #2D2421;
             --text-muted: #6B5B4C;
-            --text-dim: #8A7B6C;
+            --text-dim: #635752;
             --success: #15803D;
             --radius-sm: 10px;
             --radius-md: 16px;
             --radius-lg: 20px;
-            --shadow-sm: 0 2px 10px rgba(60,30,10,.06);
-            --shadow-md: 0 10px 28px rgba(60,30,10,.10);
-            --shadow-lg: 0 20px 55px rgba(60,30,10,.16);
-            --glow-primary: 0 6px 18px rgba(255,90,31,.32);
+            --shadow-sm: 0 2px 10px rgba(99,44,20,.06);
+            --shadow-md: 0 10px 28px rgba(99,44,20,.10);
+            --shadow-lg: 0 20px 55px rgba(99,44,20,.16);
+            --glow-primary: 0 6px 18px rgba(255,59,31,.32);
         }
 
         .starfield { display: none; }
@@ -572,25 +574,25 @@
 <header class="navbar" style="position:sticky;top:0;left:0;width:100%;background:rgba(255,251,248,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:1000;border-bottom:1px solid var(--border-color,#F1E4D6);">
     <div style="max-width:1180px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:76px;gap:16px;">
         <a href="${pageContext.request.contextPath}/user/home" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
-            <img style="width:30px;height:30px;filter:drop-shadow(0 4px 8px rgba(255,90,31,.4));" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Steaming%20bowl/3D/steaming_bowl_3d.png" alt="FOOD MANAGE">
-            <h1 style="font-size:1.55rem;letter-spacing:-.5px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;">FOOD MANAGE<span style="color:#FF5A1F;">.</span></h1>
+            <img style="width:30px;height:30px;filter:drop-shadow(0 4px 8px rgba(255,59,31,.4));" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Steaming%20bowl/3D/steaming_bowl_3d.png" alt="FOOD MANAGE">
+            <h1 style="font-size:1.55rem;letter-spacing:-.5px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;">FOOD MANAGE<span style="color:#FF3B1F;">.</span></h1>
         </a>
 
         <nav style="display:flex;gap:20px;align-items:center;">
-            <a href="${pageContext.request.contextPath}/user/home" style="font-size:.86rem;font-weight:600;color:#8A7B6C;text-decoration:none;">Trang chủ</a>
-            <a href="${pageContext.request.contextPath}/user/home#restaurants" style="font-size:.86rem;font-weight:700;color:#FF5A1F;text-decoration:none;">Nhà hàng</a>
-            <a href="${pageContext.request.contextPath}/user/donhang" style="font-size:.86rem;font-weight:600;color:#8A7B6C;text-decoration:none;">Đơn hàng</a>
-            <a href="${pageContext.request.contextPath}/user/dia-chi" style="font-size:.86rem;font-weight:600;color:#8A7B6C;text-decoration:none;">Địa chỉ</a>
-            <a href="${pageContext.request.contextPath}/user/diem-thuong" style="font-size:.86rem;font-weight:600;color:#8A7B6C;text-decoration:none;">Điểm thưởng</a>
+            <a href="${pageContext.request.contextPath}/user/home" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Trang chủ</a>
+            <a href="${pageContext.request.contextPath}/user/home#restaurants" style="font-size:.86rem;font-weight:700;color:#FF3B1F;text-decoration:none;">Nhà hàng</a>
+            <a href="${pageContext.request.contextPath}/user/donhang" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Đơn hàng</a>
+            <a href="${pageContext.request.contextPath}/user/dia-chi" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Địa chỉ</a>
+            <a href="${pageContext.request.contextPath}/user/diem-thuong" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Điểm thưởng</a>
         </nav>
 
         <div style="display:flex;align-items:center;gap:14px;">
-            <a href="${pageContext.request.contextPath}/user/thong-bao" aria-label="Thông báo" style="position:relative;width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#8A7B6C;text-decoration:none;">
+            <a href="${pageContext.request.contextPath}/user/thong-bao" aria-label="Thông báo" style="position:relative;width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;">
                 <i class="fa-solid fa-bell"></i>
                 <span data-notif-badge style="display:${unreadNotifCount > 0 ? 'inline-block' : 'none'};position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px;font-weight:700;">${unreadNotifCount}</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/user/cart" aria-label="Giỏ hàng" style="width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#8A7B6C;text-decoration:none;">
+            <a href="${pageContext.request.contextPath}/user/cart" aria-label="Giỏ hàng" style="width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;">
                 <i class="fa-solid fa-bag-shopping"></i>
             </a>
         </div>
@@ -816,7 +818,7 @@
     <c:choose>
         <c:when test="${empty products}">
             <div class="empty-state">
-                <div class="e-icon"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Fork%20and%20knife%20with%20plate/3D/fork_and_knife_with_plate_3d.png" alt="" style="width:80px;height:80px;filter:drop-shadow(0 12px 18px rgba(60,30,10,.2));"></div>
+                <div class="e-icon"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Fork%20and%20knife%20with%20plate/3D/fork_and_knife_with_plate_3d.png" alt="" style="width:80px;height:80px;filter:drop-shadow(0 12px 18px rgba(99,44,20,.2));"></div>
                 <div class="e-title">Quán chưa có món nào</div>
                 <div class="e-sub">Vui lòng quay lại sau!</div>
             </div>
@@ -1104,7 +1106,7 @@
     max-width: calc(100vw - 32px);
     background: #fff;
     border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(60,30,10,.22);
+    box-shadow: 0 20px 60px rgba(99,44,20,.22);
     z-index: 500;
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -1165,7 +1167,7 @@
     background: var(--primary); color: #fff; border: none;
     font-size: 20px; line-height: 1; cursor: pointer; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 12px rgba(255,90,31,.32);
+    box-shadow: 0 4px 12px rgba(255,59,31,.32);
     transition: background .15s, transform .1s;
 }
 .combo-card-btn:hover { background: var(--primary-hover); transform: scale(1.1); }

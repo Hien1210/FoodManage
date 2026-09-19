@@ -6,26 +6,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông báo - POB</title>
+    <title>Thông báo - FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
     <style>
         :root {
-            --bg:         #FFFBF8;
+            --bg:         #FFF9F2;
             --surface:    #FFFFFF;
             --surface-lt: #FFF4EC;
-            --gold:       #FF5A1F;
-            --gold-hover: #E14A0F;
-            --text:       #241C15;
-            --muted:      #8A7B6C;
+            --gold:       #FF3B1F;
+            --gold-hover: #E02A10;
+            --text:       #2D2421;
+            --muted:      #635752;
             --border:     #F1E4D6;
+            --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
             --font-b:  'Plus Jakarta Sans', sans-serif;
             --tr: all .25s ease;
-            --shadow: 0 14px 36px rgba(60,30,10,.14);
-            --glow:   0 8px 22px rgba(255,90,31,.3);
+            --shadow: 0 14px 36px rgba(99,44,20,.14);
+            --glow:   0 8px 22px rgba(255,59,31,.3);
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-b); background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -34,12 +35,12 @@
         /* NAVBAR (dong bo voi trang chu) */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-            background: rgba(255,251,248,.92); backdrop-filter: blur(14px);
+            background: rgba(255,249,242,.92); backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--border);
         }
         .nav-content { max-width: 1180px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 76px; gap: 16px; }
-        .logo { display: flex; align-items: center; gap: 8px; }
-        .logo h1 { font-size: 1.55rem; font-weight: 800; letter-spacing: -.5px; }
+        .logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .logo h1 { font-family: var(--font-h); white-space: nowrap; font-size: 1.55rem; font-weight: 800; letter-spacing: -.5px; }
         .logo span { color: var(--gold); }
         .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-links a { font-size: .85rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
@@ -81,13 +82,13 @@
 
         .container { max-width: 760px; margin: 0 auto; padding: 110px 20px 80px; }
         .page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
-        .page-title { font-size: 22px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px; }
+        .page-title { font-family: var(--font-h); font-size: 22px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px; }
         .unread-badge { background: var(--gold); color: #fff; font-size: 12px; font-weight: 700; padding: 3px 12px; border-radius: 50px; }
         .btn-mark-all { padding: 9px 18px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font-size: 12.5px; font-weight: 700; cursor: pointer; }
         .btn-mark-all:hover { color: var(--gold); border-color: var(--gold); background: var(--surface-lt); }
 
         .notif-list { display: flex; flex-direction: column; gap: 12px; }
-        .notif-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; box-shadow: 0 2px 10px rgba(60,30,10,.05); }
+        .notif-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; box-shadow: 0 2px 10px rgba(99,44,20,.05); }
         .notif-card.unread { border-left: 4px solid var(--gold); background: var(--surface-lt); }
         .notif-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
         .notif-body { flex: 1; }

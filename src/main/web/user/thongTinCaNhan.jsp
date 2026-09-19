@@ -10,24 +10,24 @@
 <meta name="_csrf" content="${sessionScope.csrfToken}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
 <style>
 :root {
-    --bg:         #FFFBF8;
+    --bg:         #FFF9F2;
     --surface:    #FFFFFF;
     --surface-lt: #FFF4EC;
-    --gold:       #FF5A1F;
-    --gold-hover: #E14A0F;
-    --text:       #241C15;
-    --muted:      #8A7B6C;
+    --gold:       #FF3B1F;
+    --gold-hover: #E02A10;
+    --text:       #2D2421;
+    --muted:      #635752;
     --border:     #F1E4D6;
-    --font-h: 'Plus Jakarta Sans', sans-serif;
+    --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
     --font-b: 'Plus Jakarta Sans', sans-serif;
     --tr: all 0.3s ease;
-    --shadow: 0 14px 34px rgba(60,30,10,.14);
-    --glow:   0 8px 20px rgba(255,90,31,.28);
+    --shadow: 0 14px 34px rgba(99,44,20,.14);
+    --glow:   0 8px 20px rgba(255,59,31,.28);
     --success: #15803D; --info: #1D4ED8; --danger: #E11D48;
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,7 +49,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 .logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .logo h1 { font-family: var(--font-h); font-size: 1.55rem; letter-spacing: -.5px; }
 .logo span { color: var(--gold); }
-.logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,90,31,.4)); }
+.logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,59,31,.4)); }
 .nav-links { display: flex; gap: 20px; align-items: center; }
 .nav-links a { font-size: .86rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 .nav-links a:hover, .nav-links a.active { color: var(--gold); }
@@ -70,7 +70,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     color: #FFF; font-size: 14px; font-weight: 800;
     border: none; cursor: pointer; font-family: var(--font-b);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 22px rgba(255,90,31,.3);
+    box-shadow: 0 8px 22px rgba(255,59,31,.3);
     overflow: hidden;
 }
 .avatar-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -133,7 +133,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 }
 .btn-sm { padding: 8px 16px; font-size: .78rem; }
 .btn-gold { color: #fff; border-color: var(--gold); background: linear-gradient(135deg, var(--gold), var(--gold-hover)); box-shadow: var(--glow); }
-.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255,90,31,.36); }
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255,59,31,.36); }
 .btn-muted { color: var(--muted); border-color: var(--border); }
 .btn-muted:hover { color: var(--text); border-color: var(--text); }
 .btn-default { color: var(--text); border-color: var(--border); }
@@ -154,7 +154,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     transition: var(--tr); outline: none;
 }
 .form-control:focus, .form-select:focus, .form-textarea:focus {
-    border-color: var(--gold); box-shadow: 0 0 0 4px var(--primary-light, #FFF1E8);
+    border-color: var(--gold); box-shadow: 0 0 0 4px var(--primary-light, #FFF2F0);
 }
 .form-control::placeholder { color: var(--muted); }
 .form-control[readonly] { background: var(--surface-lt); color: var(--muted); cursor: not-allowed; }
@@ -162,7 +162,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 /* PROFILE CARD */
 .profile-card {
     background: var(--surface); border: 1.5px solid var(--border); border-radius: 22px;
-    padding: 30px; box-shadow: 0 2px 12px rgba(60,30,10,.05);
+    padding: 30px; box-shadow: 0 2px 12px rgba(99,44,20,.05);
 }
 .profile-avatar-block { display: flex; align-items: center; gap: 22px; margin-bottom: 28px; padding-bottom: 26px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .profile-avatar {

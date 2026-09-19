@@ -5,18 +5,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - POB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Đăng nhập - FOOD MANAGE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f0f4f8;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #FFF9F2;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px;
+        }
+        .logo-text-main, .page-title, .deco-headline, .appeal-title, .suspend-title, .logo-badge, .deco-brand-badge {
+            font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
         }
 
         .auth-card {
@@ -42,70 +47,70 @@
         .logo-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
         .logo-badge {
             width: 40px; height: 40px; border-radius: 12px;
-            background: linear-gradient(135deg, #1a2035, #2d3a6e);
+            background: linear-gradient(135deg, #FF3B1F, #E02A10);
             display: flex; align-items: center; justify-content: center;
             color: #fff; font-weight: 800; font-size: 13px;
-            box-shadow: 0 4px 12px rgba(26,32,53,0.3);
+            box-shadow: 0 4px 12px rgba(255,59,31,0.32);
         }
-        .logo-text-main { font-size: 11px; font-weight: 800; color: #10b981; letter-spacing: 0.12em; text-transform: uppercase; display: block; }
-        .logo-text-sub  { font-size: 9px;  font-weight: 600; color: #94a3b8; letter-spacing: 0.1em;  text-transform: uppercase; display: block; margin-top: 2px; }
+        .logo-text-main { font-size: 11px; font-weight: 800; color: #FF3B1F; letter-spacing: 0.12em; text-transform: uppercase; display: block; }
+        .logo-text-sub  { font-size: 9px;  font-weight: 600; color: #635752; letter-spacing: 0.1em;  text-transform: uppercase; display: block; margin-top: 2px; }
 
-        .page-title { font-size: 26px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; margin-bottom: 6px; }
-        .page-sub   { font-size: 13px; color: #94a3b8; margin-bottom: 24px; }
+        .page-title { font-size: 26px; font-weight: 800; color: #2D2421; letter-spacing: -0.02em; margin-bottom: 6px; }
+        .page-sub   { font-size: 13px; color: #635752; margin-bottom: 24px; }
 
         .alert { display: flex; align-items: center; gap: 10px; border-radius: 12px; padding: 12px 16px; font-size: 13px; font-weight: 500; margin-bottom: 20px; }
         .alert-error   { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
-        .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+        .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803D; }
         .alert svg { flex-shrink: 0; }
 
         .form-group { margin-bottom: 16px; }
-        .field-label { display: block; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+        .field-label { display: block; font-size: 11px; font-weight: 700; color: #4A3934; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
         .field-wrap  { position: relative; }
         .field-icon-left {
             position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-            color: #b0bcc9; pointer-events: none; transition: color 0.2s;
+            color: #A99284; pointer-events: none; transition: color 0.2s;
         }
         .input-field {
-            width: 100%; background: #f8fafc; border: 1.5px solid #e2e8f0;
+            width: 100%; background: #FFF4EC; border: 1.5px solid #F1E4D6;
             border-radius: 12px; padding: 12px 14px 12px 42px;
-            font-size: 14px; color: #0f172a; font-weight: 500; font-family: inherit;
+            font-size: 14px; color: #2D2421; font-weight: 500; font-family: inherit;
             outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
-        .input-field:focus { border-color: #10b981; background: #fff; box-shadow: 0 0 0 4px rgba(16,185,129,0.12); }
-        .input-field::placeholder { color: #b0bcc9; font-weight: 400; font-size: 13px; }
-        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #f8fafc inset !important; }
+        .input-field:focus { border-color: #FF3B1F; background: #fff; box-shadow: 0 0 0 4px rgba(255,59,31,0.12); }
+        .input-field::placeholder { color: #A99284; font-weight: 400; font-size: 13px; }
+        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px #FFF4EC inset !important; }
 
         .toggle-pw {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; cursor: pointer; color: #b0bcc9;
+            background: none; border: none; cursor: pointer; color: #A99284;
             padding: 4px; transition: color 0.2s; display: flex; align-items: center;
         }
-        .toggle-pw:hover { color: #10b981; }
+        .toggle-pw:hover { color: #FF3B1F; }
         .hidden { display: none !important; }
         .error-inline { color: #dc2626; font-size: 11.5px; font-weight: 500; margin-top: 5px; display: block; }
 
         .forgot-link-wrap { text-align: right; margin-top: 4px; margin-bottom: 4px; }
-        .forgot-link { font-size: 12px; font-weight: 700; color: #10b981; text-decoration: none; }
-        .forgot-link:hover { color: #059669; }
+        .forgot-link { font-size: 12px; font-weight: 700; color: #FF3B1F; text-decoration: none; }
+        .forgot-link:hover { color: #E02A10; }
 
         .btn-primary {
-            width: 100%; background: linear-gradient(135deg, #10b981, #059669);
+            width: 100%; background: linear-gradient(135deg, #FF3B1F, #E02A10);
             color: #fff; font-weight: 700; font-size: 14px; letter-spacing: 0.02em;
             padding: 14px; border-radius: 12px; border: none; cursor: pointer;
-            transition: all 0.2s; box-shadow: 0 4px 16px rgba(16,185,129,0.35);
+            transition: all 0.2s; box-shadow: 0 4px 16px rgba(255,59,31,0.35);
             font-family: inherit; margin-top: 4px;
         }
-        .btn-primary:hover { transform: translateY(-1.5px); box-shadow: 0 6px 22px rgba(16,185,129,0.45); }
+        .btn-primary:hover { transform: translateY(-1.5px); box-shadow: 0 6px 22px rgba(255,59,31,0.45); }
         .btn-primary:active { transform: translateY(0); }
 
-        .form-footer { text-align: center; font-size: 13px; color: #94a3b8; margin-top: 16px; }
-        .form-footer a { color: #10b981; font-weight: 700; text-decoration: none; }
-        .form-footer a:hover { color: #059669; }
+        .form-footer { text-align: center; font-size: 13px; color: #635752; margin-top: 16px; }
+        .form-footer a { color: #FF3B1F; font-weight: 700; text-decoration: none; }
+        .form-footer a:hover { color: #E02A10; }
 
         /* ===== RIGHT PANEL ===== */
         .deco-panel {
             flex: 1;
-            background: linear-gradient(155deg, #1a2035 0%, #0f1624 100%);
+            background: linear-gradient(155deg, #3A1206 0%, #1A0A04 100%);
             padding: 48px 44px;
             display: flex; flex-direction: column; justify-content: space-between;
             position: relative; overflow: hidden;
@@ -113,13 +118,13 @@
         .deco-panel::before {
             content: ''; position: absolute; top: -80px; right: -80px;
             width: 320px; height: 320px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,59,31,0.18) 0%, transparent 70%);
             pointer-events: none;
         }
         .deco-panel::after {
             content: ''; position: absolute; bottom: -60px; left: -60px;
             width: 240px; height: 240px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,179,0,0.08) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -134,7 +139,7 @@
 
         .deco-body { position: relative; z-index: 1; }
         .deco-headline { font-size: 29px; font-weight: 800; color: #fff; line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 14px; }
-        .deco-headline span { color: #f59e0b; }
+        .deco-headline span { color: #FFB300; }
         .deco-desc { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.7; margin-bottom: 28px; max-width: 320px; }
 
         .feature-list { display: flex; flex-direction: column; gap: 10px; }
@@ -170,19 +175,19 @@
         @keyframes popIn { from { transform: scale(0.88); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .suspend-icon  { font-size: 52px; text-align: center; margin-bottom: 14px; }
         .suspend-title { font-size: 20px; font-weight: 800; color: #dc2626; text-align: center; letter-spacing: -0.02em; margin-bottom: 10px; }
-        .suspend-reason-label { font-size: 10.5px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .suspend-reason-label { font-size: 10.5px; font-weight: 700; color: #635752; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         .suspend-reason-box { background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 12px 16px; font-size: 13.5px; color: #c53030; font-weight: 600; line-height: 1.6; margin-bottom: 18px; }
-        .suspend-desc  { font-size: 13px; color: #64748b; line-height: 1.6; text-align: center; margin-bottom: 18px; }
-        .suspend-divider { border: none; border-top: 1px solid #f1f5f9; margin: 18px 0; }
-        .appeal-title  { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
-        .appeal-textarea { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #0f172a; font-family: inherit; resize: vertical; outline: none; min-height: 88px; background: #f8fafc; transition: border-color 0.2s, box-shadow 0.2s; }
-        .appeal-textarea:focus { border-color: #10b981; background: #fff; box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
-        .appeal-hint   { font-size: 11px; color: #94a3b8; margin: 5px 0 14px; }
+        .suspend-desc  { font-size: 13px; color: #635752; line-height: 1.6; text-align: center; margin-bottom: 18px; }
+        .suspend-divider { border: none; border-top: 1px solid #F1E4D6; margin: 18px 0; }
+        .appeal-title  { font-size: 14px; font-weight: 800; color: #2D2421; margin-bottom: 10px; }
+        .appeal-textarea { width: 100%; border: 1.5px solid #F1E4D6; border-radius: 12px; padding: 12px 14px; font-size: 13px; color: #2D2421; font-family: inherit; resize: vertical; outline: none; min-height: 88px; background: #FFF4EC; transition: border-color 0.2s, box-shadow 0.2s; }
+        .appeal-textarea:focus { border-color: #FF3B1F; background: #fff; box-shadow: 0 0 0 4px rgba(255,59,31,0.1); }
+        .appeal-hint   { font-size: 11px; color: #635752; margin: 5px 0 14px; }
         .btn-row       { display: flex; gap: 10px; }
-        .btn-appeal    { flex: 1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; border-radius: 12px; padding: 12px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(16,185,129,0.3); transition: all 0.2s; }
+        .btn-appeal    { flex: 1; background: linear-gradient(135deg, #FF3B1F, #E02A10); color: #fff; border: none; border-radius: 12px; padding: 12px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 12px rgba(255,59,31,0.3); transition: all 0.2s; }
         .btn-appeal:hover { opacity: 0.92; transform: translateY(-1px); }
-        .btn-close     { background: #f1f5f9; color: #475569; border: none; border-radius: 12px; padding: 12px 20px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.2s; }
-        .btn-close:hover { background: #e2e8f0; }
+        .btn-close     { background: #F1E4D6; color: #4A3934; border: none; border-radius: 12px; padding: 12px 20px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+        .btn-close:hover { background: #F1E4D6; }
         .appeal-success { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px 16px; color: #15803d; font-size: 13.5px; font-weight: 600; text-align: center; margin-bottom: 14px; }
         .appeal-error   { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 12px 16px; color: #c53030; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
 

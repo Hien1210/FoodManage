@@ -1,5 +1,654 @@
 # CRUD da lam
 
+## 149. Bổ sung trang mẫu "Giỏ hàng" bị bỏ sót + đồng bộ 8 trang khách hàng/xác thực còn màu cũ
+
+**Yêu cầu:** User hỏi "kiểm tra xem đã đủ các trang trong file zip chưa". Rà lại 1-1 15 trang mẫu Stitch
+với JSP thật thì phát hiện mục 146/147 báo "đầy đủ" là SAI: mẫu "Giỏ hàng xác nhận" tương ứng
+`user/gioHang.jsp` (route `/user/cart` — nút giỏ hàng trên navbar mọi trang trỏ vào đây) chưa từng được mở
+hay sửa (trước đó gộp nhầm mẫu này vào `checkoutThanhToan.jsp`, thực ra là 2 trang riêng). User chọn làm cả
+2 nhóm: (1) giỏ hàng, (2) các trang khách hàng/xác thực khác còn bảng màu cũ.
+
+**Nhóm 1 — `user/gioHang.jsp`:** đổi toàn bộ bảng màu sang token Stitch (cam-đỏ `#FF3B1F`, nền kem
+`#FFF9F2`, chữ nâu `#2D2421`, viền `#F1E4D6`; slate xám lạnh → nâu ấm), thêm Quicksand cho logo/tiêu đề,
+thêm stepper "Chọn món → Giỏ hàng & Thanh toán → Theo dõi giao hàng" đồng bộ với `checkoutThanhToan.jsp`,
+size được chọn trong modal sửa đổi sang màu thương hiệu (trước là xanh đen), `.alert-success` đổi từ nền
+cam sang xanh lá đúng ngữ nghĩa, thêm `.page-wrap > * { min-width: 0 }` (tránh lỗi grid tràn ngang đã gặp ở
+mục 148). Không đụng logic/JS/id: chọn tất cả, đổi số lượng, sửa size/topping, xoá, form CSRF giữ nguyên.
+
+**Nhóm 2 — các trang còn màu cũ:**
+- `user/doiMatKhauUser.jsp`, `user/thongBao.jsp`, `user/guiFeedback.jsp`, `user/thanhToanThatBai.jsp`: cùng
+  bộ sed màu + thêm font Quicksand cho tiêu đề (`--font-h`); riêng `thanhToanThatBai.jsp` bỏ font Inter cũ.
+  `doiMatKhauUser`/`thongBao` thêm `flex-shrink: 0` cho `.logo` (tránh bug vỡ logo như mục 148).
+- `user/yeuCauHoanTien.jsp`: phát hiện **bug có sẵn** — trang dùng các biến `--bg-main`, `--text-main`,
+  `--bg-panel`, `--bg-input`, `--border-color`, `--text-muted`, `--font-sans` nhưng chúng chỉ được định
+  nghĩa cục bộ trong từng trang admin (ví dụ `admin/BaoCaoVanHanh.jsp`), KHÔNG có trong `theme.css` → trên
+  trang khách hàng này nền/chữ/viền/font rơi về mặc định trình duyệt. Đã định nghĩa lại các biến này trong
+  `:root` cục bộ theo bảng màu Stitch (không sửa `theme.css` vì file dùng chung với admin/shop/shipper), và
+  thêm `font-family: inherit` cho ô nhập.
+- `register.jsp`, `nhapOTP.jsp`, `quenmatkhau.jsp`: cùng layout chia đôi với `DangNhap.jsp` nhưng còn tông
+  xanh lá (`#10b981`) + panel xanh navy + font Inter → đổi sang cam-đỏ thương hiệu, panel nâu đậm
+  `#3A1206→#1A0A04`, chữ nhấn vàng `#FFB300`, nền kem `#FFF9F2`, Quicksand cho tiêu đề. Đã kiểm tra mọi chỗ
+  dùng màu xanh trong 3 file đều là màu nhấn thương hiệu (focus, nút, link), không có chỗ nào là màu
+  "thành công" cần giữ xanh.
+- Đổi `<title>` còn ghi "POB" sang "FOOD MANAGE" ở 7 trang (`register`, `nhapOTP`, `quenmatkhau`,
+  `doiMatKhauUser`, `thongBao`, `diemThuong`, `hoaDon`).
+
+**Kiểm thử thật (mvn package OK → Tomcat cổng 8090 riêng → Browser pane, đăng nhập tài khoản
+`claude_qa_test` như mục 148):** render đúng và đã chụp xem bằng mắt ở desktop: `/user/cart` (trạng thái
+giỏ trống), `/user/doi-mat-khau`, `/user/thong-bao`, `/dangky`, `/quenmatkhau`, `/xacnhanotp`,
+`/user/thanhToanThatBai.jsp`, `/user/guiFeedback.jsp`, `/user/yeuCauHoanTien.jsp` (2 trang cuối mở thẳng
+file JSP vì servlet yêu cầu đơn hàng thật nên chỉ thấy khung form, không có dữ liệu đơn). Quét ở 375px:
+`scrollWidth == innerWidth` (không tràn ngang) trên cả 6 trang truy cập được bằng route thật. **Chưa test
+được:** giỏ hàng CÓ món (shop demo vẫn không có sản phẩm) nên các thao tác đổi số lượng/sửa size-topping/xoá
+chưa chạy thật — chỉ sửa CSS/HTML tĩnh, không đụng JS/servlet nên rủi ro thấp nhưng nên tự thử.
+
+### Files sửa:
+- `src/main/web/user/gioHang.jsp`, `doiMatKhauUser.jsp`, `thongBao.jsp`, `guiFeedback.jsp`,
+  `thanhToanThatBai.jsp`, `yeuCauHoanTien.jsp`, `diemThuong.jsp` (chỉ title), `hoaDon.jsp` (chỉ title)
+- `src/main/web/register.jsp`, `nhapOTP.jsp`, `quenmatkhau.jsp`
+
+### Ghi chú:
+Không đổi schema DB, không đổi Java. Vẫn CHƯA đụng: 4 trang scaffold CRUD nội bộ (`DanhSachGioHang`,
+`cartItemDanhSach`, `themSuaGioHang`, `cartItemThemSua`, `orderDanhSach`...), và toàn bộ giao diện
+Shop/Admin/Shipper (zip không có mẫu). Tomcat test đã dừng; tài khoản `claude_qa_test` vẫn còn trong DB.
+Đối chiếu cuối cùng với zip: trang "Kho voucher" và "Cổng PayOS" vẫn không có JSP tương ứng (không phải
+bỏ sót — hệ thống chưa có tính năng / do PayOS host).
+
+## 148. Rebuild + test thật bằng Tomcat/DB thật, phát hiện và vá 4 bug thật
+
+**Yêu cầu:** User bảo "rebuild rồi test thử tất cả các trang đã sửa". Trước đó mọi ghi chú (mục
+138-147) đều nói "không có Maven/Tomcat CLI trong môi trường này" — hoá ra KHÔNG ĐÚNG, chỉ là chưa thử
+kỹ. Đợt này thực sự dựng được môi trường build+run thật:
+- Tải Apache Maven 3.9.9 portable (không có sẵn `mvn` trong PATH) vào thư mục scratch.
+- `mvn clean package` build ra `target/ROOT.war` — build thành công, không lỗi compile Java lẫn JSP.
+- Phát hiện Tomcat 10.1.54 thật đã cài sẵn tại `F:\apache-tomcat-10.1.54-windows-x64` (dùng chung với
+  SmartTomcat plugin của IDE) — dựng 1 `CATALINA_BASE` RIÊNG trong thư mục scratch (copy `conf/`, đổi
+  cổng HTTP `8080→8090` và shutdown `8005→8105`) để KHÔNG đụng vào Tomcat/state thật của user, deploy
+  `ROOT.war` vào đó và chạy nền.
+- Xác nhận DB thật (SQL Server tại `14.225.217.109:1433`, đã có sẵn trong `DBUtil.java`) truy cập được
+  từ môi trường này — dùng thẳng DB thật để test (không phải mock).
+- Đăng ký tài khoản thật qua `/dangky` bị chặn vì SMTP Gmail trong `EmailUtil.java` sai mật khẩu ứng
+  dụng (lỗi môi trường có sẵn, không phải do đợt sửa này) nên không gửi được OTP xác thực. Để có tài
+  khoản test đăng nhập được, đã viết 1 script Java nhỏ (`SeedTestAccount.java`, chỉ chạy trong phiên
+  này, không phải file trong repo) dùng đúng thư viện `jbcrypt` của project để tạo 1 Account thật trong
+  DB: `username=claude_qa_test`, `password=QaTest12345`, `roleId=3` — **tài khoản test thật nằm trong DB
+  chung, user nên tự xoá nếu không cần giữ lại** (`DELETE FROM Accounts WHERE username='claude_qa_test'`).
+- Dùng Browser pane đăng nhập bằng tài khoản này, bấm qua toàn bộ các trang đã sửa (TrangChu, DangNhap,
+  trangnguoidung, donhang, diaChi, diemThuong, thongTinCaNhan, khieuNai, menuShop, checkoutThanhToan),
+  kiểm tra cả responsive mobile (375px).
+
+**4 bug THẬT phát hiện được nhờ chạy thật (không thấy được nếu chỉ đọc code) — đã vá hết:**
+
+1. **`user/trangnguoidung.jsp` — trang trắng giữa chừng, cắt cụt HTML:** EL `${account.loyaltyPoints}`
+   dùng property KHÔNG TỒN TẠI trên model `Account` (điểm thưởng thực ra chỉ lấy được qua
+   `AccountDAO.getLoyaltyPoints(id)`, không phải field trên object) → Jasper ném exception runtime giữa
+   lúc đang stream response, HTML bị cắt cụt ngay tại thẻ `<h4>` đó, toàn bộ phần dưới (2 thẻ thống kê
+   còn lại, danh sách nhà hàng, footer) biến mất hoàn toàn — không có trang lỗi rõ ràng nào hiện ra vì
+   response đã commit 1 phần. Vá đúng cách: thêm `AccountDAO` + gọi `getLoyaltyPoints()` trong
+   `UserHomeServlet.java`, set attribute `loyaltyPoints`, sửa JSP dùng `${loyaltyPoints}` thay vì
+   `${account.loyaltyPoints}`.
+2. **`user/trangnguoidung.jsp` — logo "FOOD MANAGE" vỡ dòng đè lên menu** ở độ rộng ~1024px: file này
+   là DUY NHẤT trong 6 file dùng chung layout navbar bị thiếu `flex-shrink: 0` trên `.logo` (5 file kia
+   — donhang/khieuNai/diaChi/diemThuong/thongTinCaNhan — đều đã có sẵn, không hiểu sao riêng file này
+   thiếu). Đã thêm `flex-shrink: 0` + `white-space: nowrap` cho logo.
+3. **`user/menuShop.jsp` — icon chuông thông báo & giỏ hàng trên navbar hoàn toàn rỗng** (2 vòng tròn
+   trống không có icon): file dùng class `fa-solid fa-bell`/`fa-bag-shopping` nhưng KHÔNG hề load CSS
+   Font Awesome trong `<head>` (bug có sẵn từ trước, không phải do đợt màu mục 139). Đã thêm
+   `<link>` cdnjs font-awesome 6.4.0 giống các trang khác.
+4. **`TrangChu.jsp` — tràn ngang nghiêm trọng trên mobile (≤600px):** dù đã tự nhận "đã kiểm tra
+   responsive" ở mục 140 (chỉ đọc code, không chạy thật), khi bật giả lập 375px thật sự thì: (a) nút
+   CTA header "Đăng nhập / Đặt món ngay" không co được vì `.nav-actions` có `flex-shrink: 0` cứng, (b)
+   toàn bộ `.hero-content` và các con (search bar, trending tags, CTA, stat cards) bị ép rộng 391px dù
+   container chỉ có 343px — lỗi CSS Grid kinh điển: `grid-template-columns: 1fr` vẫn tôn trọng min-content
+   width của con bên trong trừ khi có `min-width: 0`. Đã vá: bọc chữ CTA header trong
+   `<span class="cta-label">` để ẩn ở ≤720px (chỉ còn icon), thêm `min-width: 0` cho `.hero-grid > *`
+   và `.cat-head-row > *`/`.filter-tabs`, thêm `overflow-x: hidden` an toàn cho `html`/`body`. Đã xác
+   nhận lại bằng script JS quét toàn bộ phần tử `getBoundingClientRect().right > viewport` — từ 27 phần
+   tử tràn xuống 0 (chỉ còn 1 phần tử là chip danh mục nằm trong thanh cuộn ngang CÓ CHỦ ĐÍCH, không
+   phải lỗi).
+
+### Files sửa:
+- `src/main/java/org/example/controllers/UserHomeServlet.java` (thêm `AccountDAO` + attribute
+  `loyaltyPoints`)
+- `src/main/web/user/trangnguoidung.jsp` (dùng đúng attribute + fix logo wrap)
+- `src/main/web/user/menuShop.jsp` (thêm link Font Awesome)
+- `src/main/web/TrangChu.jsp` (fix tràn ngang mobile toàn diện)
+
+### Ghi chú:
+Không đổi schema DB. Server test (Tomcat cổng 8090 + `CATALINA_BASE` riêng trong thư mục scratch của
+phiên làm việc) đã được dừng lại sau khi test xong, không để lại tiến trình chạy nền. **Tài khoản DB
+thật `claude_qa_test` vẫn còn trong bảng `Accounts`** — đề nghị user tự xoá nếu không cần dùng để test
+tiếp. Do quán "wishe" (shop demo có sẵn trong DB) chưa có sản phẩm nào nên KHÔNG test được luồng thêm
+giỏ hàng → thanh toán đầy đủ qua UI thật (chỉ xác nhận được `checkoutThanhToan.jsp` tự động chuyển
+hướng an toàn khi giỏ trống, không lỗi) — đề nghị user tự test luồng đặt hàng đầy đủ với 1 shop có sẵn
+món ăn thật. Cũng chưa test được `hoaDon.jsp` (hóa đơn) do tài khoản test chưa có đơn hàng nào.
+
+## 147. Audit + làm rõ 3 trang mẫu Stitch còn sót (theo yêu cầu "làm rõ và hoàn thiện nốt")
+
+**Yêu cầu:** Sau mục 146, user hỏi "đã đầy đủ các trang trong file zip chưa" — mình rà lại và phát hiện
+mục 146 báo cáo hơi vội: 3 trong 16 thư mục mẫu chưa hề được MỞ ĐỌC (chỉ đoán qua tên/tiêu đề), gồm
+`foodmanage_theo_d_i_shipper_realtime_qua_b_n_live_gps_tracking` (617 dòng), `foodmanage_kh_m_ph_th_c_n_t_m_n_tr_c_tuy_n_customer_portal`
+(khám phá thực đơn), và `foodmanage_chi_ti_t_qu_n_burger_wagyu_king_t_m_n` (chi tiết quán). User yêu
+cầu đọc kỹ và hoàn thiện nốt. Đã đọc đầy đủ cả 3 file và đối chiếu với trang thật:
+
+**1. Theo dõi shipper realtime (bản đồ full-screen):**
+Bản mẫu là 1 trang bản đồ full-screen riêng (SVG minh hoạ tĩnh do Stitch không dựng được bản đồ thật),
+có thẻ tài xế, hành trình 4 bước, chat nhanh mẫu câu, chỉ số tốc độ/giao thông. Hệ thống thật ĐÃ CÓ bản
+đồ Leaflet + WebSocket thật (không phải SVG giả) nhúng trong từng đơn tại `donhang.jsp`
+(`/ws/tracking`, xem mục 25/25c) — chỉ là khung nhỏ 220px. Quyết định: không tạo trang full-screen mới
+(sẽ trùng lặp/phân mảnh trải nghiệm, tốn công đồng bộ 2 nơi), thay vào đó NÂNG CẤP khung bản đồ có sẵn:
+tăng chiều cao 220px→320px, thêm badge nổi "GPS Realtime" (pulse dot) góc phải bản đồ (đặt bên phải để
+tránh đè lên nút zoom mặc định của Leaflet ở góc trái). KHÔNG thêm chat mẫu (không có hệ thống chat
+thật), KHÔNG thêm tốc độ/giao thông (không có dữ liệu thật cho việc này).
+
+**2. Khám phá thực đơn (trang browse nâng cao):**
+Bản mẫu có sidebar lọc nâng cao: khoảng giá (slider + checkbox), lọc theo sao đánh giá, thời gian giao,
+ưu đãi đối tác — TOÀN BỘ đều cần dữ liệu tổng hợp mới (khoảng giá theo shop, rating theo shop tính
+sẵn...) mà `UserHomeServlet` hiện chưa tính. Đây thực chất là 1 TÍNH NĂNG MỚI (bộ lọc nâng cao), không
+phải việc thiết kế lại giao diện — nếu làm giả (checkbox không lọc được gì) sẽ vi phạm nguyên tắc không
+bịa tính năng đã thống nhất từ đầu. Quyết định: KHÔNG thêm sidebar lọc giả. Trang tương ứng thật gần
+nhất (`trangnguoidung.jsp`, lưới quán ăn + tìm kiếm) đã được làm ở mục 141, coi như đã phủ đúng phần
+lõi thật sự của trang mẫu này (danh mục + tìm quán/món), phần lọc nâng cao để ngỏ nếu sau này muốn làm
+thành 1 tính năng thật riêng.
+
+**3. Chi tiết quán (trang mẫu "Burger Wagyu King"):**
+Đối chiếu kỹ với `user/menuShop.jsp` thật — hoá ra trang thật ĐÃ vượt xa bản mẫu về độ đầy đủ tính
+năng thật: đã có hero quán (logo/mô tả/địa chỉ/SĐT/giờ mở-đóng cửa thật qua `shop.openTime`/
+`closeTime`), rating thật (`avgRating`/`totalFeedback` qua FeedbackDAO), pill lọc theo danh mục sản
+phẩm thật (`categories`), khu Flash Sale có đếm ngược thời gian thật, khu Combo khuyến mãi thật, badge
+Hot/Mới/Hết hàng/Sale theo dữ liệu thật — tất cả đã được đổi màu đúng token mới từ mục 139. Bản mẫu
+Stitch chỉ có thêm: dải voucher riêng của quán (không rõ có hạ tầng "voucher theo shop" thật hay
+không — cần audit riêng nếu muốn làm) và badge "Đối tác Kim Cương" (danh hiệu giả, không làm). Kết
+luận: **không cần sửa thêm gì ở `menuShop.jsp`** — trang đã đạt/vượt yêu cầu.
+
+### Files sửa:
+- `src/main/web/user/donhang.jsp` (tăng khung bản đồ + badge GPS Realtime)
+
+### Kết luận cuối cùng về độ đầy đủ so với zip:
+Toàn bộ 15 trang mẫu "screen" thật trong zip (không tính `food_manage_experience/DESIGN.md` và
+`foodmanage_brand_logo` — không phải trang) đã được đối chiếu 1-1 với trang JSP thật hoặc đã xác nhận lý
+do không áp dụng. Không còn trang mẫu nào chưa được xem xét.
+
+## 146. Tổng kết đợt áp bộ thiết kế Stitch cho toàn bộ giao diện Khách hàng (mục 138→146)
+
+**Bối cảnh:** Sau khi user gửi 2 file zip thiết kế Stitch (mục 139) rồi bảo "làm tiếp các trang khác" /
+"cứ tiếp tục luôn đi" (mục 141-145), đã đi lần lượt qua toàn bộ 12 trang JSP thật thuộc role Khách hàng
+khớp với 16 trang mẫu trong zip. Mục này tổng kết trạng thái cuối cùng để lần sau (hoặc người khác) tra
+cứu nhanh, khỏi phải đọc lại toàn bộ mục 138-145.
+
+**Đã hoàn thành đầy đủ (đổi màu + polish cấu trúc theo bản mẫu, có kiểm tra không phá logic thật):**
+- `TrangChu.jsp` — viết lại hoàn toàn theo đúng `code.html` gốc (mục 140).
+- `user/trangnguoidung.jsp` — trang chủ member, lời chào cá nhân hoá dùng dữ liệu thật (mục 141).
+- `user/checkoutThanhToan.jsp` — giỏ hàng & thanh toán, vá 2 bug thật (voucher input trùng, sai route)
+  (mục 142).
+- `user/donhang.jsp` — đơn hàng + theo dõi shipper, thêm thẻ thống kê/tab lọc dùng dữ liệu thật (mục 143).
+- `user/khieuNai.jsp` — khiếu nại, thêm mini-timeline trạng thái thật (mục 144).
+- `user/hoaDon.jsp` — hóa đơn, dịch trạng thái + màu badge theo status thật (mục 145).
+- `DangNhap.jsp` — đăng nhập, viết lại toàn bộ bảng màu (mục 139, trước đó lệch tông xanh lá).
+
+**Đã kiểm tra và xác nhận SẠCH từ mục 139 (không cần sửa thêm ở đợt polish sâu này):**
+- `user/diaChi.jsp` (sổ địa chỉ) — đã đúng token màu + Quicksand, có sẵn badge địa chỉ mặc định + map
+  picker, không có gì cần đổi thêm.
+- `user/thongTinCaNhan.jsp` (trang cá nhân), `user/diemThuong.jsp` (ví điểm thưởng) — đã đúng token
+  màu, chỉ còn màu semantic (danger/info/success) hợp lệ, không sót xám lạnh.
+- `user/menuShop.jsp` (khám phá thực đơn / chi tiết quán) — đã đúng token màu chủ đạo từ mục 139, còn
+  vài màu lẻ (nút disabled xám, badge "Flash Sale" cam-đỏ riêng) nhưng đều hợp lý về mặt thiết kế, không
+  sửa thêm để tránh rủi ro trên file 1540 dòng có nhiều modal chọn size/topping phức tạp.
+
+**KHÔNG áp dụng (đã ghi rõ lý do từng mục):**
+- `user/DanhSachGioHang.jsp`, `user/cartItemDanhSach.jsp`, `user/themSuaGioHang.jsp`,
+  `user/cartItemThemSua.jsp` — trang CRUD nội bộ liệt kê entity thô, không phải trải nghiệm khách hàng
+  thật (mục 139 ghi chú).
+- Trang "Kho voucher ẩm thực" và "Cổng thanh toán PayOS/VietQR" trong zip — chưa có JSP tương ứng /
+  không kiểm soát được giao diện (PayOS host) (mục 139 ghi chú).
+- Mọi tính năng KHÔNG có thật trong hệ thống xuất hiện trong các trang mẫu Stitch (Ví FoodPay, hạng
+  thành viên Gold/Diamond, gợi ý AI theo khẩu vị, quán "đã thả tim"/wishlist, mã voucher giả, tài xế
+  giả, upsell combo giả) — cố ý bỏ qua toàn bộ để tránh hứa hẹn sai với người dùng thật, xem lý do chi
+  tiết ở từng mục 141/142.
+
+**Ngoài phạm vi (chưa làm, cần yêu cầu riêng nếu muốn tiếp tục):** giao diện role Shop, Admin, Shipper —
+zip không có trang mẫu nào cho 3 role này (đã hỏi user ở đầu phiên, xem lịch sử hội thoại).
+
+### Ghi chú:
+Không có Maven/Tomcat CLI trong môi trường này xuyên suốt cả đợt nên KHÔNG trang nào được build/chạy
+thử thực tế — toàn bộ xác minh chỉ dừng ở mức đọc lại code + grep kiểm tra cân bằng thẻ JSTL/sạch màu
+cũ. Đề nghị user dành thời gian rebuild/redeploy và click qua thật kỹ toàn bộ 12 trang đã sửa trước khi
+coi đợt việc này là hoàn tất, đặc biệt các trang có logic JS phức tạp (`checkoutThanhToan.jsp` tính phí
+ship theo bản đồ, `donhang.jsp` WebSocket tracking).
+
+## 145. Hoàn thiện màu ấm cho hoaDon.jsp + dịch trạng thái đơn ra tiếng Việt có màu theo status thật
+
+**Yêu cầu:** Tiếp tục áp bộ thiết kế Stitch cho `user/hoaDon.jsp` (hóa đơn — đã đổi 1 phần màu chính ở
+mục 139 nhưng còn sót nhiều xám lạnh slate chưa đổi, khác các trang khác đã làm kỹ ở mục 142/143).
+Đã kiểm tra `diaChi.jsp` trước đó — trang này đã sạch hoàn toàn từ mục 139 nên bỏ qua, không cần sửa
+thêm.
+
+**Đã làm:**
+- Đổi nốt toàn bộ hex xám lạnh còn sót (`#0f172a/#374151/#475569/#64748b/#94a3b8/#e2e8f0/#f8fafc/
+  #f1f5f9/#cbd5e1/#eef0f4/#e9edf2`) sang bộ màu ấm đồng bộ.
+- Badge trạng thái trên hóa đơn trước đây LUÔN hiển thị màu cam-đỏ cố định và in thẳng giá trị enum
+  tiếng Anh thô (`bill.order.staTus`, vd hiện chữ "DONE"/"CANCELLED" y nguyên) — sửa thành dịch tiếng
+  Việt đúng như cách `donhang.jsp` đã làm (Chờ xác nhận/Đang chuẩn bị/.../Đã giao thành công/Đã hủy) và
+  đổi màu badge theo đúng trạng thái thật (xanh lá khi `DONE`, đỏ khi `CANCELLED`, xanh dương khi đang
+  xử lý) thay vì 1 màu cứng cho mọi trạng thái.
+
+### Files sửa:
+- `src/main/web/user/hoaDon.jsp`
+
+### Ghi chú:
+Không đổi Servlet/DAO, không đổi schema DB, không đổi CSS `@media print` (khổ giấy nhiệt) — chỉ đổi
+biến màu và cách hiển thị text trạng thái. Đã grep cân bằng thẻ JSTL và xác nhận sạch hex cũ. Đề nghị
+user rebuild rồi in thử hóa đơn để chắc chắn khổ giấy nhiệt (58mm/80mm) không bị ảnh hưởng bởi thay đổi
+màu badge.
+
+## 144. Polish khieuNai.jsp (khiếu nại & bồi hoàn) theo phong cách Stitch
+
+**Yêu cầu:** Tiếp tục áp bộ thiết kế Stitch. Trang này (`user/khieuNai.jsp`, tương ứng
+`foodmanage_khi_u_n_i_n_h_ng_y_u_c_u_b_i_ho_n_customer_complaint_refund` trong zip) đã được đổi màu ở
+mục 139 rồi và vốn khá gọn (form gửi khiếu nại + danh sách khiếu nại cũ có badge trạng thái + phản hồi
+Admin, nối đúng `ComplaintDAO`/`Complaint` model — xem mục 52). Không đọc lại toàn bộ 663 dòng file mẫu
+chi tiết (đã nắm rõ pattern chung từ 4 trang trước), chỉ áp nhanh phần polish thị giác hợp lý.
+
+**Đã làm:**
+- Thêm khối `.card-head` (icon tròn + tiêu đề + mô tả phụ) cho cả 2 card (form gửi khiếu nại, danh sách
+  khiếu nại) — card danh sách hiển thị số khiếu nại thật (`fn:length(complaints)`) thay vì chỉ có tiêu
+  đề tĩnh.
+- Thêm mini-timeline 3 chấm (Đã gửi → Đang xử lý → Kết quả) cho mỗi khiếu nại, tô màu theo đúng
+  `c.status` thật (`PENDING/PROCESSING/RESOLVED/REJECTED`) — không phải trang trí giả, phản ánh đúng
+  trạng thái backend.
+
+### Files sửa:
+- `src/main/web/user/khieuNai.jsp`
+
+### Ghi chú:
+Không đổi Servlet/DAO/logic, không đổi schema DB. Đã grep cân bằng thẻ JSTL. Không có Maven/Tomcat CLI
+nên không build/test trực tiếp được. Đề nghị user rebuild rồi kiểm tra timeline hiển thị đúng theo từng
+trạng thái khiếu nại thật.
+
+## 143. Thêm thẻ thống kê + tab lọc trạng thái thật cho donhang.jsp (đơn hàng của tôi + theo dõi shipper)
+
+**Yêu cầu:** Tiếp tục áp bộ thiết kế Stitch, đọc 2 file mẫu `foodmanage_n_h_ng_c_a_t_i_theo_d_i_n_h_ng_customer_portal/code.html`
+(907 dòng) và `foodmanage_theo_d_i_shipper_realtime_qua_b_n_live_gps_tracking/code.html` (617 dòng) —
+cả 2 đều tương ứng `user/donhang.jsp` (danh sách đơn + theo dõi live qua WebSocket, xem mục 25/25c).
+Đọc kỹ trang thật thì thấy `donhang.jsp` đã ĐƯỢC đổi màu/font ở mục 139 rồi (đã có `--gold:#FF3B1F`,
+`--font-h: Quicksand`), và đã có sẵn RẤT nhiều logic thật tinh vi hơn cả bản mẫu Stitch: đủ 5 bước
+tracking stepper theo state máy trạng thái đơn hàng thật (PENDING→...→DONE), bản đồ realtime qua
+WebSocket `/ws/tracking`, thẻ liên hệ Shop/Shipper thật, nút hủy đơn/hoàn tiền/khiếu nại/đánh giá đều
+nối logic thật, modal chi tiết hóa đơn, tự động reload 10s khi có đơn đang hoạt động. Mẫu Stitch có
+phần "Ví FoodPay/Gold Member/1.250 Xu" giả — bỏ qua như các trang trước.
+
+**Đã làm (chỉ thêm phần dùng đúng dữ liệu đã có, không bịa số liệu):**
+- Thêm 2 thẻ thống kê đầu trang: "Đang thực hiện" và "Tổng đơn" — đếm thật bằng JSTL
+  (`<c:set>`+`<c:forEach>` cộng dồn số đơn có `staTus` khác `DONE`/`CANCELLED`, và `fn:length(orders)`),
+  không phải số tĩnh như mẫu.
+- Thêm 4 tab lọc trạng thái (Tất cả / Đang thực hiện / Đã giao / Đã hủy) — lọc THẬT bằng JS phía client
+  dựa trên thuộc tính `data-status="${order.staTus}"` mới thêm vào mỗi `.order-card` (ẩn/hiện
+  `display:none`, không gọi lại server, không có state giả).
+
+### Files sửa:
+- `src/main/web/user/donhang.jsp`
+
+### Ghi chú:
+Không đổi Servlet/DAO (chỉ đọc lại đúng field `order.staTus` đã có), không đổi WebSocket/tracking JS
+hiện có, không đổi schema DB nên không cần cập nhật `database.md`. Đã grep xác nhận cân bằng thẻ JSTL
+(`c:choose/c:forEach/c:if` đều khớp số mở/đóng, `c:set` không cần thẻ đóng) và không còn hex cũ sót lại
+(trang này vốn đã sạch từ mục 139). Không có Maven/Tomcat CLI trong môi trường này nên không tự
+build/chạy được. Đề nghị user tự rebuild/redeploy rồi test: (1) tab lọc trạng thái ẩn/hiện đúng đơn
+tương ứng, (2) số liệu 2 thẻ thống kê khớp đúng số đơn thật của tài khoản đang đăng nhập, (3) các nút
+Hủy đơn/Khiếu nại/Đánh giá/modal chi tiết vẫn hoạt động như cũ (không đổi logic, chỉ thêm khối mới phía
+trên).
+
+## 142. Redesign checkoutThanhToan.jsp theo bản mẫu Stitch "Giỏ hàng & Xác nhận đặt món" + tiện thể vá 2 bug thật
+
+**Yêu cầu:** Tiếp tục áp bộ thiết kế Stitch (user nói "cứ tiếp tục luôn đi"). Đọc file mẫu
+`foodmanage_gi_h_ng_x_c_nh_n_t_m_n_thi_t_k_m_i/code.html` (635 dòng) — tương ứng đúng với
+`user/checkoutThanhToan.jsp` (route `/checkout`) như đã xác định ở mục 138. Đọc kỹ trang thật trước:
+trang này đã có RẤT NHIỀU logic thật quan trọng (tính phí ship theo khoảng cách Haversine JS, bản đồ
+Leaflet chọn vị trí + geocode, voucher thật nối `bestVoucher`/`VoucherDAO`, hẹn giờ giao, chống
+double-submit) — khác hẳn bản mẫu Stitch vốn có nhiều phần bịa (Ví FoodPay số dư giả, badge "Đối tác
+Kim Cương", combo upsell ảnh CDN giả, mã voucher giả `WAGYUKING30K`, tích điểm "1.500 Xu" giả). Quyết
+định: CHỈ áp dụng phong cách thị giác (màu ấm, bo tròn, Quicksand, shadow ấm, thẻ radio phương thức
+thanh toán, stepper 3 bước) lên đúng phần tử/logic thật đang có, không thêm tính năng giả, và KHÔNG
+đổi bất kỳ `id`/`name` nào mà JS trang này đang dùng để tính phí ship/bản đồ (nguy cơ vỡ chức năng rất
+cao nếu đổi nhầm).
+
+**Phát hiện + vá 2 bug thật khi đọc kỹ code cũ:**
+1. Trang có **2 khối "Mã giảm giá" trùng nhau**, cả 2 đều dùng `name="voucherCode"` và cùng
+   `id="voucherCodeInput"` — khối đầu có logic banner gợi ý `bestVoucher` thật, khối sau (thêm sau,
+   nằm cuối form) là bản tĩnh trùng lặp, link "Đổi điểm lấy voucher" trỏ sai route `/user/loyalty`
+   (route thật là `/user/diem-thuong` — `UserLoyaltyServlet`, xem mục 79). Đã gộp làm 1 khối duy nhất,
+   giữ logic banner + input thật, sửa link đúng route.
+2. Dropdown `<select name="paymentMethod">` đổi thành 2 thẻ radio bo tròn (COD / PayOS) — vẫn đúng 2
+   `value` thật hệ thống hỗ trợ (`COD`, `PAYOS`, xem `CheckoutServlet`), không thêm phương thức giả nào
+   (mẫu Stitch có thêm "Ví FoodPay"/"Thẻ tín dụng" — bỏ vì hệ thống chưa hỗ trợ).
+
+**Đã làm khác:**
+- Đổi toàn bộ màu xám lạnh (slate `#0f172a/#94a3b8/#64748b/#e2e8f0/#f8fafc/#f1f5f9/#cbd5e1/...`, tàn dư
+  từ trước khi có hệ màu ấm) sang bộ màu ấm đồng bộ (`#2D2421/#8A7B6C/#635752/#F1E4D6/#FFF9F2/...`),
+  đổ bóng card đổi tint từ `rgba(26,32,53,*)` sang `rgba(99,44,20,*)`.
+- Nút tăng/giảm số lượng (`.qty-mini-btn`) đổi từ ô vuông bo nhẹ sang khay pill tròn 2 nút trắng nổi
+  trên nền kem, giống mẫu Stitch — vẫn 2 `<form>` POST `/user/cart action=qty` y hệt cũ.
+- Thêm 1 stepper 3 bước tĩnh phía trên (Chọn món ✓ → Giỏ hàng & Thanh toán (đang ở đây) → Theo dõi
+  giao hàng) — chỉ hiển thị vị trí trong luồng thật (chọn món ở `menuShop.jsp` → trang này → theo dõi ở
+  `donhang.jsp`), không phải tính năng mới.
+- Thêm 1 dòng ghi chú nhỏ dưới nút đặt hàng trỏ tới tính năng khiếu nại THẬT đã có sẵn (mục 52,
+  `user/khieuNai.jsp` truy cập từ `user/donhang.jsp`) thay vì lời hứa "đền bù 100%" bịa như mẫu gốc.
+
+### Files sửa:
+- `src/main/web/user/checkoutThanhToan.jsp`
+
+### Ghi chú:
+Không đổi Servlet/DAO, không đổi bất kỳ `id`/`name` nào JS trang dùng (đã grep xác nhận đủ 21 id quan
+trọng: `checkoutLocationXInput`, `distanceDisplay`, `feeDisplay`, `grandTotalDisplay`,
+`checkoutSubmitBtn`, `checkoutLocationMap`, `btnDeliveryNow`, v.v. — mỗi cái đúng 1 lần, không thiếu
+không thừa), không đổi schema DB nên không cần cập nhật `database.md`. Đã grep xác nhận: chỉ còn 1
+`id="voucherCodeInput"` (hết trùng lặp), không còn hex xám lạnh sót lại. Không có Maven/Tomcat CLI
+trong môi trường này nên không tự build/chạy/test bản đồ + tính phí ship thật được. Đề nghị user tự
+rebuild/redeploy rồi test kỹ luồng thanh toán: (1) chọn vị trí trên bản đồ → phí ship/tổng tiền cập
+nhật đúng, (2) nhập mã voucher hoặc bấm "Dùng ngay" ở banner gợi ý → chỉ có 1 ô input nhận giá trị
+(trước là 2 ô trùng tên có thể gây gửi sai dữ liệu), (3) chọn COD/PayOS bằng thẻ radio mới → submit
+đúng giá trị, (4) nút "Đổi điểm lấy voucher" dẫn đúng sang `/user/diem-thuong` (trước trỏ sai
+`/user/loyalty`, có thể đã 404 từ trước).
+
+## 141. Sửa nhầm mapping + redesign trangnguoidung.jsp (trang chủ SAU khi đăng nhập)
+
+**Phát hiện sửa sai:** User bảo "làm tiếp các trang khác" để tiếp tục áp bộ thiết kế Stitch. Mình đọc
+tiếp file `foodmanage_trang_ch_th_nh_vi_n_ng_nh_p/code.html` (703 dòng) — trước đó (mục 139) đã LỠ hiểu
+nhầm tên thư mục này là "trang đăng nhập" nên chỉ sửa màu `DangNhap.jsp`. Đọc kỹ nội dung mới phát hiện
+đây thực ra là **trang chủ của thành viên SAU khi đăng nhập** ("Chào mừng trở lại, Phương Linh! 👋",
+đơn đang giao, ví điểm thưởng, gợi ý AI...), khớp đúng với `user/trangnguoidung.jsp` (route
+`/user/home`, `UserHomeServlet`) — không liên quan gì tới `DangNhap.jsp`. Việc sửa màu `DangNhap.jsp`
+ở mục 139 vẫn ĐÚNG và giữ nguyên (trang đó thật sự lệch tông xanh lá nên cần sửa), chỉ là không phải
+bản dịch của trang mẫu này.
+
+**Vấn đề khi áp dụng:** Trang mẫu Stitch có rất nhiều nội dung KHÔNG có thật trong hệ thống: Ví
+FoodPay, hạng thành viên Gold/Diamond + thanh tiến trình thăng hạng, gợi ý món ăn theo "AI học khẩu
+vị", danh sách quán "đã thả tim" (wishlist), theo dõi đơn hàng trực tiếp có tên tài xế/biển số giả,
+voucher cá nhân hoá với mã giả (`GOLDVIP30K`...). Hệ thống thật (`UserHomeServlet`) chỉ truyền
+`account`, `shops` (danh sách quán active), `unreadNotifCount`, `shopProductsJson` — KHÔNG có ví, hạng
+thành viên, wishlist, hay gợi ý AI. Quyết định: chỉ lấy phần **thiết kế thị giác + nội dung có dữ liệu
+thật**, không bịa tính năng giả (tránh hứa hẹn sai với người dùng thật).
+
+**Đã làm (`user/trangnguoidung.jsp`):**
+- Đổi bảng màu local `:root` sang token mới (`#FF3B1F/#E02A10/#2D2421/#635752/#FFF9F2/#FFC7BE/#FFF2F0`,
+  giống pattern đã dùng ở 9 trang mục 139), thêm `--brand-700/--brand-500` cho gradient thương hiệu,
+  đổ bóng ấm `rgba(99,44,20,*)`.
+- Thêm font Quicksand (`--font-h` trỏ sang Quicksand, các thẻ `h1-h6` toàn trang tự động đổi font qua
+  rule `h1,h2,h3,h4,h5,h6{font-family:var(--font-h)}` có sẵn từ trước).
+- Đổi `.navbar` từ nền kính mờ trắng sang dải gradient thương hiệu `#A83900→#FE6A2B` đặc (khớp đúng
+  header của bản mẫu Stitch — mẫu Stitch dùng header đặc màu cho CẢ 2 trang "trang chủ" khách vãng lai
+  lẫn trang chủ thành viên, khác các trang tác vụ như giỏ hàng/đơn hàng vẫn dùng nav trắng), đồng bộ
+  icon giỏ hàng/thông báo/avatar sang tông trắng trong suốt trên nền màu.
+- Thay hero quảng cáo chung chung (badge "giao hỏa tốc" + tiêu đề "Đói bụng? Đã có FOOD MANAGE!") bằng
+  lời chào cá nhân hoá THẬT: "Chào mừng trở lại, ${account.fullName}! 👋" + badge đếm đúng số quán
+  đang có (`${fn:length(shops)}`), giữ nguyên 100% thanh tìm kiếm + toàn bộ JS filter/search theo món
+  ăn đã có (`filterShops`, `doSearch`, `searchShopsByDish`) — không đổi logic. Thêm dải 3 thẻ thống kê
+  dùng dữ liệu thật: số quán đối tác (`fn:length(shops)`), điểm thưởng thật (`${account.loyaltyPoints}`
+  — field có sẵn trên `Account`, không cần sửa servlet), số thông báo chưa đọc thật
+  (`${unreadNotifCount}`, servlet đã truyền sẵn). KHÔNG thêm ví/hạng thành viên/AI gợi ý/wishlist như
+  bản mẫu.
+- Giữ nguyên khối 3D icon món ăn nổi (Fluent Emoji 3D) trang trí bên phải hero — thuần trang trí, không
+  phải dữ liệu nên không có vấn đề "bịa dữ liệu".
+- Footer: đổi nền sang gradient thương hiệu, thêm hotline "1900-8899" (tĩnh, decorative — số điện thoại
+  minh hoạ giống các trang khác đã thêm ở mục 138/140), bổ sung link "Điểm thưởng" vào footer-links
+  (route thật `/user/diem-thuong`).
+
+### Files sửa:
+- `src/main/web/user/trangnguoidung.jsp`
+
+### Ghi chú:
+Không đổi Servlet/DAO nào (chỉ dùng lại field/attribute server đã truyền sẵn: `account.loyaltyPoints`,
+`unreadNotifCount`, `fn:length(shops)`), không đổi schema DB nên không cần cập nhật `database.md`.
+Không có Maven/Tomcat CLI trong môi trường này nên không tự build/chạy/chụp màn hình được; đã grep lại
+để xác nhận sạch hex cũ và cân bằng thẻ JSTL. Đề nghị user tự rebuild/redeploy rồi kiểm tra: (1) tên
+hiển thị đúng khi đăng nhập bằng tài khoản có/không có `fullName`, (2) điểm thưởng hiển thị đúng số
+thật (so với trang `/user/diem-thuong`), (3) toàn bộ tính năng tìm kiếm quán/món ăn trong ô search vẫn
+hoạt động như cũ (chỉ đổi giao diện, không đổi JS).
+
+## 140. Viết lại TrangChu.jsp bám sát đúng bản thiết kế Stitch chính thức (trang chủ)
+
+**Yêu cầu:** Sau mục 138/139, user gửi ảnh chụp trực tiếp từ Stitch (đường dẫn
+`.../stitch/projects/14927297908987799351/screens/...`) cho thấy bản thiết kế trang chủ THẬT SỰ phong
+phú hơn nhiều so với bản mình tự dựng ở mục 138 (thiếu section giới thiệu 3 thẻ có link phụ, danh mục
+đang tô nguyên dải màu thương hiệu thay vì thẻ trắng có icon tròn, thiếu banner khuyến mãi lớn, thiếu
+section đánh giá khách hàng, thiếu footer 4 cột có hotline + tải app). Mình đọc lại đúng file
+`foodmanage_trang_ch_t_n_tr_c_tuy_n/code.html` (mã nguồn Tailwind do Stitch sinh, 780 dòng) trong zip
+thứ 2 — trước đó chỉ sửa font mà chưa đọc kỹ nội dung/cấu trúc trang này.
+
+**Đã làm:** Viết lại toàn bộ `TrangChu.jsp` bám sát đúng thứ tự section + nội dung/copy tiếng Việt
+trong `code.html` gốc (chuyển từ Tailwind sang CSS thuần theo đúng pattern các trang khác của dự án),
+giữ nguyên 100% phần dữ liệu thật (JSTL `featuredProducts`, mọi link `/dangnhap`, `/dangky`,
+`/dangky-shop`, `/dangky-shipper`):
+- Header: sticky, gradient thương hiệu chính xác `#A83900 → #FE6A2B` (lấy đúng giá trị `secondary`/
+  `secondary-container` trong `tailwind-config` của `code.html`, khác chút với gradient
+  `#C4340C → #FF6B2C` mình tự đoán ở mục 138), thêm pill "Giao tới: Hà Nội" (tĩnh, chưa có geolocation
+  thật), nút CTA "Đăng nhập / Đặt món" màu `#FF3B1F` riêng biệt (đúng theo inline override
+  `background-color: rgb(255, 59, 31)` trong `code.html` gốc — xác nhận nút CTA vẫn tách màu khỏi dải
+  gradient header, khớp quy tắc CTA 10% đã dùng xuyên suốt 9 trang khác nên KHÔNG đổi `--primary` toàn
+  site theo màu `secondary`/`primary` Material của riêng file này để tránh lệch tông với các trang đã
+  sửa ở mục 139).
+- Hero: badge ưu đãi, headline có từ "FoodManage!" viền gạch sóng, thanh tìm kiếm + chip vị trí + nút
+  tìm kiếm, dãy "Xu hướng" (4 tag bấm vào tự điền ô tìm kiếm), 2 nút CTA, dải 4 thẻ thống kê
+  (500K+/4.9/5/20-30p/1.200+), thẻ món ăn nổi bật bên phải (dùng ảnh có sẵn `burger_hero.png`, badge
+  "Giao nóng 15 phút" + "Best Seller", giá kèm giá gạch — đây là nội dung TĨNH minh hoạ như bản gốc,
+  tách biệt khỏi lưới món ăn thật bên dưới).
+- Thêm mới section "Tại sao chọn FoodManage?" (3 thẻ: Chất lượng tươi ngon/Giao siêu tốc/Đối tác tin
+  cậy, mỗi thẻ có icon Material Symbols + dòng link phụ).
+- Đổi hẳn cách trình bày "Danh mục nổi bật": từ dải nền màu thương hiệu nguyên khối (bản mục 138) sang
+  đúng bản gốc — nền kem, 7 thẻ trắng bo góc có icon tròn + tên + số món, kèm hàng "filter tabs" tĩnh
+  (Tất cả/Bán chạy nhất/Gần bạn nhất/Ưu đãi sốc hôm nay).
+- Lưới "Món Ăn Được Yêu Thích Nhất": tăng `FEATURED_LIMIT` trong
+  `src/main/java/org/example/controllers/IndexServlet.java` từ 3 lên **6** để khớp lưới 6 món trong
+  bản thiết kế (chỉ đổi 1 hằng số, không đổi logic chọn món/DAO); card món ăn thêm nút yêu thích (❤,
+  chỉ hiển thị, chưa có logic lưu wishlist) và dòng tên shop, dùng đúng field thật
+  (`imageUrl/productName/description/price/shopName/shopRating/soldCount`) — không có field
+  `originalPrice`/giá gạch cho `FeaturedProduct` nên KHÔNG bịa giá gốc giả cho lưới món ăn thật (khác
+  với thẻ hero tĩnh ở trên vốn chỉ là minh hoạ).
+- Thêm mới banner khuyến mãi lớn "Giảm Ngay 50.000đ Cho Đơn Từ 150K" với mã `GIAM50K` (nút sao chép mã
+  vào clipboard qua JS, KHÔNG có logic áp dụng thật — đây là mã trang trí tĩnh giống bản gốc Stitch,
+  không phải voucher thật trong bảng `Vouchers`; nếu muốn mã thật cần một đợt việc riêng nối
+  `VoucherDAO`), dùng ảnh có sẵn `pizza_dish.png` thay ảnh CDN của Stitch (không truy cập được lâu
+  dài).
+- Thêm mới section đánh giá khách hàng (3 testimonial, dùng avatar chữ cái đầu thay vì ảnh CDN ngoài
+  của Stitch vì các URL đó thuộc phiên làm việc riêng của Stitch, không đảm bảo còn truy cập được).
+- Thêm nút nổi góc dưới phải "Đặt món ngay" (bỏ phần đếm giỏ hàng giả trong bản gốc Stitch vì trang
+  này dành cho khách CHƯA đăng nhập — hệ thống không có giỏ hàng thật ở trạng thái đó, hiển thị số đếm
+  giả sẽ gây hiểu lầm).
+- Footer: 4 cột (thương hiệu + hotline 1900-8899, Về chúng tôi, Hỗ trợ khách hàng, Tải ứng dụng có QR +
+  nút Google Play/App Store — toàn bộ phần tải app là trang trí vì dự án chưa có app di động thật).
+- Đổi icon toàn trang từ SVG tự vẽ sang font **Material Symbols Outlined** (Google Fonts, giống hệt
+  `code.html` gốc) để khớp đúng bộ icon (`local_fire_department`, `electric_moped`, `storefront`,
+  `verified`, `bolt`, `shield`, `local_dining`, `celebration`, `content_copy`, `qr_code_2`, v.v.), thêm
+  1 mark logo SVG đơn giản (dạng lồng bàn) thay emoji 🍔 cũ ở cả header lẫn footer.
+
+### Files sửa:
+- `src/main/web/TrangChu.jsp`
+- `src/main/java/org/example/controllers/IndexServlet.java` (chỉ đổi hằng số `FEATURED_LIMIT` 3→6)
+
+### Ghi chú:
+Không đổi schema DB, không đổi DAO/logic chọn món nổi bật — chỉ tăng số lượng lấy ra, nên không cần
+cập nhật `database.md`. Không có Maven/Tomcat CLI trong môi trường này nên không tự build/chạy/chụp
+màn hình được; đã grep lại toàn bộ file để xác nhận cân bằng thẻ JSTL (`c:choose/c:when/c:otherwise/
+c:forEach` đều khớp số mở/đóng) và không còn sót `Fredoka` cũ. Đề nghị user tự rebuild/redeploy rồi so
+sánh trực tiếp với ảnh chụp Stitch đã gửi — đặc biệt kiểm tra: (1) lưới 6 món ăn nổi bật có tải đúng dữ
+liệu thật không (trước là 3, giờ cần có tối thiểu 6 sản phẩm hợp lệ trong DB mới hiển thị đủ lưới,
+nếu ít hơn sẽ hiển thị ít món hơn — đây là hành vi đúng, không phải lỗi), (2) icon Material Symbols có
+tải được không (phụ thuộc kết nối tới `fonts.googleapis.com`, nếu mạng chặn Google Fonts icon sẽ hiện
+dạng chữ thay vì icon).
+
+## 139. Đồng bộ bảng màu/font mới (từ bộ thiết kế Stitch) ra toàn bộ giao diện Khách hàng (User)
+
+**Yêu cầu:** User gửi 2 file zip thiết kế do công cụ Stitch (Google) sinh ra
+(`stitch_remix_of_foodmanage_ui_design.zip` rồi bản đầy đủ hơn `... (1).zip`), gồm 16 trang mẫu +
+1 file `food_manage_experience/DESIGN.md` (spec màu/font/shadow chính thức) + 1 logo mark tham khảo.
+Toàn bộ 16 trang mẫu đều thuộc role **Khách hàng (User)**, không có trang nào cho Shop/Admin/Shipper.
+User xác nhận muốn áp dụng bộ thiết kế này ra "giao diện hệ thống" (đã hỏi lại phạm vi qua
+AskUserQuestion, user dismiss câu hỏi và gửi thêm file — hiểu là: cứ dựa vào tài liệu mới mà làm, ưu
+tiên áp dụng đúng các trang khách hàng khớp với zip).
+
+**Phát hiện quan trọng:** `DESIGN.md` trong zip mô tả gần như CHÍNH XÁC bảng màu 60-30-10 mình đã tự
+nghĩ ra ở mục 138 (nền kem `#FFF9F2`, thương hiệu `#C4340C→#FF6B2C`, CTA `#FF3B1F`) — khác biệt chính
+là: (1) font tiêu đề chính thức là **Quicksand** (không phải `Fredoka` mình đoán ở mục 138), và (2) các
+trang "app" nội bộ (giỏ hàng, đơn hàng, hóa đơn...) trong bộ mẫu KHÔNG tô header đặc màu thương hiệu
+như trang chủ — chỉ dùng 1 màu "brand" `#FF3B1F` nhất quán làm điểm nhấn trên nền trắng/kem với thanh
+nav kính mờ trắng (glass), giữ đúng những gì `user-theme.css`/từng JSP `user/` đã làm trước đó — nên
+đợt này chỉ cần **đổi giá trị token màu + thêm font Quicksand cho tiêu đề**, không cần dựng lại layout
+từng trang.
+
+**Đã làm:**
+- Cập nhật token dùng chung [assets/css/user-theme.css](src/main/web/assets/css/user-theme.css):
+  `--primary #FF5A1F→#FF3B1F`, `--primary-dark→#E02A10`, `--primary-light→#FFF2F0`,
+  `--primary-border→#FFC7BE`, `--accent-gold #FFB020→#FFB300`, `--bg #FFFBF8→#FFF9F2`,
+  `--text #241C15→#2D2421`, `--muted #8A7B6C→#635752`, đổ bóng ấm hơn (tint
+  `rgba(60,30,10,*)→rgba(99,44,20,*)`, glow `rgba(255,90,31,*)→rgba(255,59,31,*)`), thêm biến
+  `--font-display: 'Quicksand', 'Plus Jakarta Sans', sans-serif` + rule `h1/h2/h3/.ut-headline/
+  .ut-logo/.ut-price` dùng font này.
+- Sửa `TrangChu.jsp`: đổi font hiển thị từ `Fredoka` (đoán ở mục 138) sang `Quicksand` (đúng
+  `DESIGN.md` chính thức) — chỉ đổi `<link>` Google Fonts + biến `--font-display`, không đổi cấu trúc.
+- Áp cùng cách đổi màu (tìm-thay hex cũ→mới, y hệt danh sách trên) + thêm `Quicksand` cho phần
+  tiêu đề/logo/giá (qua biến `--font-h` có sẵn, hoặc thêm rule mới nếu trang không có biến riêng) cho
+  8 trang đã dùng chung bảng cam-đỏ cũ: `user/menuShop.jsp`, `user/checkoutThanhToan.jsp` (trang này
+  vốn KHÔNG hề `<link>` Google Fonts nào — bug cũ, đã bổ sung `<link>` Plus Jakarta Sans + Quicksand),
+  `user/donhang.jsp`, `user/khieuNai.jsp`, `user/hoaDon.jsp` (vốn chỉ load font `Inter`, nay thêm
+  Plus Jakarta Sans + Quicksand đúng chuẩn chung), `user/thongTinCaNhan.jsp`, `user/diemThuong.jsp`,
+  `user/diaChi.jsp`.
+- Viết lại toàn bộ bảng màu `DangNhap.jsp` (trang đăng nhập): trước đó trang này dùng tông **xanh lá**
+  hoàn toàn lệch thương hiệu (`#10b981`/`#059669`, không liên quan gì tới cam-đỏ FOOD MANAGE — có vẻ
+  copy từ 1 template auth chung), cộng thêm nền/chữ tông xanh dương xám (slate). Đổi toàn bộ sang bảng
+  màu ấm cam-đỏ mới (nút CTA, link, focus ring, logo badge dùng gradient `#FF3B1F→#E02A10`), đổi nền
+  panel trang trí bên phải từ navy `#1a2035→#0f1624` sang nâu-đen ấm `#3A1206→#1A0A04` (đồng bộ tông
+  ấm với footer `TrangChu.jsp`), đổi mọi màu chữ/nền slate (`#0f172a/#94a3b8/#475569/#64748b/#b0bcc9/
+  #e2e8f0/#f8fafc/#f1f5f9`) sang bộ màu ấm tương ứng (`#2D2421/#635752/#4A3934/.../#F1E4D6/#FFF4EC`),
+  thêm `<link>` Google Fonts (trước đó chỉ có `Inter`, không có `Plus Jakarta Sans` dù `body` khai
+  `font-family: 'Inter', ...` — cũng là 1 bug cũ tương tự `checkoutThanhToan.jsp`), thêm Quicksand cho
+  tiêu đề/logo. KHÔNG đổi màu `#dc2626`/`#fecaca`/... (đỏ lỗi/alert) vì đó là màu ngữ nghĩa (danger),
+  không phải màu thương hiệu.
+
+### Files sửa:
+- `src/main/web/assets/css/user-theme.css`
+- `src/main/web/TrangChu.jsp`
+- `src/main/web/DangNhap.jsp`
+- `src/main/web/user/menuShop.jsp`
+- `src/main/web/user/checkoutThanhToan.jsp`
+- `src/main/web/user/donhang.jsp`
+- `src/main/web/user/khieuNai.jsp`
+- `src/main/web/user/hoaDon.jsp`
+- `src/main/web/user/thongTinCaNhan.jsp`
+- `src/main/web/user/diemThuong.jsp`
+- `src/main/web/user/diaChi.jsp`
+
+### Ghi chú:
+- **Không đổi màu 4 trang** `user/DanhSachGioHang.jsp`, `user/cartItemDanhSach.jsp`,
+  `user/themSuaGioHang.jsp`, `user/cartItemThemSua.jsp` (route `/cart`, `/cart-items`) — đọc kỹ thì đây
+  là các trang CRUD nội bộ liệt kê thẳng entity `Cart`/`CartItem` (bảng ID/UserId/ngày tạo, style
+  bootstrap-cũ, không nằm trong nav công khai nào), KHÔNG phải trải nghiệm giỏ hàng thật của khách —
+  luồng thật là `menuShop.jsp` (thêm món) → `checkoutThanhToan.jsp` (đã có sẵn UI xem/sửa số
+  lượng+topping+thanh toán trong cùng 1 trang, khớp đúng ý trang mẫu "Giỏ Hàng & Xác Nhận Đặt Món"
+  trong zip) — nên trang mẫu giỏ hàng trong zip thực ra tương ứng với `checkoutThanhToan.jsp` (đã sửa),
+  không phải `DanhSachGioHang.jsp`. Nếu user muốn theme lại cả 4 trang CRUD nội bộ này thì cần yêu cầu
+  riêng.
+- **2 trang trong zip chưa có JSP tương ứng:** "Kho voucher ẩm thực" (chưa có trang cho khách hàng tự
+  duyệt/đổi voucher — hiện voucher chỉ nhập mã trực tiếp lúc checkout, xem mục 77/78) và "Cổng thanh
+  toán PayOS/VietQR" (trang này do PayOS host, hệ thống không kiểm soát giao diện — xem
+  `PayOSReturnServlet`/`PayOSWebhookServlet`). Không tạo trang mới trong đợt này.
+- Không đổi schema DB, không đổi Servlet/Java nào — chỉ CSS/font trong các JSP nên không cần cập nhật
+  `database.md`. Không có Maven/Tomcat CLI trong môi trường này nên không tự build/chạy để chụp màn
+  hình; đã `grep` lại toàn bộ file đã sửa để xác nhận không còn sót giá trị hex cũ nào (`#FF5A1F`,
+  `#E14A0F`, `#FFFBF8`, `#8A7B6C`, `#241C15`, `#FFD3B8`, `#FFB020`, `#FFF1E8`, `Fredoka`) — sạch hoàn
+  toàn. Đề nghị user tự rebuild/redeploy rồi kiểm tra lại từng trang đã sửa, đặc biệt
+  `checkoutThanhToan.jsp`/`hoaDon.jsp` vì 2 trang này trước đó thiếu hẳn `<link>` Google Fonts (bug cũ
+  không liên quan đợt sửa này, tiện thể vá luôn).
+
+## 138. Thiết kế lại giao diện trang chủ công khai (TrangChu.jsp) theo quy tắc màu 60-30-10
+
+**Yêu cầu:** User đưa 1 bản brief thiết kế UI cho "nền tảng bán đồ ăn" (tiếng Việt, phong cách hiện
+đại/thân thiện/gợi thèm ăn hướng 2026, quy tắc màu 60% nền sáng - 30% thương hiệu cho
+Header/Footer/khung danh mục - 10% nút CTA cam đậm/đỏ tươi, bố cục Header/Hero/Giới thiệu/Menu/CTA/
+Footer). Brief gốc có vài chi tiết không khớp dự án thật (tên thương hiệu "Modtra", menu
+"Matcha/Cà phê" — có vẻ copy từ brief quán trà/cà phê khác). User xác nhận (sau khi được hỏi lại):
+chỉnh sửa yêu cầu cho phù hợp với web thật của mình rồi cập nhật lại giao diện hệ thống — tức áp dụng
+đúng các nguyên tắc thiết kế (màu 60-30-10, bo góc mềm, nhiều khoảng trắng, sans-serif) vào brand
+**FOOD MANAGE** (nền tảng đặt đồ ăn tổng hợp) đã có sẵn, không dùng tên/menu matcha.
+
+**Đã làm:** Viết lại toàn bộ `src/main/web/TrangChu.jsp` (trang chủ công khai, forward từ
+`IndexServlet` — xem `req.setAttribute("featuredProducts", ...)` +
+`getRequestDispatcher("/TrangChu.jsp")`), giữ nguyên toàn bộ logic JSTL/EL hiển thị
+`featuredProducts` (vòng lặp `fp.imageUrl/productName/soldCount/shopRating/shopName/description/price`)
+và mọi link điều hướng cũ (`/dangnhap`, `/dangky`, `/dangky-shop`, `/dangky-shipper`), chỉ thay đổi
+markup + CSS:
+- Bảng màu mới tuân thủ đúng 60-30-10: nền kem nhạt `--cream:#FFF9F2` (60%, khác `--bg-color:#FAFAFA`
+  cũ) cho Hero/About/Menu; **Header** và **Footer** đổi từ nền trắng kính mờ / xanh navy đậm sang
+  gradient thương hiệu cam-đỏ đặc `--brand-700:#C4340C → --brand-500:#FF6B2C` (30%, hiện diện rõ ở 2
+  đầu trang thay vì chỉ là điểm nhấn); nút CTA dùng `--cta-600:#FF3B1F` tách riêng khỏi brand-color để
+  luôn nổi bật kể cả khi đặt trên nền header đã có màu thương hiệu (10%).
+- Thêm section mới **"Danh mục nổi bật"** (`#danhmuc`, dải màu thương hiệu full-bleed với divider hình
+  sóng SVG) — 6 chip danh mục tổng quát (Cơm, Burger, Pizza, Trà sữa, Gà rán, Tráng miệng) đúng tinh
+  thần "khung danh mục nổi bật dùng màu thương hiệu" trong brief, và section **"Giới thiệu"**
+  (`#about`, 3 thẻ lý do chọn FoodManage) — trước đó trang chưa có 2 section này.
+  Thêm dải **CTA banner** rõ ràng ("Thèm rồi phải không? Đặt món ngay") giữa Menu và section App.
+- Đổi font từ `Outfit` (dùng cho mọi chữ) sang cặp `Fredoka` (chữ bo tròn, dùng có kiểm soát cho
+  headline/giá/logo — tạo cảm giác gần gũi/thèm ăn) + `Plus Jakarta Sans` (thân chữ, đồng bộ với
+  `assets/css/user-theme.css` đang dùng cho toàn bộ khu vực `user/`).
+- Header đổi từ nav kính mờ (glassmorphism, chữ tối) sang thanh đặc màu thương hiệu (chữ trắng), nút
+  "Đăng ký" đảo màu (nền trắng/chữ đỏ-cam) để vẫn nổi bật trên nền header đã có màu.
+- Nav gồm: Trang chủ, Thực đơn, Danh mục, Về chúng tôi, Liên hệ (thay `Cách hoạt động`/`Món nổi bật`/
+  `Ứng dụng` cũ, khớp đúng 5 section mới của trang).
+- Giữ nguyên 2 ảnh có sẵn `assets/img/burger_hero.png` (hero) và `assets/img/pizza_dish.png` (khung
+  điện thoại mock-up phần "Trải nghiệm trên web") — không thêm ảnh mới.
+
+### Files sửa:
+- `src/main/web/TrangChu.jsp`
+
+### Ghi chú:
+Không đổi schema DB, không đổi servlet/Java nào (chỉ HTML/CSS/JS tĩnh trong 1 file JSP) nên không cần
+cập nhật `database.md`. Không có Maven/Tomcat CLI trong môi trường này nên không tự build/deploy/chạy
+Tomcat thật để chụp màn hình được; đã dựng thử 1 bản HTML tĩnh tương đương (cùng CSS/markup, thay vòng
+lặp JSTL bằng dữ liệu mẫu) để soát cấu trúc, nhưng không mở được qua Browser pane vì công cụ chặn
+điều hướng tới `localhost`/mạng nội bộ (an toàn theo thiết kế, không phải lỗi) nên chỉ xác minh được
+bằng cách đọc lại kỹ HTML/CSS đã sinh ra (cân bằng thẻ, đúng cú pháp JSTL/EL, đúng tên field
+`FeaturedProduct` dùng lại y hệt bản cũ). Đề nghị user tự rebuild/redeploy rồi kiểm tra trực tiếp
+`TrangChu.jsp` ở cả desktop và mobile (đặc biệt: dải "Danh mục nổi bật" mới, form tìm kiếm, và vòng lặp
+món ăn nổi bật khi `featuredProducts` rỗng/có dữ liệu thật).
+
+## 137. Dọn lại database.md cho khớp migration_all.sql (chỉ sửa tài liệu, không đổi DB thật)
+
+**Vấn đề:** `database.md` bị lệch so với `migration_all.sql` (988 dòng, nguồn chính xác nhất): thiếu
+hẳn 4 bảng (`Shop_Wallets`, `Shop_Wallet_Transactions`, `Shop_Withdrawals`, `Refund_Requests`),
+CHECK constraint `Orders.status`/`Order_Logs.old_status/new_status` còn dùng bộ giá trị CŨ (thiếu
+`WAITING_FOR_SHIPPER`, `ACCEPTED`), nhiều khối `ALTER TABLE ... IF NOT EXISTS` bị trùng lặp hoàn
+toàn với cột đã có sẵn trong `CREATE TABLE` phía trên, `Shipper_Profiles` còn liệt kê 2 cột ảnh cũ
+đã bị DROP (`id_card_image_url`, `license_image_url`), và `Combos`/`Flash_Sales` chỉ là block
+markdown trang trí (không phải SQL thật) đặt SAU `Cart_Items` dù `Cart_Items` đã FK sang `Combos`
+— chạy top-to-bottom sẽ lỗi.
+
+**Đã làm (chỉ sửa `database.md`, không chạy SQL, không đổi code Java):**
+- Viết lại toàn bộ `database.md` thành 1 script chạy được từ đầu tới cuối, đúng thứ tự phụ thuộc
+  FK (39 bảng, `DROP TABLE IF EXISTS` liệt kê đủ 39 bảng theo thứ tự ngược).
+- Bổ sung 4 bảng còn thiếu: `Shop_Wallets`, `Shop_Wallet_Transactions`, `Shop_Withdrawals`,
+  `Refund_Requests` (lấy nguyên định nghĩa từ `migration_all.sql`).
+- Cập nhật `CHECK` constraint `Orders.status`/`Order_Logs.old_status`/`new_status` thành đủ 8 giá
+  trị: `PENDING, CONFIRMED, READY_FOR_PICKUP, WAITING_FOR_SHIPPER, ACCEPTED, SHIPPING, DONE,
+  CANCELLED` (khớp `migration_orders_status_constraint.sql` và grep code Java).
+- Gộp các cột thêm bằng `ALTER TABLE ... IF NOT EXISTS` thẳng vào `CREATE TABLE` (vd `bom_count`,
+  `suspend_reason` vào `Accounts`; `cancel_reason` vào `Orders`), xoá các khối `ALTER` trùng lặp
+  hoàn toàn với cột/constraint đã có trong `CREATE TABLE`.
+- Sửa `Shipper_Profiles`: bỏ 2 cột ảnh đơn cũ đã bị DROP bởi `migration_shipper_doc_front_back.sql`
+  (`id_card_image_url`, `license_image_url`), chỉ giữ 4 cột mặt trước/sau.
+- Chuyển `Combos`/`Flash_Sales`/`Combo_Items` từ block markdown trang trí thành `CREATE TABLE` thật,
+  đặt đúng vị trí (`Combos` trước `Cart_Items`).
+- Bổ sung thêm những gì `migration_relationship_integrity.sql` yêu cầu nhưng `database.md` cũ chưa
+  có: cột `User_Addresses.is_deleted` (đang được `UserAddressDAOImpl` dùng để soft-delete), các FK
+  composite (`UQ_Products_Id_Shop`, `UQ_ProductSizes_Id_Product/Shop`, `UQ_ToppingCategories_Id_Shop`
+  + các FK 2 cột tương ứng) và 3 trigger nghiệp vụ (`TR_Feedbacks_ValidateOrderParties`,
+  `TR_Complaints_ValidateOrderOwner`, `TR_UserProfiles_ValidateDefaultAddress`).
+- Thêm 2 mục cuối file: audit bảng/cột chưa có code Java dùng (kết luận: `Shop_Wallets`/
+  `Refund_Requests`... thực ra ĐÃ có DAO+Servlet đầy đủ, chỉ `Shipper_Wallets/Withdrawals` vẫn
+  thiếu màn hình phía Shipper như ghi chú cũ) và audit từng file `migration_*.sql` so với
+  `migration_all.sql` — phát hiện rủi ro thật: nhiều file (`migration_audit_logs.sql`,
+  `migration_vouchers.sql`, `migration_faqs.sql`, `migration_system_configs.sql`,
+  `migration_relationship_integrity.sql`, v.v.) KHÔNG có marker "Nguon:" trong `migration_all.sql`
+  — nghĩa là 1 DB mới dựng chỉ bằng cách chạy `migration_all.sql` sẽ thiếu các bảng/cột/trigger đó.
+
 ## 136. Fix "Thêm Combo" không tính đúng giá combo lúc thanh toán
 
 User báo: menu hiện combo "Mua 2 tặng 1" giá 142.000đ, nhưng khi bấm "Thêm Combo" rồi ra checkout

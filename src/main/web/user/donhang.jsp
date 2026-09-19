@@ -11,7 +11,7 @@
 <title>Đơn hàng của tôi - FOOD MANAGE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -19,18 +19,18 @@
 <script src="${pageContext.request.contextPath}/assets/js/orderTrackingMap.js"></script>
 <style>
 :root {
-    --bg:         #FFFBF8;
+    --bg:         #FFF9F2;
     --surface:    #FFFFFF;
     --surface-lt: #FFF4EC;
-    --gold:       #FF5A1F;
-    --gold-hover: #E14A0F;
-    --text:       #241C15;
-    --muted:      #8A7B6C;
+    --gold:       #FF3B1F;
+    --gold-hover: #E02A10;
+    --text:       #2D2421;
+    --muted:      #635752;
     --border:     #F1E4D6;
-    --font-h: 'Plus Jakarta Sans', sans-serif;
+    --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
     --font-b: 'Plus Jakarta Sans', sans-serif;
     --tr: all 0.3s ease;
-    --shadow: 0 14px 34px rgba(60,30,10,.14);
+    --shadow: 0 14px 34px rgba(99,44,20,.14);
     --success: #15803D; --warning: #C2660A; --info: #1D4ED8; --danger: #E11D48;
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -52,7 +52,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 .logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .logo h1 { font-family: var(--font-h); font-size: 1.55rem; letter-spacing: -.5px; }
 .logo span { color: var(--gold); }
-.logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,90,31,.4)); }
+.logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,59,31,.4)); }
 .nav-links { display: flex; gap: 20px; align-items: center; }
 .nav-links a { font-size: .86rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 .nav-links a:hover, .nav-links a.active { color: var(--gold); }
@@ -73,7 +73,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     color: #FFF; font-size: 14px; font-weight: 800;
     border: none; cursor: pointer; font-family: var(--font-b);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 22px rgba(255,90,31,.3);
+    box-shadow: 0 8px 22px rgba(255,59,31,.3);
 }
 .avatar-dropdown {
     position: absolute; top: calc(100% + 12px); right: 0;
@@ -118,16 +118,29 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 .alert-danger  { background: #FEECEF; border-color: #FBD0D8; color: #E11D48; }
 
 /* SECTION HEADER */
-.section-header { margin-bottom: 28px; }
+.section-header { margin-bottom: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
 .section-header h2 { font-family: var(--font-h); font-size: 1.9rem; color: var(--text); letter-spacing: -.5px; }
 .section-header .sub { font-size: .88rem; color: var(--muted); margin-top: 4px; font-weight: 500; }
+.stats-row { display: flex; gap: 10px; }
+.stat-pill { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 10px 16px; box-shadow: 0 2px 10px rgba(99,44,20,.05); display: flex; align-items: center; gap: 10px; }
+.stat-pill .ic { width: 34px; height: 34px; border-radius: 10px; background: #FFF2F0; color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0; }
+.stat-pill strong { display: block; font-family: var(--font-h); font-size: 1.15rem; font-weight: 800; color: var(--text); line-height: 1.1; }
+.stat-pill span { font-size: .72rem; color: var(--muted); font-weight: 600; }
+
+/* STATUS FILTER TABS */
+.filter-tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 22px; padding-bottom: 2px; }
+.filter-tab { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 50px; font-size: .82rem; font-weight: 700; color: var(--muted); background: var(--surface); border: 1.5px solid var(--border); cursor: pointer; transition: var(--tr); font-family: var(--font-b); }
+.filter-tab:hover { border-color: var(--gold); color: var(--gold); }
+.filter-tab.active { background: linear-gradient(135deg, var(--gold), var(--gold-hover)); color: #fff; border-color: transparent; box-shadow: 0 6px 16px rgba(255,59,31,.28); }
+.filter-tab .count { font-size: .7rem; background: rgba(0,0,0,.08); padding: 1px 7px; border-radius: 50px; }
+.filter-tab.active .count { background: rgba(255,255,255,.25); }
 
 /* EMPTY */
 .empty-state {
     text-align: center; padding: 70px 24px; border-radius: 22px;
     background: var(--surface); border: 1px dashed var(--border);
 }
-.empty-state img { width: 90px; height: 90px; margin-bottom: 18px; filter: drop-shadow(0 12px 18px rgba(60,30,10,.2)); animation: donhang-float 4s ease-in-out infinite; }
+.empty-state img { width: 90px; height: 90px; margin-bottom: 18px; filter: drop-shadow(0 12px 18px rgba(99,44,20,.2)); animation: donhang-float 4s ease-in-out infinite; }
 @keyframes donhang-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .empty-state h3 { font-family: var(--font-h); font-size: 1.3rem; color: var(--text); margin-bottom: 8px; }
 .empty-state p { font-size: .9rem; color: var(--muted); }
@@ -139,7 +152,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 .order-card {
     background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px;
     transition: var(--tr); padding: 24px;
-    box-shadow: 0 2px 12px rgba(60,30,10,.05);
+    box-shadow: 0 2px 12px rgba(99,44,20,.05);
 }
 .order-card:hover { border-color: var(--gold); box-shadow: var(--shadow); transform: translateY(-2px); }
 
@@ -157,7 +170,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 .badge-pending  { border-color: #FFDCB0; color: #C2660A; background: #FFF3E0; }
 .badge-warning  { border-color: #FFDCB0; color: #C2660A; background: #FFF3E0; }
 .badge-info     { border-color: #C4D7FC; color: #1D4ED8; background: #EAF1FE; }
-.badge-primary  { border-color: #FFD3B8; color: var(--gold); background: #FFF1E8; }
+.badge-primary  { border-color: #FFC7BE; color: var(--gold); background: #FFF2F0; }
 .badge-success  { border-color: #BBF0CF; color: #15803D; background: #EAFBF1; }
 .badge-danger   { border-color: #FBD0D8; color: #E11D48; background: #FEECEF; }
 .badge-neutral  { border-color: var(--border);  color: var(--muted);   background: var(--surface-lt); }
@@ -172,7 +185,15 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 
 /* TRACKING MAP */
 .shop-marker-icon { background: none; border: none; font-size: 22px; line-height: 24px; text-align: center; }
-.tracking-map { height: 220px; border-radius: 14px; margin-bottom: 18px; overflow: hidden; }
+.tracking-map-wrap { position: relative; margin-bottom: 18px; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 24px rgba(99,44,20,.12); }
+.tracking-map { height: 320px; }
+.tracking-gps-badge {
+    position: absolute; top: 12px; right: 12px; z-index: 500;
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.95); backdrop-filter: blur(6px);
+    padding: 6px 12px; border-radius: 50px; box-shadow: 0 4px 14px rgba(99,44,20,.18);
+    font-size: .72rem; font-weight: 800; color: var(--gold);
+}
 
 /* FEEDBACK BUTTONS */
 .fb-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -212,7 +233,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 }
 .stepper-progress-bar {
     position: absolute; top: 16px; left: 24px;
-    height: 3px; background: linear-gradient(90deg, #FF5A1F, #10B981);
+    height: 3px; background: linear-gradient(90deg, #FF3B1F, #10B981);
     z-index: 2; transition: width .4s ease;
 }
 .step-item {
@@ -229,14 +250,14 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     background: #10B981; color: #FFF; border-color: #10B981;
 }
 .step-item.active .step-icon-wrap {
-    background: #FF5A1F; color: #FFF; border-color: #FF5A1F;
-    box-shadow: 0 0 0 4px rgba(255,90,31,.25); transform: scale(1.12);
+    background: #FF3B1F; color: #FFF; border-color: #FF3B1F;
+    box-shadow: 0 0 0 4px rgba(255,59,31,.25); transform: scale(1.12);
 }
 .step-label {
     font-size: 11px; font-weight: 600; color: #6B7280; margin-top: 8px;
     line-height: 1.25; max-width: 75px;
 }
-.step-item.active .step-label { color: #FF5A1F; font-weight: 800; }
+.step-item.active .step-label { color: #FF3B1F; font-weight: 800; }
 .step-item.completed .step-label { color: #10B981; font-weight: 700; }
 
 .cancelled-banner {
@@ -411,10 +432,34 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
         <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Có lỗi xảy ra khi hủy đơn. Vui lòng thử lại.</div>
     </c:if>
 
+    <c:set var="activeOrderCount" value="0"/>
+    <c:forEach var="o" items="${orders}">
+        <c:if test="${o.staTus ne 'DONE' and o.staTus ne 'CANCELLED'}">
+            <c:set var="activeOrderCount" value="${activeOrderCount + 1}"/>
+        </c:if>
+    </c:forEach>
+
     <div class="section-header">
-        <h2>Lịch Sử & Theo Dõi Đơn Hàng</h2>
-        <p class="sub">Theo dõi tiến trình trực tiếp và chi tiết đơn hàng đã đặt</p>
+        <div>
+            <h2>Lịch Sử & Theo Dõi Đơn Hàng</h2>
+            <p class="sub">Theo dõi tiến trình trực tiếp và chi tiết đơn hàng đã đặt</p>
+        </div>
+        <c:if test="${not empty orders}">
+            <div class="stats-row">
+                <div class="stat-pill"><span class="ic"><i class="fa-solid fa-motorcycle"></i></span><div><strong>${activeOrderCount}</strong><span>Đang thực hiện</span></div></div>
+                <div class="stat-pill"><span class="ic"><i class="fa-solid fa-receipt"></i></span><div><strong>${fn:length(orders)}</strong><span>Tổng đơn</span></div></div>
+            </div>
+        </c:if>
     </div>
+
+    <c:if test="${not empty orders}">
+        <div class="filter-tabs" id="orderFilterTabs">
+            <button type="button" class="filter-tab active" data-filter="all">Tất cả <span class="count">${fn:length(orders)}</span></button>
+            <button type="button" class="filter-tab" data-filter="active">Đang thực hiện <span class="count">${activeOrderCount}</span></button>
+            <button type="button" class="filter-tab" data-filter="DONE">Đã giao</button>
+            <button type="button" class="filter-tab" data-filter="CANCELLED">Đã hủy</button>
+        </div>
+    </c:if>
 
     <c:choose>
         <c:when test="${empty orders}">
@@ -430,7 +475,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
         <c:otherwise>
             <div class="order-list">
                 <c:forEach var="order" items="${orders}">
-                    <div class="order-card">
+                    <div class="order-card" data-status="${order.staTus}">
                         <div class="order-top">
                             <div>
                                 <div class="order-id">Đơn #${order.id}</div>
@@ -593,11 +638,14 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                         </div>
 
                         <c:if test="${order.staTus eq 'SHIPPING'}">
-                            <div id="map-${order.id}" class="tracking-map"></div>
+                            <div class="tracking-map-wrap">
+                                <div class="tracking-gps-badge"><span class="pulse-dot"></span> GPS Realtime</div>
+                                <div id="map-${order.id}" class="tracking-map"></div>
+                            </div>
                         </c:if>
 
                         <div class="fb-row" style="margin-bottom:10px;">
-                            <button type="button" class="btn-fb" style="background:linear-gradient(135deg,var(--gold),#e14a0f);color:#fff;border:none;font-weight:700;"
+                            <button type="button" class="btn-fb" style="background:linear-gradient(135deg,var(--gold),#e02a10);color:#fff;border:none;font-weight:700;"
                                     onclick="openOrderModal('modal-${order.id}')">
                                 <i class="fa-solid fa-receipt"></i> Chi tiết & Theo dõi đơn
                             </button>
@@ -774,6 +822,26 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 function toggleDropdown() {
     document.getElementById('accountDropdown').classList.toggle('open');
 }
+
+(function () {
+    var tabsWrap = document.getElementById('orderFilterTabs');
+    if (!tabsWrap) return;
+    var cards = document.querySelectorAll('.order-card');
+    tabsWrap.querySelectorAll('.filter-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            tabsWrap.querySelectorAll('.filter-tab').forEach(function (t) { t.classList.remove('active'); });
+            tab.classList.add('active');
+            var filter = tab.dataset.filter;
+            cards.forEach(function (card) {
+                var st = card.dataset.status;
+                var show = filter === 'all'
+                    || (filter === 'active' && st !== 'DONE' && st !== 'CANCELLED')
+                    || st === filter;
+                card.style.display = show ? '' : 'none';
+            });
+        });
+    });
+})();
 document.addEventListener('click', function(e) {
     var w = document.getElementById('avatarWrap');
     if (w && !w.contains(e.target)) document.getElementById('accountDropdown').classList.remove('open');

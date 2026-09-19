@@ -9,24 +9,26 @@
 <title>FOOD MANAGE - Đói bụng? Có ngay!</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
 <style>
 :root {
-    --bg:         #FFFBF8;
+    --bg:         #FFF9F2;
     --surface:    #FFFFFF;
     --surface-lt: #FFF4EC;
-    --gold:       #FF5A1F;
-    --gold-hover: #E14A0F;
-    --text:       #241C15;
-    --muted:      #8A7B6C;
+    --gold:       #FF3B1F;
+    --gold-hover: #E02A10;
+    --brand-700:  #A83900;
+    --brand-500:  #FE6A2B;
+    --text:       #2D2421;
+    --muted:      #635752;
     --border:     #F1E4D6;
-    --font-h: 'Plus Jakarta Sans', sans-serif;
+    --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
     --font-b: 'Plus Jakarta Sans', sans-serif;
     --tr: all 0.3s ease;
-    --shadow: 0 14px 36px rgba(60,30,10,.14);
-    --glow:   0 8px 22px rgba(255,90,31,.3);
+    --shadow: 0 14px 36px rgba(99,44,20,.14);
+    --glow:   0 8px 22px rgba(255,59,31,.3);
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -57,47 +59,46 @@ ul { list-style: none; }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(255,90,31,.4); }
 .btn-full { width: 100%; justify-content: center; }
 
-/* ── NAVBAR ── */
+/* ── NAVBAR — khối thương hiệu (30%) ── */
 .navbar {
     position: fixed; top: 0; left: 0; width: 100%;
-    background: rgba(255,251,248,.92);
-    backdrop-filter: blur(14px);
+    background: linear-gradient(100deg, var(--brand-700), var(--brand-500));
+    box-shadow: 0 4px 20px rgba(168,57,0,.2);
     z-index: 1000;
-    border-bottom: 1px solid var(--border);
 }
 .nav-content {
     display: flex; justify-content: space-between; align-items: center; height: 76px;
 }
-.logo { display: flex; align-items: center; gap: 8px; }
-.logo h1 { font-size: 1.7rem; letter-spacing: -.5px; }
+.logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.logo h1 { font-size: 1.7rem; letter-spacing: -.5px; color: #fff; white-space: nowrap; }
 .logo span { color: var(--gold); }
-.logo-emoji { width: 32px; height: 32px; filter: drop-shadow(0 4px 8px rgba(255,90,31,.4)); }
-.nav-links { display: flex; gap: 22px; align-items: center; }
-.nav-links a { font-size: .88rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
-.nav-links a:hover, .nav-links a.active { color: var(--gold); }
+.logo-emoji { width: 32px; height: 32px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.25)); }
+.nav-links { display: flex; gap: 6px; align-items: center; }
+.nav-links a { padding: 8px 14px; border-radius: 50px; font-size: .88rem; font-weight: 600; color: rgba(255,255,255,.85); white-space: nowrap; }
+.nav-links a:hover { color: #fff; }
+.nav-links a.active { background: rgba(255,255,255,.18); color: #fff; }
 
 .nav-actions { display: flex; align-items: center; gap: 16px; }
 
 /* Search in nav */
 .nav-search { position: relative; }
 .nav-search input {
-    background: var(--surface-lt); border: 1.5px solid var(--border); border-radius: 50px;
-    color: var(--text); font-family: var(--font-b); font-size: .85rem;
+    background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.3); border-radius: 50px;
+    color: #fff; font-family: var(--font-b); font-size: .85rem;
     padding: 9px 16px 9px 38px; width: 220px; transition: var(--tr);
 }
-.nav-search input:focus { outline: none; border-color: var(--gold); width: 280px; background: var(--surface); }
-.nav-search input::placeholder { color: var(--muted); }
-.nav-search i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .85rem; pointer-events: none; }
+.nav-search input:focus { outline: none; border-color: #fff; width: 280px; background: rgba(255,255,255,.24); }
+.nav-search input::placeholder { color: rgba(255,255,255,.7); }
+.nav-search i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,.75); font-size: .85rem; pointer-events: none; }
 
 /* Avatar dropdown */
 .avatar-wrap { position: relative; }
 .avatar-btn {
     width: 40px; height: 40px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold), var(--gold-hover));
+    background: rgba(255,255,255,.18); border: 1.5px solid rgba(255,255,255,.35);
     color: #FFF; font-size: 15px; font-weight: 800;
-    border: none; cursor: pointer; font-family: var(--font-b);
+    cursor: pointer; font-family: var(--font-b);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: var(--glow);
 }
 .avatar-dropdown {
     position: absolute; top: calc(100% + 12px); right: 0;
@@ -118,16 +119,16 @@ ul { list-style: none; }
     font-family: var(--font-b); transition: var(--tr); text-align: left;
 }
 .dd-link i, .dd-btn i { color: var(--gold); width: 14px; }
-.dd-link:hover, .dd-btn:hover { color: var(--gold); background: var(--primary-light, #FFF1E8); }
+.dd-link:hover, .dd-btn:hover { color: var(--gold); background: var(--primary-light, #FFF2F0); }
 .dd-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
 .cart-btn {
-    background: var(--surface-lt); border: 1.5px solid var(--border); border-radius: 50%;
-    width: 42px; height: 42px; color: var(--text);
+    background: rgba(255,255,255,.16); border: none; border-radius: 50%;
+    width: 42px; height: 42px; color: #fff;
     font-size: 1.05rem; cursor: pointer; position: relative; transition: var(--tr);
     display: flex; align-items: center; justify-content: center;
 }
-.cart-btn:hover { color: var(--gold); border-color: var(--gold); }
+.cart-btn:hover { background: rgba(255,255,255,.28); }
 .cart-count {
     position: absolute; top: -6px; right: -6px;
     background: var(--gold); color: #fff;
@@ -149,7 +150,7 @@ ul { list-style: none; }
 .hero-content { max-width: 600px; position: relative; z-index: 2; }
 .hero-badge {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 8px 18px; background: var(--surface); border: 1px solid var(--primary-border, #FFD3B8);
+    padding: 8px 18px; background: var(--surface); border: 1px solid var(--primary-border, #FFC7BE);
     border-radius: 50px; font-weight: 700; font-size: .85rem; color: var(--gold);
     margin-bottom: 22px; box-shadow: var(--shadow-sm, 0 2px 10px rgba(0,0,0,.05));
 }
@@ -221,7 +222,7 @@ ul { list-style: none; }
     overflow: hidden; transition: var(--tr); cursor: pointer;
     box-shadow: var(--shadow-sm, 0 2px 10px rgba(0,0,0,.05));
 }
-.shop-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: var(--primary-border, #FFD3B8); }
+.shop-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); border-color: var(--primary-border, #FFC7BE); }
 .shop-img {
     width: 100%; height: 170px;
     background: var(--surface-lt); display: flex; align-items: center; justify-content: center;
@@ -244,8 +245,8 @@ ul { list-style: none; }
 .shop-meta-row { display: flex; align-items: center; gap: 8px; font-size: .83rem; color: var(--muted); }
 .shop-meta-row i { color: var(--gold); width: 14px; }
 .btn-menu {
-    width: 100%; background: var(--primary-light, #FFF1E8); color: var(--gold);
-    border: 1.5px solid var(--primary-border, #FFD3B8); padding: 12px; border-radius: 50px;
+    width: 100%; background: var(--primary-light, #FFF2F0); color: var(--gold);
+    border: 1.5px solid var(--primary-border, #FFC7BE); padding: 12px; border-radius: 50px;
     font-family: var(--font-b); font-size: .85rem; font-weight: 700;
     cursor: pointer; transition: var(--tr);
 }
@@ -284,7 +285,7 @@ ul { list-style: none; }
 }
 .cart-header h2 { font-size: 1.4rem; }
 .close-btn { background: var(--surface-lt); border: none; width: 34px; height: 34px; border-radius: 50%; color: var(--muted); font-size: 1.1rem; cursor: pointer; transition: var(--tr); }
-.close-btn:hover { color: var(--gold); background: var(--primary-light, #FFF1E8); }
+.close-btn:hover { color: var(--gold); background: var(--primary-light, #FFF2F0); }
 .cart-body { flex: 1; overflow-y: auto; padding: 26px; }
 .cart-items { display: flex; flex-direction: column; gap: 18px; }
 .empty-cart { text-align: center; color: var(--muted); padding: 50px 0; }
@@ -312,21 +313,24 @@ ul { list-style: none; }
 }
 .total-price { color: var(--gold); font-size: 1.35rem; font-family: var(--font-h); }
 
-/* ── FOOTER ── */
-.footer { border-top: 1px solid var(--border); padding: 70px 0 20px; background: var(--surface-lt); }
+/* ── FOOTER — khối thương hiệu (30%) ── */
+.footer { padding: 70px 0 20px; background: linear-gradient(100deg, var(--brand-700), var(--brand-500)); color: #fff; }
 .footer-content {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 50px; flex-wrap: wrap; gap: 40px;
 }
-.footer-brand h2 { font-size: 1.8rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.footer-brand h2 { font-size: 1.8rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #fff; }
 .footer-brand span { color: var(--gold); }
-.footer-brand p { color: var(--muted); max-width: 320px; }
+.footer-brand p { color: rgba(255,255,255,.85); max-width: 320px; }
+.footer-hotline { margin-top: 12px; }
+.footer-hotline small { display: block; text-transform: uppercase; letter-spacing: .06em; font-size: .72rem; color: rgba(255,255,255,.75); }
+.footer-hotline strong { font-family: var(--font-h); font-size: 1.2rem; }
 .footer-links { display: flex; gap: 28px; flex-wrap: wrap; }
-.footer-links a { color: var(--muted); font-size: .9rem; font-weight: 600; }
-.footer-links a:hover { color: var(--gold); }
+.footer-links a { color: rgba(255,255,255,.85); font-size: .9rem; font-weight: 600; }
+.footer-links a:hover { color: #fff; }
 .footer-bottom {
-    text-align: center; color: var(--muted); font-size: .85rem;
-    padding-top: 20px; border-top: 1px solid var(--border);
+    text-align: center; color: rgba(255,255,255,.75); font-size: .85rem;
+    padding-top: 20px; border-top: 1px solid rgba(255,255,255,.15);
 }
 
 /* ── RESPONSIVE ── */
@@ -432,15 +436,20 @@ ul { list-style: none; }
 <section id="home" class="hero">
     <div class="container hero-grid">
         <div class="hero-content">
-            <div class="hero-badge"><i class="fa-solid fa-bolt"></i> Giao hàng hỏa tốc trong 20 phút</div>
-            <h2 class="hero-title">Đói bụng?<br>Đã có <span class="accent">FOOD MANAGE!</span></h2>
-            <p class="hero-subtitle">Khám phá hàng ngàn món ăn ngon từ các nhà hàng hàng đầu, giao tận nơi nóng hổi chỉ trong vài bước.</p>
+            <div class="hero-badge"><i class="fa-solid fa-bolt"></i> ${fn:length(shops)} quán đối tác đang phục vụ gần bạn</div>
+            <h2 class="hero-title">Chào mừng trở lại,<br><span class="accent">${not empty account.fullName ? account.fullName : account.userName}!</span> 👋</h2>
+            <p class="hero-subtitle">Hôm nay bạn muốn thưởng thức món gì thơm lừng và nóng hổi?</p>
             <div class="hero-search-wrap">
                 <div class="hero-search">
                     <i class="fa-solid fa-magnifying-glass"></i>
 <input id="heroSearch" type="text" placeholder="Bạn muốn ăn gì hôm nay?" oninput="filterShops(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();doSearch(this.value);}">
                     <button class="btn-search" onclick="doSearch(document.getElementById('heroSearch').value)">Tìm kiếm</button>
                 </div>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat"><h4>${fn:length(shops)}</h4><p>Quán đối tác</p></div>
+                <div class="hero-stat"><h4>${loyaltyPoints}</h4><p>Điểm thưởng</p></div>
+                <div class="hero-stat"><h4>${unreadNotifCount}</h4><p>Thông báo mới</p></div>
             </div>
         </div>
 
@@ -559,13 +568,15 @@ ul { list-style: none; }
         <div class="footer-brand">
             <h2>FOOD MANAGE<span>.</span></h2>
             <p>Nền tảng giao đồ ăn nhanh chóng, tiện lợi và thơm ngon nhất dành cho bạn.</p>
+            <div class="footer-hotline"><small>Tổng đài CSKH 24/7</small><strong>1900-8899</strong></div>
         </div>
         <div class="footer-links">
             <a href="#">Về chúng tôi</a>
             <a href="#">Chính sách bảo mật</a>
             <a href="#">Điều khoản sử dụng</a>
-            <a href="${pageContext.request.contextPath}/user/donhang">Đơn hàng</a>
-            <a href="${pageContext.request.contextPath}/user/dia-chi">Địa chỉ</a>
+            <a href="${pageContext.request.contextPath}/user/donhang">Đơn hàng của tôi</a>
+            <a href="${pageContext.request.contextPath}/user/dia-chi">Địa chỉ giao hàng</a>
+            <a href="${pageContext.request.contextPath}/user/diem-thuong">Điểm thưởng</a>
         </div>
     </div>
     <div class="footer-bottom container">

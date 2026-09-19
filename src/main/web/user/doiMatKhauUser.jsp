@@ -6,26 +6,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đổi mật khẩu - POB</title>
+    <title>Đổi mật khẩu - FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
     <style>
         :root {
-            --bg:         #FFFBF8;
+            --bg:         #FFF9F2;
             --surface:    #FFFFFF;
             --surface-lt: #FFF4EC;
-            --gold:       #FF5A1F;
-            --gold-hover: #E14A0F;
-            --text:       #241C15;
-            --muted:      #8A7B6C;
+            --gold:       #FF3B1F;
+            --gold-hover: #E02A10;
+            --text:       #2D2421;
+            --muted:      #635752;
             --border:     #F1E4D6;
+            --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
             --font-b:  'Plus Jakarta Sans', sans-serif;
             --tr: all .25s ease;
-            --shadow: 0 14px 36px rgba(60,30,10,.14);
-            --glow:   0 8px 22px rgba(255,90,31,.3);
+            --shadow: 0 14px 36px rgba(99,44,20,.14);
+            --glow:   0 8px 22px rgba(255,59,31,.3);
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-b); background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -34,12 +35,12 @@
         /* NAVBAR (dong bo voi trang chu) */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-            background: rgba(255,251,248,.92); backdrop-filter: blur(14px);
+            background: rgba(255,249,242,.92); backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--border);
         }
         .nav-content { max-width: 1180px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; height: 76px; gap: 16px; }
-        .logo { display: flex; align-items: center; gap: 8px; }
-        .logo h1 { font-size: 1.55rem; font-weight: 800; letter-spacing: -.5px; }
+        .logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .logo h1 { font-family: var(--font-h); white-space: nowrap; font-size: 1.55rem; font-weight: 800; letter-spacing: -.5px; }
         .logo span { color: var(--gold); }
         .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-links a { font-size: .85rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
@@ -86,9 +87,9 @@
         .alert-success { background: #EAFBF1; border-color: #BBF0CF; color: #15803D; }
         .alert-danger  { background: #FEECEF; border-color: #FBD0D8; color: #E11D48; }
 
-        .pw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 4px 18px rgba(60,30,10,.06); padding: 32px; }
+        .pw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 4px 18px rgba(99,44,20,.06); padding: 32px; }
         .pw-icon { width: 56px; height: 56px; border-radius: 16px; background: var(--surface-lt); border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 18px; }
-        .pw-title { font-size: 19px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+        .pw-title { font-family: var(--font-h); font-size: 19px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
         .pw-desc { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
@@ -104,7 +105,7 @@
         .match-ok { color: #15803D; }
         .match-err { color: #E11D48; }
         .form-actions { display: flex; gap: 10px; margin-top: 8px; }
-        .btn-submit { padding: 11px 24px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--gold), #E14A0F); color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 8px 22px rgba(255,90,31,.32); }
+        .btn-submit { padding: 11px 24px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--gold), #E02A10); color: #fff; font-weight: 700; font-size: 13.5px; cursor: pointer; box-shadow: 0 8px 22px rgba(255,59,31,.32); }
         .btn-submit:hover { filter: brightness(1.05); }
         .btn-cancel { padding: 11px 24px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--surface); color: var(--muted); font-weight: 700; font-size: 13.5px; cursor: pointer; }
         .btn-cancel:hover { color: var(--gold); border-color: var(--gold); background: var(--surface-lt); }

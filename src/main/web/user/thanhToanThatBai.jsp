@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh toán thất bại</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Plus Jakarta Sans', 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #FFFBF8;
-            color: #241C15;
+            background: #FFF9F2;
+            color: #2D2421;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -22,9 +22,9 @@
         }
         .card {
             background: #fff;
-            border: 1px solid #eef0f4;
+            border: 1px solid #F1E4D6;
             border-radius: 20px;
-            box-shadow: 0 2px 20px rgba(26,32,53,0.08);
+            box-shadow: 0 2px 20px rgba(99,44,20,0.08);
             padding: 40px 36px;
             max-width: 440px;
             width: 100%;
@@ -40,13 +40,13 @@
             justify-content: center;
             margin: 0 auto 18px;
         }
-        h1 { font-size: 20px; font-weight: 800; color: #dc2626; margin-bottom: 10px; }
-        p.msg { font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.6; }
+        h1 { font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; color: #dc2626; margin-bottom: 10px; }
+        p.msg { font-size: 14px; color: #635752; margin-bottom: 20px; line-height: 1.6; }
         p.order-id {
             font-size: 13px;
-            color: #374151;
+            color: #4A3934;
             font-weight: 600;
-            background: #f0f4f8;
+            background: #F7EBDD;
             border-radius: 10px;
             padding: 10px 14px;
             margin-bottom: 24px;
@@ -64,12 +64,12 @@
             font-family: inherit;
         }
         .btn-primary {
-            background: linear-gradient(135deg,#FF5A1F,#E14A0F);
+            background: linear-gradient(135deg,#FF3B1F,#E02A10);
             color: #fff;
-            box-shadow: 0 4px 12px rgba(255,90,31,0.28);
+            box-shadow: 0 4px 12px rgba(255,59,31,0.28);
             transition: transform 0.15s, box-shadow 0.15s;
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,90,31,0.35); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,59,31,0.35); }
     </style>
 </head>
 <body>

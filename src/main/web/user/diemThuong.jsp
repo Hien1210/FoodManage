@@ -7,26 +7,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Điểm thưởng - POB</title>
+    <title>Điểm thưởng - FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
     <style>
         :root {
-            --bg:      #FFFBF8;
+            --bg:      #FFF9F2;
             --surface: #FFFFFF;
             --surface-lt: #FFF4EC;
-            --gold:    #FF5A1F;
-            --gold-hover: #E14A0F;
-            --text:    #241C15;
-            --muted:   #8A7B6C;
+            --gold:    #FF3B1F;
+            --gold-hover: #E02A10;
+            --text:    #2D2421;
+            --muted:   #635752;
             --border:  #F1E4D6;
-            --font-h:  'Plus Jakarta Sans', sans-serif;
+            --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
             --font-b:  'Plus Jakarta Sans', sans-serif;
             --tr: all .25s ease;
-            --shadow: 0 14px 34px rgba(60,30,10,.14);
+            --shadow: 0 14px 34px rgba(99,44,20,.14);
         }
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-b); background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -47,7 +47,7 @@
         .logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .logo h1 { font-family: var(--font-h); font-size: 1.55rem; letter-spacing: -.5px; }
         .logo span { color: var(--gold); }
-        .logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,90,31,.4)); }
+        .logo-emoji { width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(255,59,31,.4)); }
         .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-links a { font-size: .86rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
         .nav-links a:hover, .nav-links a.active { color: var(--gold); }
@@ -68,7 +68,7 @@
             color: #FFF; font-size: 14px; font-weight: 800;
             border: none; cursor: pointer; font-family: var(--font-b);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 22px rgba(255,90,31,.3);
+            box-shadow: 0 8px 22px rgba(255,59,31,.3);
         }
         .avatar-dropdown {
             position: absolute; top: calc(100% + 12px); right: 0;
@@ -105,12 +105,12 @@
         .alert { display: flex; align-items: center; gap: 10px; padding: 14px 18px; margin-bottom: 20px; border-radius: 14px; border: 1px solid; font-size: .9rem; font-weight: 600; }
         .alert-danger { background: #FEECEF; border-color: #FBD0D8; color: #E11D48; }
 
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 4px 18px rgba(60,30,10,.06); padding: 24px; margin-bottom: 20px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 4px 18px rgba(99,44,20,.06); padding: 24px; margin-bottom: 20px; }
         .points-hero { text-align: center; padding: 32px 20px; }
         .points-value { font-size: 46px; font-weight: 900; color: var(--gold); }
         .points-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
         .points-hint { font-size: 12.5px; color: var(--muted); margin-top: 14px; line-height: 1.6; }
-        .btn-redeem { display: block; width: 100%; padding: 13px; margin-top: 18px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--gold), #E14A0F); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 8px 22px rgba(255,90,31,.32); }
+        .btn-redeem { display: block; width: 100%; padding: 13px; margin-top: 18px; border-radius: 50px; border: none; background: linear-gradient(135deg, var(--gold), #E02A10); color: #fff; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 8px 22px rgba(255,59,31,.32); }
         .btn-redeem:hover { filter: brightness(1.05); }
         .btn-redeem:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
         .voucher-result { background: var(--surface-lt); border: 1px dashed var(--gold); border-radius: 12px; padding: 14px; text-align: center; font-size: 13.5px; color: var(--text); margin-bottom: 20px; }

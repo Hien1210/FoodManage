@@ -7,18 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đánh giá - FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/user-theme.css">
     <style>
         :root {
-            --bg:       #FFFBF8;
+            --bg:       #FFF9F2;
             --surface:  #FFFFFF;
             --surface-lt: #FFF4EC;
-            --gold:     #FF5A1F;
-            --gold-hover: #E14A0F;
-            --text:     #241C15;
-            --muted:    #8A7B6C;
+            --gold:     #FF3B1F;
+            --gold-hover: #E02A10;
+            --text:     #2D2421;
+            --muted:    #635752;
             --border:   #F1E4D6;
+            --font-h: 'Quicksand', 'Plus Jakarta Sans', sans-serif;
             --font-b:   'Plus Jakarta Sans', sans-serif;
         }
         * { box-sizing: border-box; }
@@ -29,12 +30,12 @@
         .fb-card {
             max-width: 480px; width: 100%; padding: 34px;
             background: var(--surface); border: 1px solid var(--border); border-radius: 22px;
-            box-shadow: 0 14px 34px rgba(60,30,10,.12);
+            box-shadow: 0 14px 34px rgba(99,44,20,.12);
         }
         .fb-head { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
-        .fb-logo { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--gold), var(--gold-hover)); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(255,90,31,.32); }
+        .fb-logo { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--gold), var(--gold-hover)); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(255,59,31,.32); }
         .fb-logo img { width: 28px; height: 28px; }
-        .fb-title { font-size: 18px; font-weight: 800; color: var(--text); }
+        .fb-title { font-family: var(--font-h); font-size: 18px; font-weight: 800; color: var(--text); }
         .fb-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; font-weight: 500; }
 
         .form-group { margin-bottom: 18px; }
@@ -44,7 +45,7 @@
             border-radius: 12px; color: var(--text); font-family: var(--font-b); font-size: .92rem;
             resize: vertical; min-height: 100px; outline: none; transition: all .2s ease;
         }
-        .form-textarea:focus { border-color: var(--gold); background: var(--surface); box-shadow: 0 0 0 4px #FFF1E8; }
+        .form-textarea:focus { border-color: var(--gold); background: var(--surface); box-shadow: 0 0 0 4px #FFF2F0; }
         .form-textarea::placeholder { color: var(--muted); }
 
         .star-row { display: flex; gap: 10px; justify-content: center; }
@@ -58,8 +59,8 @@
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 22px; border-radius: 50px; font-family: var(--font-b); font-size: .9rem; font-weight: 700; cursor: pointer; border: 1.5px solid; transition: all .2s ease; text-decoration: none; }
         .btn-ghost { background: transparent; color: var(--muted); border-color: var(--border); }
         .btn-ghost:hover { color: var(--text); border-color: var(--text); }
-        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-hover)); color: #fff; border-color: var(--gold); box-shadow: 0 8px 20px rgba(255,90,31,.3); }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(255,90,31,.4); }
+        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-hover)); color: #fff; border-color: var(--gold); box-shadow: 0 8px 20px rgba(255,59,31,.3); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(255,59,31,.4); }
         .fb-actions { display: flex; gap: 12px; margin-top: 26px; }
         .fb-actions .btn { flex: 1; }
 

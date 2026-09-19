@@ -8,29 +8,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh toán</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; background: #FFFBF8; min-height: 100vh; }
+        body { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; background: #FFF9F2; min-height: 100vh; }
+        .nav-title, .card-title, .total-row.grand, h1, h2, h3 { font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif; }
 
         /* NAVBAR */
-        .navbar { background: #fff; border-bottom: 1px solid #e9edf2; box-shadow: 0 1px 6px rgba(26,32,53,0.06); padding: 0 24px; height: 60px; display: flex; align-items: center; gap: 14px; }
+        .navbar { background: #fff; border-bottom: 1px solid #F1E4D6; box-shadow: 0 1px 6px rgba(99,44,20,0.06); padding: 0 24px; height: 60px; display: flex; align-items: center; gap: 14px; }
         .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .nav-logo-badge { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#FF5A1F,#E14A0F); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 12px; }
-        .nav-title { font-size: 16px; font-weight: 800; color: #0f172a; }
+        .nav-logo-badge { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#FF3B1F,#E02A10); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 12px; }
+        .nav-title { font-size: 16px; font-weight: 800; color: #2D2421; }
         .nav-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
-        .nav-link { font-size: 13px; font-weight: 500; color: #64748b; text-decoration: none; transition: color 0.2s; }
-        .nav-link:hover { color: #FF5A1F; }
+        .nav-link { font-size: 13px; font-weight: 500; color: #635752; text-decoration: none; transition: color 0.2s; }
+        .nav-link:hover { color: #FF3B1F; }
 
         /* LAYOUT */
         .page-wrap { max-width: 860px; margin: 0 auto; padding: 32px 20px; display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start; }
         @media (max-width: 700px) { .page-wrap { grid-template-columns: 1fr; } }
 
         /* CARD */
-        .card { background: #fff; border-radius: 20px; border: 1px solid #eef0f4; box-shadow: 0 2px 10px rgba(26,32,53,0.06); padding: 24px; margin-bottom: 18px; }
+        .card { background: #fff; border-radius: 20px; border: 1px solid #F1E4D6; box-shadow: 0 2px 10px rgba(99,44,20,0.06); padding: 24px; margin-bottom: 18px; }
         .card:last-child { margin-bottom: 0; }
-        .card-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+        .card-title { font-size: 15px; font-weight: 800; color: #2D2421; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
 
         /* ALERT */
         .alert { display: flex; align-items: center; gap: 10px; border-radius: 12px; padding: 13px 16px; font-size: 13px; font-weight: 500; margin-bottom: 18px; }
@@ -38,43 +42,43 @@
 
         /* ORDER TABLE */
         .order-table { width: 100%; border-collapse: collapse; }
-        .order-table th { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 0 10px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        .order-table th { font-size: 11px; font-weight: 700; color: #8A7B6C; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 0 10px; text-align: left; border-bottom: 1px solid #F1E4D6; }
         .order-table th.r, .order-table td.r { text-align: right; }
-        .order-table td { padding: 11px 0; font-size: 13.5px; color: #374151; border-bottom: 1px solid #f8fafc; }
-        .shop-row td { font-weight: 700; color: #241C15; font-size: 12.5px; padding-top: 14px; }
+        .order-table td { padding: 11px 0; font-size: 13.5px; color: #4A3934; border-bottom: 1px solid #FFF9F2; }
+        .shop-row td { font-weight: 700; color: #2D2421; font-size: 12.5px; padding-top: 14px; }
         .shop-row td span { background: #FFF4EC; padding: 3px 10px; border-radius: 8px; }
-        .prod-name { font-weight: 600; color: #0f172a; }
-        .size-tag { font-size: 11.5px; color: #94a3b8; font-weight: 500; }
+        .prod-name { font-weight: 600; color: #2D2421; }
+        .size-tag { font-size: 11.5px; color: #8A7B6C; font-weight: 500; }
 
-        .qty-mini { display: inline-flex; align-items: center; gap: 6px; }
-        .qty-mini-btn { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #374151; padding: 0; font-family: inherit; transition: all 0.12s; }
-        .qty-mini-btn:hover:not(:disabled) { border-color: #FF5A1F; color: #FF5A1F; background: #FFF1E8; }
+        .qty-mini { display: inline-flex; align-items: center; gap: 2px; background: #FFF9F2; border: 1px solid #F1E4D6; border-radius: 50px; padding: 2px; }
+        .qty-mini-btn { width: 24px; height: 24px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 1px 3px rgba(99,44,20,.12); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #4A3934; padding: 0; font-family: inherit; transition: all 0.12s; }
+        .qty-mini-btn:hover:not(:disabled) { border-color: #FF3B1F; color: #FF3B1F; background: #FFF2F0; }
         .qty-mini-btn:disabled { opacity: .4; cursor: not-allowed; }
-        .qty-mini-val { font-size: 13px; font-weight: 700; color: #0f172a; min-width: 16px; text-align: center; display: inline-block; }
-        .btn-remove-mini { background: none; border: none; color: #cbd5e1; cursor: pointer; font-size: 15px; padding: 2px 4px; transition: color 0.15s; }
+        .qty-mini-val { font-size: 13px; font-weight: 700; color: #2D2421; min-width: 16px; text-align: center; display: inline-block; }
+        .btn-remove-mini { background: none; border: none; color: #E8D7C3; cursor: pointer; font-size: 15px; padding: 2px 4px; transition: color 0.15s; }
         .btn-remove-mini:hover { color: #ef4444; }
 
         .total-block { margin-top: 14px; padding-top: 14px; border-top: 2px solid #FFF4EC; }
-        .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; color: #64748b; margin-bottom: 6px; }
-        .total-row.grand { font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 8px; }
-        .total-row.grand .amt { color: #FF5A1F; }
-        .fee-note { font-size: 11.5px; color: #94a3b8; margin-top: 4px; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; color: #635752; margin-bottom: 6px; }
+        .total-row.grand { font-size: 16px; font-weight: 800; color: #2D2421; margin-top: 8px; }
+        .total-row.grand .amt { color: #FF3B1F; }
+        .fee-note { font-size: 11.5px; color: #8A7B6C; margin-top: 4px; }
 
         .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #4A3934; margin-bottom: 6px; }
         .form-group input, .form-group select {
             width: 100%;
             padding: 10px 13px;
-            border: 1.5px solid #e2e8f0;
+            border: 1.5px solid #F1E4D6;
             border-radius: 10px;
             font-size: 13.5px;
             font-family: inherit;
-            color: #0f172a;
+            color: #2D2421;
             transition: border-color 0.2s;
         }
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #FF5A1F;
+            border-color: #FF3B1F;
         }
 
         .btn {
@@ -88,25 +92,49 @@
             font-family: inherit;
         }
         .btn-primary {
-            background: linear-gradient(135deg,#FF5A1F,#E14A0F);
+            background: linear-gradient(135deg,#FF3B1F,#E02A10);
             color: #fff; width: 100%; font-size: 15px; font-weight: 700; padding: 13px;
             display: flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 4px 12px rgba(255,90,31,0.28);
+            box-shadow: 0 4px 12px rgba(255,59,31,0.28);
             transition: transform 0.15s, box-shadow 0.15s;
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,90,31,0.35); }
-        .btn-primary:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; transform: none; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255,59,31,0.35); }
+        .btn-primary:disabled { background: #E8D7C3; box-shadow: none; cursor: not-allowed; transform: none; }
 
-        .btn-secondary { background: #FFF4EC; color: #374151; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-secondary { background: #FFF4EC; color: #4A3934; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-secondary:hover { background: #F1E4D6; }
         .location-map-wrap { margin-top: 10px; }
         .location-search-row { display: flex; gap: 8px; margin-bottom: 8px; }
         .location-search-row input { flex: 1; }
         #checkoutLocationMap { height: 240px; border-radius: 10px; overflow: hidden; }
-        .location-hint { font-size: 11.5px; color: #94a3b8; margin-top: 6px; }
+        .location-hint { font-size: 11.5px; color: #8A7B6C; margin-top: 6px; }
         .best-voucher-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff7ed; border: 1px dashed #f97316; color: #9a3412; border-radius: 8px; padding: 10px 12px; font-size: 12.5px; font-weight: 600; margin-bottom: 8px; }
         .btn-use-voucher { margin-left: auto; background: #f97316; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
         .btn-use-voucher:hover { background: #ea580c; }
+
+        /* PAYMENT METHOD CARDS */
+        .pay-method-list { display: flex; flex-direction: column; gap: 8px; }
+        .pay-method-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid #F1E4D6; border-radius: 14px; cursor: pointer; transition: all .15s; background: #fff; }
+        .pay-method-card:has(input:checked) { border-color: #FF3B1F; background: #FFF2F0; }
+        .pm-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .pm-icon-cod { background: #EAFBF1; color: #15803D; }
+        .pm-icon-payos { background: #EAF1FE; color: #1D4ED8; }
+        .pm-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .pm-text strong { font-size: 13px; color: #2D2421; font-weight: 800; }
+        .pm-text span { font-size: 11.5px; color: #8A7B6C; }
+        .pay-method-card input[type="radio"] { accent-color: #FF3B1F; width: 17px; height: 17px; cursor: pointer; flex-shrink: 0; }
+
+        /* CHECKOUT STEPPER */
+        .checkout-stepper { display: flex; align-items: center; gap: 8px; max-width: 860px; margin: 18px auto 0; padding: 0 20px; font-size: 12px; font-family: 'Quicksand', sans-serif; font-weight: 700; }
+        .step-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 50px; white-space: nowrap; }
+        .step-pill .num { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+        .step-pill.done { background: #EAFBF1; color: #15803D; }
+        .step-pill.done .num { background: #15803D; color: #fff; }
+        .step-pill.current { background: #FFF2F0; color: #FF3B1F; box-shadow: 0 0 0 3px rgba(255,59,31,.1); }
+        .step-pill.current .num { background: #FF3B1F; color: #fff; }
+        .step-pill.upcoming { background: #F1E4D6; color: #8A7B6C; }
+        .step-pill.upcoming .num { background: #E8D7C3; color: #8A7B6C; }
+        .step-line { flex: 1; max-width: 28px; height: 2px; background: #F1E4D6; }
     </style>
 </head>
 <body>
@@ -124,6 +152,14 @@
         <a href="${pageContext.request.contextPath}/user/home" class="nav-link">← Trang chủ</a>
     </div>
 </nav>
+
+<div class="checkout-stepper">
+    <span class="step-pill done"><span class="num">✓</span>Chọn món</span>
+    <span class="step-line"></span>
+    <span class="step-pill current"><span class="num">2</span>Giỏ hàng &amp; Thanh toán</span>
+    <span class="step-line"></span>
+    <span class="step-pill upcoming"><span class="num">3</span>Theo dõi giao hàng</span>
+</div>
 
 <div class="page-wrap">
 
@@ -156,13 +192,13 @@
                                 <div class="prod-name"><c:out value="${line.productName}"/></div>
                                 <div class="size-tag"><c:out value="${line.sizeName}"/>
                                     <c:if test="${line.hasSale}">
-                                        — <span style="color:#FF5A1F;font-weight:700;"><fmt:formatNumber value="${line.unitPrice}" type="number" maxFractionDigits="0"/>đ</span>
-                                        <del style="color:#94a3b8;"><fmt:formatNumber value="${line.originalPrice}" type="number" maxFractionDigits="0"/>đ</del>
+                                        — <span style="color:#FF3B1F;font-weight:700;"><fmt:formatNumber value="${line.unitPrice}" type="number" maxFractionDigits="0"/>đ</span>
+                                        <del style="color:#8A7B6C;"><fmt:formatNumber value="${line.originalPrice}" type="number" maxFractionDigits="0"/>đ</del>
                                         <span style="font-size:10px;background:linear-gradient(135deg,#ff4444,#ff6b35);color:#fff;padding:1px 6px;border-radius:4px;margin-left:3px;">⚡Sale</span>
                                     </c:if>
                                 </div>
                                 <c:forEach var="tp" items="${line.toppings}">
-                                    <div class="size-tag" style="color:#FF5A1F;">
+                                    <div class="size-tag" style="color:#FF3B1F;">
                                         + <c:out value="${tp.toppingName}"/>
                                         (<fmt:formatNumber value="${tp.price}" type="number" maxFractionDigits="0"/>đ
                                         <c:if test="${tp.qty > 1}">× ${tp.qty}</c:if>)
@@ -255,7 +291,7 @@
                     <div class="location-search-row">
                         <input type="text" id="checkoutLocationSearchInput" placeholder="Tìm địa chỉ...">
                         <button type="button" id="checkoutLocationSearchBtn" class="btn btn-secondary">Tìm</button>
-                        <button type="button" id="checkoutCurrentLocationBtn" class="btn btn-secondary" style="color:#FF5A1F;border-color:#FF5A1F;font-weight:700;white-space:nowrap;">📍 Vị trí hiện tại</button>
+                        <button type="button" id="checkoutCurrentLocationBtn" class="btn btn-secondary" style="color:#FF3B1F;border-color:#FF3B1F;font-weight:700;white-space:nowrap;">📍 Vị trí hiện tại</button>
                     </div>
                     <div id="checkoutLocationMap"></div>
                 </div>
@@ -267,13 +303,21 @@
             </div>
             <div class="form-group">
                 <label>Phương thức thanh toán</label>
-                <select name="paymentMethod" required>
-                    <option value="COD" ${param.paymentMethod eq 'COD' ? 'selected' : ''}>Thanh toán khi nhận hàng (COD)</option>
-                    <option value="PAYOS" ${param.paymentMethod eq 'PAYOS' ? 'selected' : ''}>Thanh toán online qua PayOS (QR Code)</option>
-                </select>
+                <div class="pay-method-list">
+                    <label class="pay-method-card">
+                        <div class="pm-icon pm-icon-cod"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div>
+                        <div class="pm-text"><strong>Thanh toán khi nhận hàng</strong><span>Trả tiền mặt trực tiếp cho shipper (COD)</span></div>
+                        <input type="radio" name="paymentMethod" value="COD" ${param.paymentMethod eq 'PAYOS' ? '' : 'checked'} required>
+                    </label>
+                    <label class="pay-method-card">
+                        <div class="pm-icon pm-icon-payos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM19 14h2v2h-2zM14 19h2v2h-2zM19 19h2v2h-2z"/></svg></div>
+                        <div class="pm-text"><strong>Thanh toán online qua PayOS</strong><span>Quét mã QR chuyển khoản, xác nhận tự động</span></div>
+                        <input type="radio" name="paymentMethod" value="PAYOS" ${param.paymentMethod eq 'PAYOS' ? 'checked' : ''} required>
+                    </label>
+                </div>
             </div>
             <div class="form-group">
-                <label>Mã giảm giá (không bắt buộc)</label>
+                <label>Mã giảm giá / Voucher (không bắt buộc)</label>
                 <c:if test="${not empty bestVoucher && empty param.voucherCode}">
                     <div class="best-voucher-banner">
                         🎁 Bạn có thể dùng mã <strong><c:out value="${bestVoucher.code}"/></strong> để giảm
@@ -281,27 +325,27 @@
                         <button type="button" class="btn-use-voucher" onclick="document.getElementById('voucherCodeInput').value='${fn:escapeXml(bestVoucher.code)}'">Dùng ngay</button>
                     </div>
                 </c:if>
-                <input type="text" name="voucherCode" id="voucherCodeInput" style="text-transform:uppercase;"
-                       value="${param.voucherCode}" placeholder="VD: SALE50K">
-                <p class="location-hint">Chỉ áp dụng cho đơn hàng của shop đầu tiên trong giỏ hàng nếu giỏ có nhiều shop.</p>
+                <input type="text" name="voucherCode" id="voucherCodeInput" style="text-transform:uppercase;font-weight:700;letter-spacing:.5px;"
+                       value="${fn:escapeXml(param.voucherCode)}" placeholder="VD: SALE50K">
+                <p class="location-hint">Mã giảm giá tự động áp dụng khi đặt hàng — chỉ áp dụng cho đơn hàng của shop đầu tiên trong giỏ nếu giỏ có nhiều shop. <a href="${pageContext.request.contextPath}/user/diem-thuong" style="color:#FF3B1F;font-weight:700;">Đổi điểm lấy voucher →</a></p>
             </div>
             <div class="form-group">
                 <label>Thời gian giao hàng</label>
                 <div style="display:flex;gap:8px;margin-bottom:8px;">
                     <button type="button" id="btnDeliveryNow"
                             onclick="setDeliveryMode('now')"
-                            style="flex:1;padding:9px;border-radius:10px;border:2px solid #FF5A1F;background:#FFF4EC;color:#FF5A1F;font-weight:700;font-size:13px;cursor:pointer;">
+                            style="flex:1;padding:9px;border-radius:10px;border:2px solid #FF3B1F;background:#FFF4EC;color:#FF3B1F;font-weight:700;font-size:13px;cursor:pointer;">
                         🛵 Giao ngay
                     </button>
                     <button type="button" id="btnDeliveryScheduled"
                             onclick="setDeliveryMode('scheduled')"
-                            style="flex:1;padding:9px;border-radius:10px;border:2px solid #e2e8f0;background:#f8fafc;color:#64748b;font-weight:700;font-size:13px;cursor:pointer;">
+                            style="flex:1;padding:9px;border-radius:10px;border:2px solid #F1E4D6;background:#FFF9F2;color:#635752;font-weight:700;font-size:13px;cursor:pointer;">
                         🕐 Hẹn giờ
                     </button>
                 </div>
                 <div id="scheduledAtWrap" style="display:none;">
                     <input type="datetime-local" name="scheduledAt" id="scheduledAtInput"
-                           style="width:100%;padding:10px 13px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13.5px;font-family:inherit;color:#0f172a;">
+                           style="width:100%;padding:10px 13px;border:1.5px solid #F1E4D6;border-radius:10px;font-size:13.5px;font-family:inherit;color:#2D2421;">
                     <p class="location-hint" style="margin-top:4px;">Đơn hàng sẽ được gửi đến shipper vào thời điểm bạn chọn.</p>
                 </div>
             </div>
@@ -312,21 +356,15 @@
                     shop → điểm giao (5.000đ/km). Đơn hàng sẽ bị từ chối nếu shop cách vị trí giao hàng quá 20km.</p>
             </div>
 
-            <!-- VOUCHER CODE -->
-            <div class="form-group" style="margin-top:14px;background:#FFFBF8;padding:12px;border-radius:12px;border:1px dashed #FFD3B8;">
-                <label style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-                    <span style="font-weight:700;color:#0f172a;">🎟️ Mã giảm giá / Voucher</span>
-                    <a href="${pageContext.request.contextPath}/user/loyalty" target="_blank" style="font-size:11.5px;color:#FF5A1F;text-decoration:none;font-weight:700;">Đổi điểm lấy voucher →</a>
-                </label>
-                <input type="text" name="voucherCode" id="voucherCodeInput" placeholder="Nhập mã voucher (VD: SALE50K)"
-                       value="${fn:escapeXml(param.voucherCode)}" style="text-transform:uppercase;font-weight:700;letter-spacing:1px;">
-                <div style="font-size:11px;color:#64748b;margin-top:4px;">* Mã giảm giá sẽ tự động được áp dụng và trừ tiền vào đơn hàng.</div>
-            </div>
         </div>
 
         <button type="submit" class="btn btn-primary" id="checkoutSubmitBtn" disabled>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <span id="checkoutSubmitBtnLabel">Vui lòng chọn vị trí giao hàng</span></button>
+        <p style="text-align:center;font-size:11px;color:#8A7B6C;margin-top:10px;line-height:1.6;">
+            Có sự cố với đơn hàng? Bạn có thể gửi khiếu nại trực tiếp trong mục
+            <a href="${pageContext.request.contextPath}/user/donhang" style="color:#FF3B1F;font-weight:700;">Đơn hàng của tôi</a> sau khi đặt.
+        </p>
     </form>
 </div>
 <script>
@@ -335,8 +373,8 @@
         var input = document.getElementById('scheduledAtInput');
         var btnNow = document.getElementById('btnDeliveryNow');
         var btnSch = document.getElementById('btnDeliveryScheduled');
-        var activeStyle = 'border:2px solid #FF5A1F;background:#FFF4EC;color:#FF5A1F;';
-        var inactiveStyle = 'border:2px solid #e2e8f0;background:#f8fafc;color:#64748b;';
+        var activeStyle = 'border:2px solid #FF3B1F;background:#FFF4EC;color:#FF3B1F;';
+        var inactiveStyle = 'border:2px solid #F1E4D6;background:#FFF9F2;color:#635752;';
         if (mode === 'now') {
             wrap.style.display = 'none';
             input.name = '';
