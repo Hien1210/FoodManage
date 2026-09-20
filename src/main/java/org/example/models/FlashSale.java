@@ -43,4 +43,14 @@ public class FlashSale {
         LocalDateTime now = LocalDateTime.now();
         return !now.isBefore(startTime) && !now.isAfter(endTime);
     }
+
+    /** Đang bật nhưng chưa tới giờ bắt đầu (hiển thị nhãn "Sắp diễn ra" ở trang shop). */
+    public boolean isUpcoming() {
+        return active && startTime != null && LocalDateTime.now().isBefore(startTime);
+    }
+
+    /** Đã quá giờ kết thúc. */
+    public boolean isEnded() {
+        return endTime != null && LocalDateTime.now().isAfter(endTime);
+    }
 }

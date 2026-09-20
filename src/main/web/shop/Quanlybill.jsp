@@ -17,6 +17,11 @@
     <title>Hóa đơn - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <style>
         .avatar-wrapper { position: relative; }
         .avatar-dropdown { display: none; position: fixed; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--dash-shadow-md); min-width: 220px; z-index: 500; }
@@ -38,79 +43,32 @@
         .filter-bar a.clear { font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
         .action-cell { display: flex; gap: 6px; flex-wrap: wrap; }
         .inline-form { display: inline; }
+        /* Tab lọc theo trạng thái đơn (lọc phía client trên danh sách đang hiển thị) */
+        .stat-card.stat-alert { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light), var(--dash-shadow-sm); }
+        .bill-id { font-weight: 800; color: var(--text-main); font-family: var(--font-display); }
+        .bill-date { font-size: 12px; color: var(--text-dim); margin-top: 2px; white-space: nowrap; }
+        .col-cust { min-width: 190px; }
+        .bill-addr { max-width: 230px; margin-top: 2px; font-size: 12px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .bill-total { font-weight: 800; color: var(--primary); font-size: 14.5px; margin-bottom: 4px; white-space: nowrap; }
+        table.dash-table td .badge { white-space: normal; text-align: left; }
+        .bill-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .bill-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+        .bill-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .bill-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 8px 20px rgba(227, 37, 10, .25); }
+        .bill-tab-count { font-size: 11px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: var(--bg-input); color: var(--text-main); }
+        .bill-tab.active .bill-tab-count { background: rgba(255, 255, 255, .25); color: #fff; }
     </style>
 </head>
-<body class="dash-body">
+<body class="dash-body shop-theme">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🍔</div>
-        <div class="brand-text">
-            <span class="brand-title">${not empty currentShop.shopName ? currentShop.shopName : 'CỬA HÀNG CỦA TÔI'}</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
-        </div>
-    <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Tổng quan</div>
-        <a href="${pageContext.request.contextPath}/shop" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Trang chủ</span></span>
-        </a>
-
-        <div class="menu-title">Sản phẩm</div>
-        <a href="${pageContext.request.contextPath}/shop/products" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🍽️</span><span class="mi-label"> Quản lý sản phẩm</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/product-types" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📂</span><span class="mi-label"> Quản lý loại sản phẩm</span></span>
-        </a>
-
-        <div class="menu-title">Topping</div>
-        <a href="${pageContext.request.contextPath}/shop/toppings" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧂</span><span class="mi-label"> Quản lý Topping</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/topping-categories" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏷️</span><span class="mi-label"> Quản lý loại Topping</span></span>
-        </a>
-
-        <div class="menu-title">Đơn hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/pos" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧾</span><span class="mi-label"> Bấm Bill</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/bills" class="menu-item active">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Quản lý hóa đơn</span></span>
-        </a>
-
-        <div class="menu-title">Cửa hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/profile" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Thông tin cửa hàng</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Xem đánh giá</span></span>
-        </a>
-
-        <div class="menu-title">Khuyến mãi</div>
-        <a href="${pageContext.request.contextPath}/shop/combo" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🎁</span><span class="mi-label"> Quản lý Combo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/flash-sale" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⚡</span><span class="mi-label"> Flash Sale</span></span>
-        </a>
-        <div class="menu-title">Tài chính</div>
-        <a href="${pageContext.request.contextPath}/shop/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền Shop</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shopActive" value="/shop/bills" scope="request"/>
+<%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
-            <h1>📋 Quản lý hóa đơn / đơn hàng</h1>
+            <h1><span class="material-symbols-outlined tb-icon">receipt_long</span> Quản lý hóa đơn / đơn hàng</h1>
         </div>
         <div class="topbar-right">
             <div class="avatar-wrapper" id="avatarWrapper">
@@ -172,6 +130,68 @@
             </a>
         </form>
 
+        <%-- Thống kê + tab trạng thái: tính từ chính danh sách đơn đang hiển thị (đã áp bộ lọc phía trên) --%>
+        <c:set var="nAll" value="${fn:length(orderList)}"/>
+        <c:set var="nPending" value="0"/><c:set var="nConfirmed" value="0"/><c:set var="nReady" value="0"/>
+        <c:set var="nShipping" value="0"/><c:set var="nDone" value="0"/><c:set var="nCancelled" value="0"/>
+        <c:set var="revenuePaid" value="0"/>
+        <c:forEach var="o" items="${orderList}">
+            <c:set var="dsK" value="${fn:toUpperCase(o.staTus)}"/>
+            <c:choose>
+                <c:when test="${dsK == 'PENDING'}"><c:set var="nPending" value="${nPending + 1}"/></c:when>
+                <c:when test="${dsK == 'CONFIRMED'}"><c:set var="nConfirmed" value="${nConfirmed + 1}"/></c:when>
+                <c:when test="${dsK == 'READY_FOR_PICKUP'}"><c:set var="nReady" value="${nReady + 1}"/></c:when>
+                <c:when test="${dsK == 'SHIPPING'}"><c:set var="nShipping" value="${nShipping + 1}"/></c:when>
+                <c:when test="${dsK == 'DONE'}"><c:set var="nDone" value="${nDone + 1}"/></c:when>
+                <c:when test="${dsK == 'CANCELLED'}"><c:set var="nCancelled" value="${nCancelled + 1}"/></c:when>
+            </c:choose>
+            <c:if test="${fn:toUpperCase(o.paymentStatus) == 'PAID' and dsK != 'CANCELLED'}">
+                <c:set var="revenuePaid" value="${revenuePaid + o.totalPrice}"/>
+            </c:if>
+        </c:forEach>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Tổng hóa đơn</div>
+                    <div class="stat-num">${nAll}</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">receipt_long</span></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Doanh thu đã thanh toán</div>
+                    <div class="stat-num"><fmt:formatNumber value="${revenuePaid}" type="number" maxFractionDigits="0"/>đ</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">payments</span></div>
+            </div>
+            <div class="stat-card ${nPending > 0 ? 'stat-alert' : ''}">
+                <div>
+                    <div class="stat-label">Chờ xác nhận</div>
+                    <div class="stat-num">${nPending}</div>
+                    <div class="stat-trend" style="color:var(--text-dim);">đơn cần shop xác nhận</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">notifications_active</span></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Đã giao</div>
+                    <div class="stat-num">${nDone}</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">check_circle</span></div>
+            </div>
+        </div>
+
+        <div class="bill-tabs" id="billTabs" role="tablist">
+            <button type="button" class="bill-tab active" data-ds="ALL">Tất cả <span class="bill-tab-count">${nAll}</span></button>
+            <button type="button" class="bill-tab" data-ds="PENDING">Chờ xác nhận <span class="bill-tab-count">${nPending}</span></button>
+            <button type="button" class="bill-tab" data-ds="CONFIRMED">Đang chuẩn bị <span class="bill-tab-count">${nConfirmed}</span></button>
+            <button type="button" class="bill-tab" data-ds="READY_FOR_PICKUP">Chờ shipper lấy <span class="bill-tab-count">${nReady}</span></button>
+            <button type="button" class="bill-tab" data-ds="SHIPPING">Đang giao <span class="bill-tab-count">${nShipping}</span></button>
+            <button type="button" class="bill-tab" data-ds="DONE">Hoàn tất <span class="bill-tab-count">${nDone}</span></button>
+            <button type="button" class="bill-tab" data-ds="CANCELLED">Đã hủy <span class="bill-tab-count">${nCancelled}</span></button>
+        </div>
+
         <section class="panel">
             <div class="panel-header">
                 <div class="panel-title">📋 Danh sách đơn hàng</div>
@@ -189,28 +209,36 @@
                             <table class="dash-table">
                                 <thead>
                                 <tr>
-                                    <th>Mã đơn</th>
-                                    <th>Người nhận</th>
-                                    <th>Địa chỉ</th>
+                                    <th>Đơn hàng</th>
+                                    <th>Khách hàng</th>
                                     <th>Tổng tiền</th>
-                                    <th>Hình thức</th>
                                     <th>Thanh toán</th>
                                     <th>Trạng thái đơn</th>
-                                    <th>Ngày tạo</th>
                                     <th>Thao tác</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <c:forEach var="o" items="${orderList}">
-                                    <tr>
-                                        <td>#${o.id}</td>
-                                        <td>
+                                    <c:set var="rowDs" value="${fn:toUpperCase(o.staTus)}"/>
+                                    <tr data-ds="${rowDs}">
+                                        <td class="col-id">
+                                            <div class="bill-id">#${o.id}</div>
+                                            <div class="bill-date">
+                                            <c:set var="ca" value="${o.createdAt}"/>
+                                            ${fn:substring(ca,11,16)} ${fn:substring(ca,8,10)}/${fn:substring(ca,5,7)}/${fn:substring(ca,0,4)}
+                                            <c:if test="${not empty o.scheduledAt}">
+                                                <c:set var="sa" value="${o.scheduledAt}"/>
+                                                <br><span style="display:inline-block;margin-top:4px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">🕐 Hẹn: ${fn:substring(sa,11,16)} ${fn:substring(sa,8,10)}/${fn:substring(sa,5,7)}/${fn:substring(sa,0,4)}</span>
+                                            </c:if>
+                                            </div>
+                                        </td>
+                                        <td class="col-cust">
                                             <strong><c:out value="${o.receiverName}"/></strong><br>
                                             <c:out value="${o.receiverPhone}"/>
+                                            <div class="bill-addr" title="<c:out value="${o.shippingAddress}"/>"><c:out value="${o.shippingAddress}"/></div>
                                         </td>
-                                        <td><c:out value="${o.shippingAddress}"/></td>
-                                        <td><fmt:formatNumber value="${o.totalPrice}" type="number" maxFractionDigits="0"/> đ</td>
-                                        <td>
+                                        <td class="col-total">
+                                            <div class="bill-total"><fmt:formatNumber value="${o.totalPrice}" type="number" maxFractionDigits="0"/> đ</div>
                                             <c:set var="pm" value="${fn:toUpperCase(o.paymentMethod)}"/>
                                             <c:choose>
                                                 <c:when test="${pm == 'BANK'}"><span class="badge badge-info">📱 QR chuyển khoản</span></c:when>
@@ -242,14 +270,6 @@
                                                 <c:when test="${ds == 'CANCELLED'}"><span class="badge badge-danger">🚫 Đã hủy</span></c:when>
                                                 <c:otherwise><span class="badge badge-neutral">${o.staTus}</span></c:otherwise>
                                             </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:set var="ca" value="${o.createdAt}"/>
-                                            ${fn:substring(ca,11,16)} ${fn:substring(ca,8,10)}/${fn:substring(ca,5,7)}/${fn:substring(ca,0,4)}
-                                            <c:if test="${not empty o.scheduledAt}">
-                                                <c:set var="sa" value="${o.scheduledAt}"/>
-                                                <br><span style="display:inline-block;margin-top:4px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;">🕐 Hẹn: ${fn:substring(sa,11,16)} ${fn:substring(sa,8,10)}/${fn:substring(sa,5,7)}/${fn:substring(sa,0,4)}</span>
-                                            </c:if>
                                         </td>
                                         <td>
                                             <div class="action-cell">
@@ -294,6 +314,10 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="empty-state" id="billTabEmpty" style="display:none;">
+                            <div class="e-icon">🧾</div>
+                            <div class="e-title">Không có đơn hàng ở trạng thái này.</div>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -336,6 +360,28 @@
             document.addEventListener('click', function() { avatarDropdown.classList.remove('open'); });
         }
     });
+</script>
+
+<script>
+    (function () {
+        var tabs = document.getElementById('billTabs');
+        if (!tabs) return;
+        var rows = document.querySelectorAll('table.dash-table tbody tr[data-ds]');
+        var emptyNote = document.getElementById('billTabEmpty');
+        tabs.addEventListener('click', function (e) {
+            var btn = e.target.closest('.bill-tab');
+            if (!btn) return;
+            tabs.querySelectorAll('.bill-tab').forEach(function (b) { b.classList.toggle('active', b === btn); });
+            var ds = btn.getAttribute('data-ds');
+            var shown = 0;
+            rows.forEach(function (r) {
+                var ok = ds === 'ALL' || r.getAttribute('data-ds') === ds;
+                r.style.display = ok ? '' : 'none';
+                if (ok) shown++;
+            });
+            if (emptyNote && rows.length) emptyNote.style.display = shown === 0 ? '' : 'none';
+        });
+    })();
 </script>
 </body>
 </html>

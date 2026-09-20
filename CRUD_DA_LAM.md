@@ -1,5 +1,142 @@
 # CRUD da lam
 
+## 152. Dựng lại bố cục các trang Shop còn lại theo mock Stitch (trang chủ, đánh giá, hồ sơ cửa hàng, flash sale, danh mục/topping, đổi mật khẩu)
+
+**Yêu cầu:** Sau mục 151 (4 trang Combo/Hóa đơn/Thực đơn/Ví), user bảo "làm tiếp các trang còn lại". Vẫn chỉ dùng
+dữ liệu thật; bỏ phần mock hệ thống không có.
+
+- **`trangcuahang.jsp` (mock "Kênh tiếp nhận đơn"):** 4 thẻ KPI (Doanh thu hôm nay / Đơn chờ xử lý — dùng attribute
+  `donChoXuLy` mà servlet đã tính nhưng trang chưa từng hiển thị, viền nổi + link sang hóa đơn / Tỷ lệ hoàn thành =
+  hoàn thành ÷ tổng đơn / Tổng đơn), biểu đồ 7 ngày cạnh "Top món bán chạy" dạng danh sách xếp hạng, dải tuần/tháng/thực đơn,
+  bảng đơn gần đây có đủ nhãn trạng thái + nút "Xem tất cả". Chart.js đổi `maintainAspectRatio:false` + khung cao cố định.
+  Tên chào mừng nay qua `c:out` (trước in thô).
+- **`xemDanhGia.jsp`:** thẻ điểm uy tín `x.x / 5`, biểu đồ phân bổ sao (đếm từ danh sách khách + shipper), thẻ tổng quan
+  phản hồi (số đánh giá 1–2 sao), chip lọc theo sao trên cả 2 tab, thẻ đánh giá 1–2 sao có viền đỏ.
+- **`Shopprofile.jsp` (mock "Cài đặt cửa hàng"/"Hồ sơ shop"):** thẻ tổng quan cửa hàng (logo, trạng thái duyệt, mở/đóng, mã,
+  SĐT, giờ, lý do từ chối) thay panel "Tổng quan" bên phải; form CHIA thành 5 thẻ theo nhóm (Thương hiệu / Địa chỉ &
+  vị trí có bản đồ Leaflet / Giờ hoạt động / Ngân hàng nhận tiền / PayOS) trong 2 cột, thanh Lưu/Hủy dính đáy. Vẫn là MỘT
+  `<form>` với nguyên các `id`/`name` cũ nên JS bản đồ, upload logo, xác nhận thiếu vị trí không đổi.
+- **`QuanlyFlashSale.jsp` (mock "Khuyến mãi"):** 3 thẻ KPI (Đang diễn ra / Sắp diễn ra / Đã kết thúc), danh sách thẻ flash sale
+  (giá sale, giá gốc gạch ngang, `-x%`, khung giờ, badge trạng thái, xóa), form tạo dính bên phải. **Java:** thêm 2 getter
+  `isUpcoming()` / `isEnded()` vào [FlashSale.java](src/main/java/org/example/models/FlashSale.java) (cần build lại WAR).
+- **`Quanlyloaisanpham.jsp`, `Quanlyloaitopping.jsp`, `Quanlytopping.jsp` (mock "Danh mục & Kho topping"):** đổi bảng thành lưới
+  thẻ bằng CSS `table.card-table` (giữ nguyên `<table><tr>` nên các hàm lọc/tìm JS cũ chạy tiếp; ẩn cột `#`, hàng thao tác
+  đáy thẻ). Không gộp 3 trang thành 1 như mock (route/servlet riêng).
+- **`doiMatKhauShop.jsp`:** thêm checklist yêu cầu mật khẩu theo thời gian thực (≥6 ký tự — bắt buộc thật; chữ+số, hoa/thường,
+  ký tự đặc biệt — chỉ gợi ý). Bỏ qua 2FA/thiết bị đăng nhập/PIN POS/nhật ký bảo mật của mock.
+- **`shopChoDuyet.jsp`:** thêm thanh 3 bước tiến trình duyệt hồ sơ; tên shop nay qua `c:out` (trước in thô, có nguy cơ XSS).
+- **`shop-theme.css`:** `.stats-grid` co lại còn `minmax(190px,1fr)` để 4 thẻ KPI vừa 1 hàng; thêm `.card-table`.
+
+**Không làm (mock có, hệ thống không có):** ca làm việc/thiết bị in KOT/chuông báo/bán kính giao/tạm ngưng nhận đơn của
+cài đặt vận hành, voucher/ROI/Ads/gợi ý AI của khuyến mãi, sắp xếp thứ tự danh mục + nhóm topping bắt buộc/tùy chọn,
+phản hồi công khai/tặng voucher cho đánh giá, xác thực 2 bước & quản lý thiết bị ở đổi mật khẩu, bảng "đơn mới chờ nhận"
+có KDS/máy in ở trang chủ.
+
+### Files sửa:
+- `src/main/web/shop/`: `trangcuahang.jsp`, `xemDanhGia.jsp`, `Shopprofile.jsp`, `QuanlyFlashSale.jsp`, `Quanlyloaisanpham.jsp`,
+  `Quanlyloaitopping.jsp`, `Quanlytopping.jsp`, `doiMatKhauShop.jsp`, `shopChoDuyet.jsp`
+- `src/main/web/assets/css/shop-theme.css`
+- `src/main/java/org/example/models/FlashSale.java`
+
+### Ghi chú:
+Không đổi bảng/cột DB nên không cập nhật `database.md`. Đã build lại WAR (Maven portable), chạy Tomcat cổng 8090, dùng
+JSP harness tạm (chỉ trong webapp test, không nằm trong repo) dựng model giả cho flash sale/đánh giá/hồ sơ/danh mục/
+topping/trang chủ. Kiểm tra: 25 JSP thuộc role Shop đều 200 + đủ `</html>`; chip lọc sao (5★=3, 1★=1…), checklist mật
+khẩu, KPI 4 cột, không tràn ngang ở 375px. **Chưa kiểm chứng:** submit thật các form (lưu hồ sơ + bản đồ, tạo flash sale,
+đổi mật khẩu), ảnh/logo thật. Đề nghị user click qua bằng shop có dữ liệu thật.
+
+## 151. Dựng lại bố cục 4 trang Shop theo mock Stitch: Combo, Hóa đơn, Thực đơn, Ví tiền
+
+**Yêu cầu:** Sau mục 150 (chỉ đổi phong cách chung), user bảo "làm tiếp cả 4 trang" (Combo, Hóa đơn, Thực đơn,
+Ví tiền) — dựng lại bố cục riêng từng trang theo mock nhưng chỉ dùng dữ liệu hệ thống thật. Không đổi servlet/DAO/DB.
+
+- **`shop/Quanlycombo.jsp`:** hàng 3 thẻ thống kê (Tổng combo / Đang bán / Tiết kiệm trung bình — tính từ
+  `Combo.active` + giá gốc = Σ giá size × số lượng của `ComboItem`); bố cục 2 cột: trái là thẻ combo (ảnh món đầu
+  tiên có ảnh, tag `-x%`, badge Đang bán/Tạm ngưng, danh sách món, giá combo + giá gốc gạch ngang + "Tiết kiệm"),
+  phải là khung **Combo Builder** dính khi cuộn (3 bước: thông tin / món / định giá) kèm ô tổng kết trực tiếp
+  (giá gốc, tiết kiệm hoặc cảnh báo giá cao hơn mua lẻ; `<option data-price>` + `updateComboSummary()`). Vá kèm:
+  `editCombo()` trước đây điền giá dạng `85000.0` vào ô có `data-money`, nay làm tròn + format dấu chấm.
+- **`shop/Quanlybill.jsp`:** 4 thẻ thống kê (Tổng hóa đơn / Doanh thu đã thanh toán trừ đơn hủy / Chờ xác nhận —
+  viền nổi khi >0 / Đã giao), tab lọc theo trạng thái đơn kèm số đếm (lọc phía client trên danh sách đang hiển
+  thị, thêm `data-ds` cho mỗi dòng), gọn bảng từ 9 → 6 cột (gộp mã đơn+ngày, khách+địa chỉ rút gọn, tổng tiền+hình
+  thức) để nút thao tác không còn bị cắt. Toàn bộ form xác nhận/hủy/đã chuẩn bị giữ nguyên.
+- **`shop/Quanlysanpham.jsp`:** bảng → lưới thẻ món (ảnh, tên, mô tả 2 dòng, loại, tồn kho, đã bán, giá + chip
+  size, badge trạng thái, "Sửa món"/xóa; món Hết hàng/Tạm ẩn xám ảnh + cờ trên ảnh); chip loại sản phẩm kèm số món
+  thay cho select loại; JS `applyFilters()` đọc `.menu-card` (chip + select trạng thái + ô tìm ở topbar) và hiện
+  thông báo khi không khớp. Modal thêm/sửa giữ nguyên. Fix nhỏ: `onerror` ảnh dùng `nextElementSibling`.
+- **`shop/viTien.jsp`:** thẻ ví (số dư + 3 chỉ số tổng đã thu/đã rút/đang chờ duyệt) cạnh **thẻ ngân hàng** (tên
+  ngân hàng, số TK, chủ TK từ hồ sơ shop, hoặc CTA cập nhật nếu chưa có); lịch sử giao dịch + form rút tiền đặt
+  song song (form dính khi cuộn), bảng lịch sử rút tiền giữ bên dưới. Bỏ khối "tài khoản đã lưu" trùng lặp trong form
+  (thay bằng 1 dòng nơi nhận tiền). Toàn bộ dữ liệu vẫn là `wallet`, `transactions`, `withdrawals`, `shop`.
+
+**Không làm (mock có, hệ thống không có):** biên lợi nhuận/AOV combo, "Bật/Tắt bán" nhanh cho combo, in phiếu
+xem trước bên cạnh bảng hóa đơn, "Tự động gán shipper", giá vốn/biên lợi nhuận món, biểu đồ tăng trưởng + cơ cấu chi
+phí và đối soát phí từng đơn của ví, eKYC/xuất đối soát.
+
+### Files sửa:
+- `src/main/web/shop/Quanlycombo.jsp`, `Quanlybill.jsp`, `Quanlysanpham.jsp`, `viTien.jsp`
+
+### Ghi chú:
+Không đổi DB/servlet nên không cập nhật `database.md`. Kiểm chứng: build lại + chạy Tomcat cổng 8090, dùng **JSP
+"harness" tạm chỉ đặt trong webapp test (không nằm trong repo)** để dựng model giả (combo 3 gói, 8 đơn đủ trạng thái, 6
+món 3 loại, ví có/không có ngân hàng) rồi forward tới JSP thật — xem đủ trạng thái có dữ liệu mà không ghi vào DB
+thật. Đã test: tổng kết Combo Builder tính đúng (316.000đ gốc → tiết kiệm 66.000đ/21%), sửa combo nạp đúng, tab lọc
+hóa đơn (Hoàn tất=2, Đã hủy=1...), chip+select+tìm món kết hợp đúng, không tràn ngang ở 375px. **Chưa test:** submit
+form thật (tạo/sửa/xóa combo, xác nhận đơn, rút tiền) và ảnh món thật — đề nghị click qua bằng shop có dữ liệu.
+
+## 150. Áp bộ thiết kế Stitch cho role SHOP (đối tác quán): theme riêng + sidebar dùng chung
+
+**Yêu cầu:** User gửi zip Stitch mới (`stitch_remix_of_foodmanage_ui_design.zip`: 16 trang mẫu Shop + 1 trang
+Admin khiếu nại + `DESIGN.md`) và bảo "làm role shop đối tác trước, admin tôi sẽ gửi file zip khác". Bản mẫu Shop
+dùng sidebar trái "VẬN HÀNH QUÁN ĂN", nền kem, mục đang chọn tô đỏ đặc, nút pill, card bo lớn, bóng ấm.
+
+**Thiết kế thực hiện (CSS-first, không đổi logic/servlet):** các trang Shop dùng chung `theme.css` +
+`dashboard.css` với Super Admin/Shipper nên KHÔNG sửa 2 file đó. Thay vào đó:
+- Tạo `assets/css/shop-theme.css`, nạp SAU `dashboard.css`, chỉ có tác dụng khi `<body class="dash-body shop-theme">`.
+  Đè token (`--primary #E3250A`, nền `#FEF8F1`, chữ `#2D2421`, bóng `rgba(99,44,20,..)`, bo góc 12/16/24px,
+  font Plus Jakarta Sans + Quicksand cho tiêu đề), restyle sidebar (mục active đỏ đặc + đổ bóng CTA),
+  topbar, card/panel/stat-card, nút pill, ô nhập (viền/glow cam khi focus), badge, bảng, modal, scrollbar.
+  Thêm định nghĩa `.dash-card`/`.dash-card-header`/`.dash-card-body` (Combo + Flash Sale dùng class này
+  nhưng dashboard.css chưa từng định nghĩa nên trước đây hiển thị phẳng), CSS thanh lọc `.filter-bar`
+  (Quản lý hóa đơn), và rule mobile cho topbar (wrap thay vì tràn).
+- Tạo `shop/_shopSidebar.jspf` (nhúng tĩnh, cùng kiểu `_invoiceModal.jspf`, có `pageEncoding="UTF-8"` —
+  thiếu dòng này sidebar bị vỡ tiếng Việt). 19 trang từng copy-paste cùng 1 sidebar (chỉ khác mục `active`
+  và tên biến shop) nay dùng chung 1 file; trang set `shopActive` (đường dẫn mục đang mở) trước khi include.
+  Sidebar mới: logo FoodManage + "ĐỐI TÁC QUÁN", thẻ cửa hàng (tên qua `c:out`, badge Đang mở/Đang đóng theo
+  `Shop.isOpenNow()` thật, tên tài khoản), icon Material Symbols thay emoji. Menu giữ nguyên route cũ.
+- Icon tiêu đề topbar của 18 trang đổi emoji → Material Symbols (`.tb-icon`).
+
+**Trang đã áp theme:** `trangcuahang, Quanlysanpham, Quanlyloaisanpham, Quanlytopping, Quanlyloaitopping,
+Quanlybill, HoaDonShop, Quanlycombo, QuanlyFlashSale, viTien, xemDanhGia, Shopprofile, hoSoShop,
+doiMatKhauShop, ThungRac{SanPham,LoaiSanPham,Topping,LoaiTopping}, ThanhToanThatBaiPos`.
+- `Banhang.jsp` (POS, trang độc lập, có CSS riêng): bỏ CSS sidebar cục bộ, nạp dashboard.css + shop-theme.css,
+  dùng sidebar chung, thêm nút ☰ mobile + `dashboard-theme.js` (cần cho `pobToggleSidebar()`); giữ nguyên
+  toàn bộ CSS/JS của khu vực bán hàng.
+- Nhóm đăng ký/chờ duyệt: `registerShop.jsp`, `dangKyChoDuyet.jsp` (bảng màu teal/slate cũ → nâu ấm/đỏ cam,
+  Plus Jakarta Sans + Quicksand, title "FOOD MANAGE"), `shopChoDuyet.jsp`, `shopTuChoi.jsp`,
+  `shopDangKyThongTin.jsp` (viết lại `<style>`, trước là xám/teal Arial).
+- Màu lẻ: biểu đồ doanh thu trang chủ, hero ví tiền (navy → nâu-đỏ ấm), banner "Xem đánh giá" (gradient thương hiệu).
+
+**KHÔNG áp dụng (cố ý):** `taoCategory.jsp`, `taoProduct.jsp` (thực chất là trang CRUD của SUPER ADMIN,
+đặt nhầm thư mục `shop/`, chờ đợt Admin); `shopDanhSach.jsp`, `shopThemSua.jsp`, `quanLyCuaHang.jsp` (CRUD nội
+bộ). Mọi tính năng CHỈ có trong mock mà hệ thống không có (KDS/phiếu bếp, đồng bộ app POS, hotline hỗ trợ,
+giao dịch FoodPay, AOV/biên lợi nhuận combo, hồ sơ eKYC/ATVSTP, "Đổi trạng thái quán"...) — bỏ qua để không hứa
+hẹn sai; chỉ lấy ngôn ngữ hình ảnh.
+
+### Files sửa:
+- `src/main/web/assets/css/shop-theme.css` (mới), `src/main/web/shop/_shopSidebar.jspf` (mới)
+- 19 JSP dashboard Shop (danh sách ở trên), `Banhang.jsp`, `ThanhToanThatBaiPos.jsp`
+- `registerShop.jsp`, `dangKyChoDuyet.jsp`, `shopChoDuyet.jsp`, `shopTuChoi.jsp`, `shopDangKyThongTin.jsp`
+- `PROJECT_STRUCTURE.md`
+
+### Ghi chú:
+Không đổi schema/servlet/DAO nên không cập nhật `database.md`. Đã build WAR bằng Maven portable, chạy Tomcat
+riêng cổng 8090 với DB thật, đăng nhập tài khoản Shop test (`Bao`): toàn bộ 24 JSP trả 200 + đủ `</html>`, sidebar
+hiển thị đúng tiếng Việt/icon/mục active, thu gọn sidebar + ☰ mobile hoạt động, không tràn ngang ở 375px.
+**Chưa kiểm chứng được với dữ liệu thật:** tài khoản `Bao` chưa có hồ sơ shop nên các danh sách (sản phẩm, combo,
+hóa đơn, ví tiền...) chỉ xem được trạng thái rỗng; luồng bấm bill/PayOS/duyệt đơn không được chạy thử. Đề nghị
+user click qua các trang bằng 1 shop có dữ liệu thật.
+
 ## 149. Bổ sung trang mẫu "Giỏ hàng" bị bỏ sót + đồng bộ 8 trang khách hàng/xác thực còn màu cũ
 
 **Yêu cầu:** User hỏi "kiểm tra xem đã đủ các trang trong file zip chưa". Rà lại 1-1 15 trang mẫu Stitch

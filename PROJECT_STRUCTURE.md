@@ -25,11 +25,12 @@ src/main/java/org/example/
     - [TrackingEndpoint.java](src/main/java/org/example/websocket/TrackingEndpoint.java): `@ServerEndpoint("/ws/tracking")`, relay vị trí GPS shipper tới các khách hàng đang xem cùng đơn hàng (cache trong bộ nhớ, không có bảng DB mới) — xem [CRUD_DA_LAM.md](CRUD_DA_LAM.md) mục 25.
 
 src/main/web/    -> JSP views (KHÔNG nằm trong WEB-INF nên có thể truy cập trực tiếp)
-  shop/          -> trang quản lý cho shop owner (sản phẩm, topping, loại sản phẩm, hồ sơ shop...)
+  shop/          -> trang quản lý cho shop owner (sản phẩm, topping, loại sản phẩm, hồ sơ shop...). Toàn bộ trang dashboard của Shop dùng chung sidebar [shop/_shopSidebar.jspf](src/main/web/shop/_shopSidebar.jspf) (nhúng tĩnh, trang set trước `<c:set var="shopActive" value="/shop/bills" scope="request"/>` để đánh dấu mục đang mở) và theme Stitch [assets/css/shop-theme.css](src/main/web/assets/css/shop-theme.css) (chỉ có tác dụng với `<body class="dash-body shop-theme">`) — xem mục 150 trong CRUD_DA_LAM.md
   admin/         -> trang cho super admin (duyệt shop, tổng quan hệ thống, quản lý tài khoản)
   user/          -> trang cho người dùng thường (giao diện sáng, tông cam-đỏ "thèm ăn" — xem [assets/css/user-theme.css](src/main/web/assets/css/user-theme.css) và mục 47 trong CRUD_DA_LAM.md)
   shipper/       -> trang cho shipper
   assets/css/user-theme.css -> design token + component dùng chung cho toàn bộ trang user/ (nav, nút, badge, card, modal, form, ảnh 3D). Mỗi JSP trong user/ vẫn có `<style>` riêng cho layout đặc thù, nhưng đều `<link>` file này và dùng chung biến `--gold` (#FF5A1F cam-đỏ), font 'Plus Jakarta Sans'.
+  assets/css/shop-theme.css -> theme "Đối tác quán" (bộ Stitch) cho role Shop: đè token của theme.css/dashboard.css (màu #E3250A, nền kem, Quicksand + Plus Jakarta Sans, bo góc mềm, bóng ấm), restyle sidebar/topbar/nút pill/card, định nghĩa `.dash-card*`. Cần nạp SAU dashboard.css; Super Admin/Shipper không nạp nên không đổi.
   assets/js/     -> JS dùng chung nhiều trang, vd [orderTrackingMap.js](src/main/web/assets/js/orderTrackingMap.js) (bản đồ Leaflet 3-marker: shop, điểm giao, shipper realtime qua WebSocket; kèm tính khoảng cách Haversine + ETA hiển thị dưới bản đồ — xem mục 25c trong CRUD_DA_LAM.md)
   WEB-INF/       -> web.xml, config
 

@@ -16,6 +16,11 @@
     <title>Trang chủ cửa hàng</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <style>
         .avatar-wrapper { position: relative; }
         .avatar-dropdown { display: none; position: fixed; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--dash-shadow-md); min-width: 220px; z-index: 500; }
@@ -32,85 +37,44 @@
         .dropdown-link.danger:hover { background: var(--danger-light); color: var(--danger); }
 
         /* Đặc thù trang chủ shop: banner chào mừng + biểu đồ */
-        .welcome-banner { background: linear-gradient(120deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: var(--radius-lg); padding: 28px 32px; color: #fff; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--dash-shadow-md); }
+        .welcome-banner { background: var(--brand-gradient, linear-gradient(120deg, var(--primary) 0%, var(--primary-dark) 100%)); border-radius: var(--radius-lg); padding: 28px 32px; color: #fff; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--dash-shadow-md); }
         .welcome-banner h1 { font-size: 21px; font-weight: 800; margin-bottom: 6px; }
         .welcome-banner p { font-size: 13px; opacity: .92; }
         .welcome-emoji { font-size: 46px; }
         .stat-icon.green { background: var(--success-light); color: var(--success-dark); }
         .stat-icon.red { background: var(--danger-light); color: var(--danger); }
         .stat-icon.yellow { background: var(--warning-light); color: var(--warning-dark); }
+
+        .btn-hero-cta { background: #fff; color: var(--primary-dark); border-radius: 999px; padding: 11px 20px; font-weight: 800; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 8px 20px rgba(0,0,0,.16); white-space: nowrap; }
+        body.dash-body a.btn-hero-cta { color: var(--primary-dark); }
+        .btn-hero-cta .material-symbols-outlined { font-size: 19px; }
+        .stat-card.stat-alert { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light), var(--dash-shadow-sm); }
+        .home-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 24px; align-items: stretch; }
+        .chart-box { position: relative; height: 270px; }
+        .tb-icon-sm { font-size: 22px; color: var(--primary); }
+        .top-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--border-color); }
+        .top-row:last-child { border-bottom: none; }
+        .top-rank { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; background: var(--bg-input); color: var(--text-muted); }
+        .top-rank.r1 { background: var(--brand-gradient); color: #fff; }
+        .top-rank.r2 { background: #FFDBCF; color: #802900; }
+        .top-rank.r3 { background: #FFDEAC; color: #604100; }
+        .top-info { flex: 1; min-width: 0; }
+        .top-name { font-weight: 700; color: var(--text-main); font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .top-sub { font-size: 12px; color: var(--text-dim); }
+        .top-rev { font-weight: 800; color: var(--primary); font-size: 13.5px; white-space: nowrap; }
+        @media (max-width: 1100px) { .home-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body class="dash-body">
+<body class="dash-body shop-theme">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🍔</div>
-        <div class="brand-text">
-            <span class="brand-title">${not empty currentShop.shopName ? currentShop.shopName : 'CỬA HÀNG CỦA TÔI'}</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
-        </div>
-    <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Tổng quan</div>
-        <a href="${pageContext.request.contextPath}/shop" class="menu-item active">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Trang chủ</span></span>
-        </a>
-
-        <div class="menu-title">Sản phẩm</div>
-        <a href="${pageContext.request.contextPath}/shop/products" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🍽️</span><span class="mi-label"> Quản lý sản phẩm</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/product-types" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📂</span><span class="mi-label"> Quản lý loại sản phẩm</span></span>
-        </a>
-
-        <div class="menu-title">Topping</div>
-        <a href="${pageContext.request.contextPath}/shop/toppings" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧂</span><span class="mi-label"> Quản lý Topping</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/topping-categories" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏷️</span><span class="mi-label"> Quản lý loại Topping</span></span>
-        </a>
-
-        <div class="menu-title">Đơn hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/pos" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧾</span><span class="mi-label"> Bấm Bill</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/bills" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Quản lý hóa đơn</span></span>
-        </a>
-
-        <div class="menu-title">Cửa hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/profile" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Thông tin cửa hàng</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Xem đánh giá</span></span>
-        </a>
-        <div class="menu-title">Khuyến mãi</div>
-        <a href="${pageContext.request.contextPath}/shop/combo" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🎁</span><span class="mi-label"> Quản lý Combo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/flash-sale" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⚡</span><span class="mi-label"> Flash Sale</span></span>
-        </a>
-        <div class="menu-title">Tài chính</div>
-        <a href="${pageContext.request.contextPath}/shop/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền Shop</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shopActive" value="/shop" scope="request"/>
+<%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
-            <h1>📊 Trang chủ cửa hàng</h1>
+            <h1><span class="material-symbols-outlined tb-icon">dashboard</span> Trang chủ cửa hàng</h1>
         </div>
         <div class="topbar-right">
             <div class="avatar-wrapper" id="avatarWrapper">
@@ -129,106 +93,109 @@
     <div class="content">
         <div class="welcome-banner">
             <div>
-                <h1>Chào mừng quay lại, ${sessionScope.account.fullName != null ? sessionScope.account.fullName : sessionScope.account.userName}! 👋</h1>
+                <h1>Chào mừng quay lại, <c:out value="${sessionScope.account.fullName != null ? sessionScope.account.fullName : sessionScope.account.userName}"/>! 👋</h1>
                 <p>Đây là tổng quan hoạt động kinh doanh của cửa hàng bạn hôm nay.</p>
             </div>
-            <div class="welcome-emoji">🍜</div>
+            <a href="${pageContext.request.contextPath}/shop/bills" class="btn btn-hero-cta"><span class="material-symbols-outlined">receipt_long</span> Xem đơn hàng</a>
         </div>
 
+        <%-- Tỷ lệ hoàn thành = đơn hoàn thành / tổng đơn (số liệu thật từ ShopHomeServlet) --%>
         <div class="stats-grid">
             <div class="stat-card">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Doanh thu hôm nay</div>
+                    <div class="stat-label">Doanh thu hôm nay</div>
                     <div class="stat-num"><fmt:formatNumber value="${doanhThuHomNay}" pattern="#,##0"/> đ</div>
                 </div>
-                <div class="stat-icon green">💰</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">payments</span></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card ${donChoXuLy > 0 ? 'stat-alert' : ''}">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Doanh thu tuần này</div>
-                    <div class="stat-num"><fmt:formatNumber value="${doanhThuTuanNay}" pattern="#,##0"/> đ</div>
+                    <div class="stat-label">Đơn chờ xử lý</div>
+                    <div class="stat-num">${donChoXuLy}</div>
+                    <div class="stat-trend"><a href="${pageContext.request.contextPath}/shop/bills" style="color:var(--primary);font-weight:700;">Xử lý ngay →</a></div>
                 </div>
-                <div class="stat-icon">📅</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">notifications_active</span></div>
             </div>
             <div class="stat-card">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Doanh thu tháng này</div>
-                    <div class="stat-num"><fmt:formatNumber value="${doanhThuThangNay}" pattern="#,##0"/> đ</div>
+                    <div class="stat-label">Tỷ lệ hoàn thành</div>
+                    <div class="stat-num"><c:choose>
+                        <c:when test="${tongDon > 0}"><fmt:formatNumber value="${donHoanThanh * 100 / tongDon}" maxFractionDigits="1"/>%</c:when>
+                        <c:otherwise>—</c:otherwise>
+                    </c:choose></div>
+                    <div class="stat-trend" style="color:var(--text-dim);">${donHoanThanh} hoàn thành · ${donHuy} đã hủy</div>
                 </div>
-                <div class="stat-icon yellow">🗓️</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">check_circle</span></div>
             </div>
             <div class="stat-card">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Tổng đơn hàng</div>
+                    <div class="stat-label">Tổng đơn hàng</div>
                     <div class="stat-num">${tongDon}</div>
                 </div>
-                <div class="stat-icon red">📦</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">inventory_2</span></div>
+            </div>
+        </div>
+
+        <div class="home-grid">
+            <div class="panel">
+                <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">show_chart</span> Doanh thu 7 ngày gần đây</div></div>
+                <div class="panel-body"><div class="chart-box"><canvas id="revenueChart"></canvas></div></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">local_fire_department</span> Top món bán chạy</div></div>
+                <div class="panel-body" style="padding-top:8px;">
+                    <c:choose>
+                        <c:when test="${empty topSanPhamBanChay}">
+                            <div class="empty-state" style="padding:30px 10px;"><div class="e-icon">🍽️</div><div class="e-title">Chưa có dữ liệu bán hàng.</div></div>
+                        </c:when>
+                        <c:otherwise>
+                            <c:forEach var="sp" items="${topSanPhamBanChay}" varStatus="vs">
+                                <div class="top-row">
+                                    <span class="top-rank r${vs.index < 3 ? vs.index + 1 : 0}">${vs.index + 1}</span>
+                                    <div class="top-info">
+                                        <div class="top-name"><c:out value="${sp.productName}"/></div>
+                                        <div class="top-sub">${sp.soLuongDaBan} lượt bán</div>
+                                    </div>
+                                    <div class="top-rev"><fmt:formatNumber value="${sp.doanhThu}" pattern="#,##0"/> đ</div>
+                                </div>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
             </div>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Đơn hoàn thành</div>
-                    <div class="stat-num">${donHoanThanh}</div>
+                    <div class="stat-label">Doanh thu tuần này</div>
+                    <div class="stat-num"><fmt:formatNumber value="${doanhThuTuanNay}" pattern="#,##0"/> đ</div>
                 </div>
-                <div class="stat-icon green">✓</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">date_range</span></div>
             </div>
             <div class="stat-card">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Đơn đã hủy</div>
-                    <div class="stat-num">${donHuy}</div>
+                    <div class="stat-label">Doanh thu tháng này</div>
+                    <div class="stat-num"><fmt:formatNumber value="${doanhThuThangNay}" pattern="#,##0"/> đ</div>
                 </div>
-                <div class="stat-icon red">✕</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">calendar_month</span></div>
             </div>
             <div class="stat-card">
                 <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Tổng sản phẩm</div>
+                    <div class="stat-label">Thực đơn</div>
                     <div class="stat-num">${tongSanPham}</div>
+                    <div class="stat-trend" style="color:var(--text-dim);">sản phẩm · ${tongTopping} topping</div>
                 </div>
-                <div class="stat-icon">🍽️</div>
-            </div>
-            <div class="stat-card">
-                <div>
-                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Tổng Topping</div>
-                    <div class="stat-num">${tongTopping}</div>
-                </div>
-                <div class="stat-icon yellow">🧂</div>
+                <div class="stat-icon"><span class="material-symbols-outlined">menu_book</span></div>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-header"><div class="panel-title">📈 Doanh thu 7 ngày gần đây</div></div>
-            <div class="panel-body"><canvas id="revenueChart" height="90"></canvas></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-header"><div class="panel-title">🔥 Top món bán chạy</div></div>
-            <div class="panel-body" style="padding:0;">
-                <div class="dash-table-wrap">
-                    <table class="dash-table">
-                        <thead>
-                        <tr><th>Sản phẩm</th><th>Số lượng đã bán</th><th>Doanh thu</th></tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach var="sp" items="${topSanPhamBanChay}">
-                            <tr>
-                                <td><c:out value="${sp.productName}"/></td>
-                                <td>${sp.soLuongDaBan}</td>
-                                <td><fmt:formatNumber value="${sp.doanhThu}" pattern="#,##0"/> đ</td>
-                            </tr>
-                        </c:forEach>
-                        <c:if test="${empty topSanPhamBanChay}">
-                            <tr><td colspan="3"><div class="empty-state"><div class="e-icon">🍽️</div><div class="e-title">Chưa có dữ liệu bán hàng.</div></div></td></tr>
-                        </c:if>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="panel-header">
+                <div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">receipt_long</span> Đơn hàng gần đây</div>
+                <a href="${pageContext.request.contextPath}/shop/bills" class="btn btn-ghost btn-sm">Xem tất cả</a>
             </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-header"><div class="panel-title">📦 Đơn hàng gần đây</div></div>
             <div class="panel-body" style="padding:0;">
                 <div class="dash-table-wrap">
                     <table class="dash-table">
@@ -238,17 +205,21 @@
                         <tbody>
                         <c:forEach var="order" items="${donHangGanDay}">
                             <tr>
-                                <td>#<c:out value="${order.id}"/></td>
+                                <td><strong>#<c:out value="${order.id}"/></strong></td>
                                 <td><c:out value="${order.receiverName}"/></td>
                                 <td><fmt:formatNumber value="${order.totalPrice}" pattern="#,##0"/> đ</td>
                                 <td>
                                     <c:choose>
                                         <c:when test="${order.staTus == 'DONE'}"><span class="badge badge-success">✓ Hoàn thành</span></c:when>
                                         <c:when test="${order.staTus == 'CANCELLED'}"><span class="badge badge-danger">✕ Đã hủy</span></c:when>
-                                        <c:otherwise><span class="badge badge-warning">⏳ ${order.staTus}</span></c:otherwise>
+                                        <c:when test="${order.staTus == 'PENDING'}"><span class="badge badge-warning">⏳ Chờ xác nhận</span></c:when>
+                                        <c:when test="${order.staTus == 'CONFIRMED'}"><span class="badge badge-info">Đang chuẩn bị</span></c:when>
+                                        <c:when test="${order.staTus == 'READY_FOR_PICKUP'}"><span class="badge badge-success">Chờ shipper lấy</span></c:when>
+                                        <c:when test="${order.staTus == 'SHIPPING'}"><span class="badge badge-warning">🚚 Đang giao</span></c:when>
+                                        <c:otherwise><span class="badge badge-neutral"><c:out value="${order.staTus}"/></span></c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td><c:out value="${order.createdAt}"/></td>
+                                <td style="white-space:nowrap;">${fn:substring(order.createdAt,11,16)} ${fn:substring(order.createdAt,8,10)}/${fn:substring(order.createdAt,5,7)}/${fn:substring(order.createdAt,0,4)}</td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty donHangGanDay}">
@@ -294,12 +265,13 @@
             datasets: [{
                 label: 'Doanh thu (đ)',
                 data: data,
-                backgroundColor: '#FF5722',
+                backgroundColor: '#E3250A',
                 borderRadius: 6
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: { y: { beginAtZero: true } }
         }

@@ -1,0 +1,93 @@
+<%-- Sidebar dùng chung cho toàn bộ trang dashboard của role Shop (roleId = 2).
+     Trang nhúng phải:
+       - khai báo taglib "c" (jakarta.tags.core)
+       - <c:set var="shopActive" value="/shop/bills" scope="request"/> (đường dẫn của mục menu đang mở)
+     rồi nhúng bằng <%@ include file="_shopSidebar.jspf" %> (nhúng tĩnh, cùng request scope).
+     Tên shop lấy từ attribute `currentShop` (hoặc `shop` ở trang ví tiền/đánh giá), fallback session. --%>
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<c:set var="_sbShop" value="${not empty currentShop ? currentShop : (not empty shop ? shop : sessionScope.currentShop)}"/>
+<c:set var="_sbCtx" value="${pageContext.request.contextPath}"/>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="logo-mark-dash"><span class="material-symbols-outlined">restaurant</span></div>
+        <div class="brand-text">
+            <span class="brand-title">FoodManage</span>
+            <span class="brand-subtitle">ĐỐI TÁC QUÁN</span>
+        </div>
+        <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+    </div>
+
+    <a href="${_sbCtx}/shop/profile" class="sb-shop" title="Thông tin cửa hàng">
+        <div class="sb-shop-row">
+            <span class="sb-shop-name"><c:out value="${not empty _sbShop.shopName ? _sbShop.shopName : 'Cửa hàng của tôi'}"/></span>
+            <c:choose>
+                <c:when test="${not empty _sbShop and _sbShop.openNow}">
+                    <span class="sb-status open"><span class="sb-status-dot"></span>Đang mở</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="sb-status closed"><span class="sb-status-dot"></span>Đang đóng</span>
+                </c:otherwise>
+            </c:choose>
+        </div>
+        <div class="sb-shop-sub">
+            <span class="material-symbols-outlined">person</span>
+            <span><c:out value="${sessionScope.account.userName}"/></span>
+        </div>
+    </a>
+
+    <div class="menu">
+        <div class="menu-title">Tổng quan</div>
+        <a href="${_sbCtx}/shop" class="menu-item${shopActive eq '/shop' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">dashboard</span><span class="mi-label">Trang chủ</span></span>
+        </a>
+
+        <div class="menu-title">Sản phẩm</div>
+        <a href="${_sbCtx}/shop/products" class="menu-item${shopActive eq '/shop/products' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">menu_book</span><span class="mi-label">Quản lý sản phẩm</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/product-types" class="menu-item${shopActive eq '/shop/product-types' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">category</span><span class="mi-label">Quản lý loại sản phẩm</span></span>
+        </a>
+
+        <div class="menu-title">Topping</div>
+        <a href="${_sbCtx}/shop/toppings" class="menu-item${shopActive eq '/shop/toppings' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">icecream</span><span class="mi-label">Quản lý Topping</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/topping-categories" class="menu-item${shopActive eq '/shop/topping-categories' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">sell</span><span class="mi-label">Quản lý loại Topping</span></span>
+        </a>
+
+        <div class="menu-title">Đơn hàng</div>
+        <a href="${_sbCtx}/shop/pos" class="menu-item${shopActive eq '/shop/pos' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">point_of_sale</span><span class="mi-label">Bấm Bill</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/bills" class="menu-item${shopActive eq '/shop/bills' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">receipt_long</span><span class="mi-label">Quản lý hóa đơn</span></span>
+        </a>
+
+        <div class="menu-title">Cửa hàng</div>
+        <a href="${_sbCtx}/shop/profile" class="menu-item${shopActive eq '/shop/profile' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">storefront</span><span class="mi-label">Thông tin cửa hàng</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/danh-gia" class="menu-item${shopActive eq '/shop/danh-gia' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">rate_review</span><span class="mi-label">Xem đánh giá</span></span>
+        </a>
+
+        <div class="menu-title">Khuyến mãi</div>
+        <a href="${_sbCtx}/shop/combo" class="menu-item${shopActive eq '/shop/combo' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">lunch_dining</span><span class="mi-label">Quản lý Combo</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/flash-sale" class="menu-item${shopActive eq '/shop/flash-sale' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">bolt</span><span class="mi-label">Flash Sale</span></span>
+        </a>
+
+        <div class="menu-title">Tài chính</div>
+        <a href="${_sbCtx}/shop/vi-tien" class="menu-item${shopActive eq '/shop/vi-tien' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">account_balance_wallet</span><span class="mi-label">Ví tiền Shop</span></span>
+        </a>
+    </div>
+</aside>

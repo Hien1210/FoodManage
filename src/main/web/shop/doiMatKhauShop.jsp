@@ -14,6 +14,11 @@
     <title>Đổi mật khẩu - ${sessionScope.account.userName}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <style>
         .avatar-wrapper { position: relative; }
         .avatar-dropdown { display: none; position: fixed; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--dash-shadow-md); min-width: 220px; z-index: 500; }
@@ -44,78 +49,22 @@
         .match-msg { font-size: 12px; margin-top: 5px; }
         .match-ok { color: var(--success); }
         .match-err { color: var(--danger); }
+        .pw-rules { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 12px; color: var(--text-dim); }
+        .pw-rules li::before { content: "○"; margin-right: 6px; }
+        .pw-rules li.ok { color: var(--success-dark); font-weight: 600; }
+        .pw-rules li.ok::before { content: "✓"; }
     </style>
 </head>
-<body class="dash-body">
+<body class="dash-body shop-theme">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🍔</div>
-        <div class="brand-text">
-            <span class="brand-title">${not empty sessionScope.currentShop.shopName ? sessionScope.currentShop.shopName : 'CỬA HÀNG'}</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
-        </div>
-    <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Tổng quan</div>
-        <a href="${pageContext.request.contextPath}/shop" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Trang chủ</span></span>
-        </a>
-
-        <div class="menu-title">Sản phẩm</div>
-        <a href="${pageContext.request.contextPath}/shop/products" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🍽️</span><span class="mi-label"> Quản lý sản phẩm</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/product-types" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📂</span><span class="mi-label"> Quản lý loại sản phẩm</span></span>
-        </a>
-
-        <div class="menu-title">Topping</div>
-        <a href="${pageContext.request.contextPath}/shop/toppings" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧂</span><span class="mi-label"> Quản lý Topping</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/topping-categories" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏷️</span><span class="mi-label"> Quản lý loại Topping</span></span>
-        </a>
-
-        <div class="menu-title">Đơn hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/pos" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧾</span><span class="mi-label"> Bấm Bill</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/bills" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Quản lý hóa đơn</span></span>
-        </a>
-
-        <div class="menu-title">Cửa hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/profile" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Thông tin cửa hàng</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Xem đánh giá</span></span>
-        </a>
-        <div class="menu-title">Khuyến mãi</div>
-        <a href="${pageContext.request.contextPath}/shop/combo" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🎁</span><span class="mi-label"> Quản lý Combo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/flash-sale" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⚡</span><span class="mi-label"> Flash Sale</span></span>
-        </a>
-        <div class="menu-title">Tài chính</div>
-        <a href="${pageContext.request.contextPath}/shop/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền Shop</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shopActive" value="" scope="request"/>
+<%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
-            <h1>🔒 Đổi mật khẩu</h1>
+            <h1><span class="material-symbols-outlined tb-icon">lock</span> Đổi mật khẩu</h1>
         </div>
         <div class="topbar-right">
             <div class="avatar-wrapper" id="avatarWrapper">
@@ -173,6 +122,12 @@
                         </div>
                         <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
                         <div class="strength-label" id="strengthLabel"></div>
+                        <ul class="pw-rules" id="pwRules">
+                            <li data-rule="len">Ít nhất 6 ký tự (bắt buộc)</li>
+                            <li data-rule="alnum">Có cả chữ và số</li>
+                            <li data-rule="mixed">Có chữ hoa, chữ thường</li>
+                            <li data-rule="special">Có ký tự đặc biệt (!@#$...)</li>
+                        </ul>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Xác nhận mật khẩu mới</label>
@@ -263,6 +218,23 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function() { avatarDropdown.classList.remove('open'); });
     }
 });
+</script>
+<script>
+(function () {
+    var input = document.getElementById("newPassword");
+    var rules = document.getElementById("pwRules");
+    if (!input || !rules) return;
+    input.addEventListener("input", function () {
+        var v = input.value;
+        var ok = {
+            len: v.length >= 6,
+            alnum: /[A-Za-z]/.test(v) && /[0-9]/.test(v),
+            mixed: /[a-z]/.test(v) && /[A-Z]/.test(v),
+            special: /[^A-Za-z0-9]/.test(v)
+        };
+        rules.querySelectorAll("li").forEach(function (li) { li.classList.toggle("ok", !!ok[li.getAttribute("data-rule")]); });
+    });
+})();
 </script>
 </body>
 </html>

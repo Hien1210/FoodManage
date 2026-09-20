@@ -1,0 +1,260 @@
+/* ====
+   FOOD MANAGE — Theme "Đối tác quán" (role Shop) theo bộ thiết kế Stitch (food_manage_experience/DESIGN.md)
+   Nạp SAU theme.css + dashboard.css và chỉ có tác dụng khi <body class="dash-body shop-theme">,
+   nên KHÔNG ảnh hưởng tới dashboard của Super Admin / Shipper (dùng chung 2 file kia).
+   Chỉ đổi token màu/font/bo góc/bóng đổ + restyle khung sidebar/topbar; logic từng trang giữ nguyên.
+   Cần nạp kèm Google Fonts: Plus Jakarta Sans, Quicksand, Material Symbols Outlined.
+   ==== */
+
+body.shop-theme {
+    /* Thương hiệu: đỏ-cam ấm. CTA/mục đang chọn dùng --primary (#E3250A, "primary-container" trong DESIGN.md) */
+    --primary: #E3250A;
+    --primary-dark: #B71500;
+    --primary-darker: #900E00;
+    --primary-light: rgba(227, 37, 10, .09);
+    --secondary: #FE6A2B;
+    --brand-gradient: linear-gradient(135deg, #C4340C, #FF6B2C);
+    --cta-shadow: 0 8px 20px rgba(227, 37, 10, .28);
+
+    /* Nền kem + card trắng */
+    --bg-base: #FEF8F1;
+    --bg-sidebar: #FEF8F1;
+    --bg-panel: #FFFFFF;
+    --bg-input: #F9F3EC;
+    --bg-hover: #F3EDE6;
+    --border-color: #EDE1D8;
+    --text-main: #2D2421;
+    --text-muted: #635752;
+    --text-dim: #926F68;
+    --topbar-bg: rgba(254, 248, 241, .85);
+    --dash-shadow-sm: 0 4px 16px -2px rgba(99, 44, 20, .06);
+    --dash-shadow-md: 0 12px 28px -4px rgba(99, 44, 20, .12);
+    --shadow-sm: 0 4px 16px -2px rgba(99, 44, 20, .06);
+    --shadow-md: 0 12px 28px -4px rgba(99, 44, 20, .12);
+    --shadow-lg: 0 16px 36px -6px rgba(99, 44, 20, .16);
+
+    /* Màu ngữ nghĩa ấm hơn một chút (giữ nguyên nghĩa) */
+    --warning: #FFB300;
+    --warning-dark: #9B6B00;
+    --success-dark: #15803D;
+
+    /* Bo góc mềm: nút/ô nhập 12px, card 16px, modal 24px */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+
+    --font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, Tahoma, sans-serif;
+    --font-display: 'Quicksand', 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+
+    background-color: var(--bg-base);
+    font-family: var(--font-family);
+}
+
+/* Font hiển thị cho tiêu đề */
+body.shop-theme h1, body.shop-theme h2, body.shop-theme h3,
+body.shop-theme .topbar h1, body.shop-theme .panel-title,
+body.shop-theme .brand-title, body.shop-theme .stat-num,
+body.shop-theme .section-title, body.shop-theme .modal-title {
+    font-family: var(--font-display);
+    letter-spacing: -.005em;
+}
+body.shop-theme .topbar h1 { font-size: 21px; font-weight: 700; }
+
+/* Icon Material Symbols */
+body.shop-theme .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: 400; font-style: normal; line-height: 1;
+    letter-spacing: normal; text-transform: none; white-space: nowrap;
+    display: inline-block; vertical-align: middle;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    -webkit-font-feature-settings: 'liga'; font-feature-settings: 'liga';
+}
+
+/* === SIDEBAR === */
+body.shop-theme .sidebar:not(.collapsed) { width: 272px; box-shadow: 4px 0 24px -12px rgba(99, 44, 20, .10); }
+body.shop-theme .sidebar-brand { padding: 20px 20px 14px; border-bottom: none; }
+body.shop-theme .sidebar-brand .logo,
+body.shop-theme .logo-mark-dash {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--primary); box-shadow: var(--cta-shadow);
+}
+body.shop-theme .logo-mark-dash .material-symbols-outlined { font-size: 24px; }
+body.shop-theme .brand-title { font-size: 19px; font-weight: 700; color: var(--primary-dark); line-height: 1.1; }
+body.shop-theme .brand-subtitle { color: #A83900; font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+
+/* Thẻ thông tin cửa hàng dưới logo (tên + trạng thái mở/đóng theo giờ hoạt động thật) */
+body.shop-theme .sb-shop {
+    display: block; margin: 0 16px 6px; padding: 12px 14px;
+    background: #fff; border: 1px solid var(--border-color); border-radius: 16px;
+    box-shadow: var(--dash-shadow-sm); color: inherit;
+    transition: border-color .15s, box-shadow .15s;
+}
+body.shop-theme .sb-shop:hover { border-color: #E7BDB5; box-shadow: var(--dash-shadow-md); }
+body.shop-theme .sb-shop-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+body.shop-theme .sb-shop-name {
+    font-family: var(--font-display); font-size: 14.5px; font-weight: 700; color: var(--text-main);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+}
+body.shop-theme .sb-shop-sub {
+    display: flex; align-items: center; gap: 4px; margin-top: 4px;
+    font-size: 12px; color: var(--text-muted); overflow: hidden; white-space: nowrap;
+}
+body.shop-theme .sb-shop-sub .material-symbols-outlined { font-size: 14px; color: var(--text-dim); }
+body.shop-theme .sb-status {
+    display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+    padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid transparent;
+}
+body.shop-theme .sb-status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+body.shop-theme .sb-status.open { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+body.shop-theme .sb-status.open .sb-status-dot { animation: pobBlink 1.6s infinite; }
+body.shop-theme .sb-status.closed { background: #F3EDE6; color: #635752; border-color: #E7E2DB; }
+
+body.shop-theme .menu { padding: 10px 14px 16px; }
+body.shop-theme .menu-title {
+    font-size: 11px; font-weight: 700; color: var(--text-dim);
+    letter-spacing: .09em; margin: 16px 10px 6px;
+}
+body.shop-theme .menu-item {
+    padding: 10px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 600;
+    color: var(--text-muted); margin-bottom: 2px;
+}
+body.shop-theme .menu-item:hover { background: var(--bg-hover); color: var(--text-main); transform: none; }
+body.shop-theme .menu-item .mi-icon {
+    font-size: 21px; width: 22px; height: 22px; overflow: hidden; /* cắt chữ ligature nếu font icon chưa tải */
+    color: var(--text-dim); transition: color .15s;
+}
+body.shop-theme .menu-item:hover .mi-icon { color: var(--primary); }
+body.shop-theme .menu-item.active {
+    background: var(--primary); color: #fff; font-weight: 700; box-shadow: var(--cta-shadow);
+}
+body.shop-theme .menu-item.active .mi-icon { color: #fff; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body.shop-theme .menu-badge { background: var(--primary); color: #fff; }
+body.shop-theme .sidebar.collapsed .sb-shop { display: none; }
+body.shop-theme .sidebar.collapsed .menu-item.active { box-shadow: none; }
+
+/* === TOPBAR / CONTENT === */
+body.shop-theme .topbar { padding: 14px 32px; border-bottom: 1px solid var(--border-color); box-shadow: 0 6px 20px -14px rgba(99, 44, 20, .18); }
+body.shop-theme .content { padding: 28px 32px 40px; gap: 24px; }
+body.shop-theme .avatar-circle { background: var(--brand-gradient); box-shadow: 0 4px 12px rgba(227, 37, 10, .25); }
+body.shop-theme .btn-logout-dash { border-radius: 999px; }
+body.shop-theme .menu-toggle-btn,
+body.shop-theme .theme-toggle { border-radius: 12px; }
+body.shop-theme .avatar-dropdown { border-radius: 16px; box-shadow: var(--shadow-lg); }
+
+/* === CARD / PANEL / STAT === */
+body.shop-theme .panel, body.shop-theme .stat-card, body.shop-theme .info-card,
+body.shop-theme .section-card, body.shop-theme .card {
+    border-radius: 16px; border-color: var(--border-color); box-shadow: var(--dash-shadow-sm);
+}
+body.shop-theme .panel-header { padding: 18px 24px; }
+body.shop-theme .panel-body { padding: 24px; }
+body.shop-theme .panel-title { font-size: 17px; font-weight: 700; }
+body.shop-theme .stats-grid { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+body.shop-theme .stat-card { transition: transform .18s, box-shadow .18s; }
+body.shop-theme .stat-card:hover { transform: translateY(-3px); box-shadow: var(--dash-shadow-md); }
+body.shop-theme .stat-card .stat-icon { border-radius: 14px; background: var(--primary-light); color: var(--primary); }
+body.shop-theme .stat-num { font-size: 26px; font-weight: 700; }
+body.shop-theme .stat-card .stat-label { font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+
+
+/* Icon đầu tiêu đề topbar */
+body.shop-theme .tb-icon { font-size: 26px; color: var(--primary); }
+body.shop-theme .top-header h2 { font-family: var(--font-display); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+/* .dash-card: một số trang shop (Combo, Flash Sale) dùng class này nhưng dashboard.css không định nghĩa -> trước đây hiển thị phẳng */
+body.shop-theme .dash-card {
+    background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px;
+    box-shadow: var(--dash-shadow-sm); overflow: hidden;
+}
+body.shop-theme .dash-card-header {
+    padding: 16px 24px; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+body.shop-theme .dash-card-header h3 { margin: 0; font-size: 17px; font-weight: 700; color: var(--text-main); }
+body.shop-theme .dash-card-body { padding: 24px; }
+
+
+/* Thanh lọc (Quản lý hóa đơn...): gom thành 1 card, ô nhập tự co theo nội dung thay vì kéo 100% chiều ngang */
+body.shop-theme .filter-bar {
+    background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px;
+    padding: 14px 18px; box-shadow: var(--dash-shadow-sm); margin-bottom: 0;
+}
+body.shop-theme .filter-bar .dash-input { width: auto; min-width: 150px; }
+body.shop-theme .filter-bar input[type="text"].dash-input { width: 280px; }
+
+/* === BUTTONS: nút chính dạng pill, đổ bóng ấm === */
+body.shop-theme .btn { border-radius: 999px; font-family: var(--font-family); font-weight: 700; }
+body.shop-theme .btn-primary { background: var(--primary); color: #fff; box-shadow: var(--cta-shadow); }
+body.shop-theme .btn-primary:hover { background: var(--primary-dark); }
+body.shop-theme .btn-primary:disabled { background: #E7E2DB; color: #926F68; box-shadow: none; }
+body.shop-theme .btn-outline { color: var(--primary); border-color: rgba(227, 37, 10, .45); background: #fff; }
+body.shop-theme .btn-outline:hover { background: var(--primary-light); }
+body.shop-theme .btn-ghost { background: #fff; color: var(--text-main); border-color: #E7D3C9; }
+body.shop-theme .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+body.shop-theme .btn-warning { background: var(--warning); color: #3A2A1E; }
+body.shop-theme .btn-sm { padding: 6px 14px; }
+body.shop-theme a.btn-primary { color: #fff; }
+body.shop-theme a.btn-outline { color: var(--primary); }
+body.shop-theme a.btn-ghost { color: var(--text-main); }
+
+/* === FORM === */
+body.shop-theme .form-control, body.shop-theme .form-select, body.shop-theme .form-textarea,
+body.shop-theme textarea.form-control, body.shop-theme select.form-control, body.shop-theme .dash-input {
+    border-radius: 12px; border: 1px solid #E7D3C9; background: #FFFCF9;
+}
+body.shop-theme .form-control:focus, body.shop-theme .form-select:focus, body.shop-theme .form-textarea:focus,
+body.shop-theme .dash-input:focus {
+    border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(255, 107, 44, .2);
+}
+body.shop-theme .form-label { font-weight: 700; }
+body.shop-theme input[type="checkbox"], body.shop-theme input[type="radio"] { accent-color: var(--primary); }
+
+/* === BADGE / ALERT / TABLE === */
+body.shop-theme .badge { padding: 3px 11px; }
+body.shop-theme .alert { border-radius: 14px; }
+body.shop-theme table.dash-table th, body.shop-theme table.pob-table th {
+    background: #F9F3EC; color: var(--text-dim); letter-spacing: .06em;
+}
+body.shop-theme table.dash-table td, body.shop-theme table.pob-table td { border-bottom-color: #F3EDE6; }
+body.shop-theme table.dash-table tbody tr:hover, body.shop-theme table.pob-table tbody tr:hover { background: #FFF6EE; }
+body.shop-theme .table-wrap { border-color: var(--border-color); border-radius: 16px; }
+
+
+/* Bảng dạng thẻ (Loại sản phẩm / Loại topping / Topping): giữ nguyên <table><tr> để JS lọc cũ vẫn chạy, chỉ đổi cách hiển thị */
+body.shop-theme table.card-table { display: block; border: 0; }
+body.shop-theme table.card-table thead { display: none; }
+body.shop-theme table.card-table tbody { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; padding: 18px 20px 22px; }
+body.shop-theme table.card-table tbody tr { display: flex; flex-direction: column; gap: 10px; padding: 16px 18px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--dash-shadow-sm); transition: transform .18s, box-shadow .18s; }
+body.shop-theme table.card-table tbody tr:hover { background: var(--bg-panel); transform: translateY(-3px); box-shadow: var(--dash-shadow-md); }
+body.shop-theme table.card-table td { display: block; padding: 0; border: 0; text-align: left; }
+body.shop-theme table.card-table td:first-child { display: none; }
+body.shop-theme table.card-table td strong, body.shop-theme table.card-table .topping-name { font-family: var(--font-display); font-size: 16.5px; font-weight: 700; }
+body.shop-theme table.card-table td:last-child { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--border-color); }
+body.shop-theme table.card-table td:last-child .action-cell { justify-content: flex-start; }
+body.shop-theme table.card-table.ct-topping tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 12px; row-gap: 10px; }
+body.shop-theme table.card-table.ct-topping td:last-child { grid-column: 1 / -1; }
+@media (max-width: 560px) { body.shop-theme table.card-table tbody { grid-template-columns: 1fr; padding: 12px; } }
+
+/* === MODAL === */
+body.shop-theme .pob-modal-overlay { background: rgba(45, 36, 33, .45); }
+body.shop-theme .pob-modal-box { border-radius: 24px; box-shadow: var(--shadow-lg); }
+
+/* === SCROLLBAR ấm === */
+body.shop-theme ::-webkit-scrollbar { width: 8px; height: 8px; }
+body.shop-theme ::-webkit-scrollbar-track { background: transparent; }
+body.shop-theme ::-webkit-scrollbar-thumb { background: #E7BDB5; border-radius: 999px; }
+body.shop-theme ::-webkit-scrollbar-thumb:hover { background: #926F68; }
+
+@media (max-width: 900px) {
+    body.shop-theme .sidebar:not(.collapsed) { width: 280px; }
+    body.shop-theme .topbar { padding: 12px 16px; }
+    body.shop-theme .topbar h1 { font-size: 17px; white-space: nowrap; }
+    body.shop-theme .topbar h1 .tb-icon { font-size: 22px; }
+    body.shop-theme .topbar { flex-wrap: wrap; row-gap: 8px; }
+    body.shop-theme .topbar-right { min-width: 0; margin-left: auto; }
+    body.shop-theme .topbar-right { gap: 8px; }
+    body.shop-theme .topbar-right input { min-width: 0; width: 150px !important; }
+    body.shop-theme .topbar-right .btn { white-space: nowrap; padding: 6px 10px; }
+    body.shop-theme .topbar-right .avatar-wrapper { flex-shrink: 0; }
+    body.shop-theme .content { padding: 18px 16px 32px; }
+}

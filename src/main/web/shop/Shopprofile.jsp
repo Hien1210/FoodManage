@@ -16,6 +16,11 @@
     <title>Thông tin cửa hàng - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
@@ -53,78 +58,39 @@
         .profile-info-row .val { color: var(--text-main); font-weight: 700; text-align: right; }
         .reject-box { background: var(--danger-light); border: 1px solid var(--danger); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 14px; font-size: 12px; color: var(--danger); line-height: 1.6; }
         .reject-box strong { display: block; margin-bottom: 4px; }
+
+        /* --- Bố cục hồ sơ cửa hàng theo bản Stitch: thẻ tổng quan + các nhóm cài đặt + thanh lưu dính --- */
+        .shop-hero { display: flex; align-items: center; gap: 22px; padding: 22px 26px; animation: none; }
+        .shop-hero .logo-preview { flex-shrink: 0; width: 104px; height: 104px; border-style: solid; }
+        .shop-hero-info { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+        .shop-hero-name { font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--text-main); }
+        .shop-hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .shop-hero-meta { display: flex; gap: 8px 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-muted); }
+        .shop-hero-meta span { display: inline-flex; align-items: center; gap: 5px; }
+        .shop-hero-meta .material-symbols-outlined { font-size: 17px; color: var(--text-dim); }
+        .profile-cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+        .profile-col { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+        .profile-section { animation: none; }
+        .profile-section .panel-header { flex-wrap: nowrap; }
+        .ps-sub { font-size: 12px; color: var(--text-dim); text-align: right; }
+        .tb-icon-sm { font-size: 22px; color: var(--primary); }
+        .save-bar { position: sticky; bottom: 0; z-index: 5; margin-top: 24px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 14px 20px; background: rgba(255, 255, 255, .92); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 18px; box-shadow: 0 -8px 28px -10px rgba(99, 44, 20, .18); }
+        .save-bar-note { font-size: 12.5px; color: var(--text-muted); }
+        .save-bar-actions { display: flex; gap: 10px; }
+        @media (max-width: 1100px) { .profile-cols { grid-template-columns: 1fr; } }
+        @media (max-width: 560px) { .shop-hero { flex-direction: column; align-items: flex-start; } .form-grid { grid-template-columns: 1fr; } .ps-sub { display: none; } }
     </style>
 </head>
-<body class="dash-body">
+<body class="dash-body shop-theme">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🍔</div>
-        <div class="brand-text">
-            <span class="brand-title">${not empty currentShop.shopName ? currentShop.shopName : 'CỬA HÀNG'}</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
-        </div>
-    <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Tổng quan</div>
-        <a href="${pageContext.request.contextPath}/shop" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Trang chủ</span></span>
-        </a>
-
-        <div class="menu-title">Sản phẩm</div>
-        <a href="${pageContext.request.contextPath}/shop/products" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🍽️</span><span class="mi-label"> Quản lý sản phẩm</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/product-types" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📂</span><span class="mi-label"> Quản lý loại sản phẩm</span></span>
-        </a>
-
-        <div class="menu-title">Topping</div>
-        <a href="${pageContext.request.contextPath}/shop/toppings" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧂</span><span class="mi-label"> Quản lý Topping</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/topping-categories" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏷️</span><span class="mi-label"> Quản lý loại Topping</span></span>
-        </a>
-
-        <div class="menu-title">Đơn hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/pos" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧾</span><span class="mi-label"> Bấm Bill</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/bills" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Quản lý hóa đơn</span></span>
-        </a>
-
-        <div class="menu-title">Cửa hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/profile" class="menu-item active">
-            <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Thông tin cửa hàng</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Xem đánh giá</span></span>
-        </a>
-        <div class="menu-title">Khuyến mãi</div>
-        <a href="${pageContext.request.contextPath}/shop/combo" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🎁</span><span class="mi-label"> Quản lý Combo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/flash-sale" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⚡</span><span class="mi-label"> Flash Sale</span></span>
-        </a>
-        <div class="menu-title">Tài chính</div>
-        <a href="${pageContext.request.contextPath}/shop/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền Shop</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shopActive" value="/shop/profile" scope="request"/>
+<%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
-            <h1>🏪 Thông tin cửa hàng của tôi</h1>
+            <h1><span class="material-symbols-outlined tb-icon">storefront</span> Thông tin cửa hàng của tôi</h1>
         </div>
         <div class="topbar-right">
             <div class="avatar-wrapper" id="avatarWrapper">
@@ -150,15 +116,66 @@
 
         <c:set var="formShop" value="${not empty shopForm ? shopForm : currentShop}"/>
 
-        <div class="page-grid">
-            <section class="panel">
-                <div class="panel-header"><div class="panel-title">✏️ Chỉnh sửa thông tin cửa hàng</div></div>
-                <div class="panel-body">
-                    <form action="${pageContext.request.contextPath}/shop/profile" method="post" id="shopProfileForm">
-<input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                        <input type="hidden" name="action" value="update">
-                        <input type="hidden" name="id" value="${currentShop.id}">
+        <%-- Thẻ tổng quan cửa hàng (thay cho panel "Tổng quan" bên phải trước đây) --%>
+        <div class="panel shop-hero">
+            <div class="logo-preview" id="logoPreview">
+                <c:choose>
+                    <c:when test="${not empty currentShop.shopLogo}">
+                        <img src="<c:out value='${currentShop.shopLogo}'/>" alt="Logo" onerror="this.parentNode.innerHTML='🏪'">
+                    </c:when>
+                    <c:otherwise>🏪</c:otherwise>
+                </c:choose>
+            </div>
+            <div class="shop-hero-info">
+                <div class="shop-hero-name"><c:out value="${currentShop.shopName}"/></div>
+                <div class="shop-hero-badges">
+                    <c:choose>
+                        <c:when test="${fn:toUpperCase(currentShop.status) == 'APPROVED' || fn:toUpperCase(currentShop.status) == 'ACCEPT' || fn:toUpperCase(currentShop.status) == 'ACTIVE'}">
+                            <span class="badge badge-success">✅ Đã duyệt - Đang hoạt động</span>
+                        </c:when>
+                        <c:when test="${fn:toUpperCase(currentShop.status) == 'REJECT' || fn:toUpperCase(currentShop.status) == 'REJECTED'}">
+                            <span class="badge badge-danger">✕ Bị từ chối</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="badge badge-warning">⏳ Chờ duyệt</span>
+                        </c:otherwise>
+                    </c:choose>
+                    <c:choose>
+                        <c:when test="${currentShop.openNow}"><span class="badge badge-success"><span class="badge-dot"></span>Đang mở cửa</span></c:when>
+                        <c:otherwise><span class="badge badge-neutral">Đang đóng cửa</span></c:otherwise>
+                    </c:choose>
+                </div>
+                <div class="shop-hero-meta">
+                    <span><span class="material-symbols-outlined">tag</span> Mã cửa hàng #${currentShop.id}</span>
+                    <span><span class="material-symbols-outlined">call</span> <c:out value="${currentShop.shopPhone}" default="—"/></span>
+                    <span><span class="material-symbols-outlined">person</span> <c:out value="${sessionScope.account.userName}"/></span>
+                    <span><span class="material-symbols-outlined">schedule</span>
+                        <c:choose>
+                            <c:when test="${not empty currentShop.openTime && not empty currentShop.closeTime}">${currentShop.openTime} - ${currentShop.closeTime}</c:when>
+                            <c:otherwise>Mở cả ngày</c:otherwise>
+                        </c:choose>
+                    </span>
+                </div>
+                <c:if test="${(fn:toUpperCase(currentShop.status) == 'REJECT' || fn:toUpperCase(currentShop.status) == 'REJECTED') && not empty currentShop.rejectionReason}">
+                    <div class="reject-box">
+                        <strong>⚠️ Lý do từ chối lần trước:</strong>
+                        <c:out value="${currentShop.rejectionReason}"/>
+                    </div>
+                </c:if>
+            </div>
+        </div>
 
+        <div class="profile-form-wrap">
+            <form action="${pageContext.request.contextPath}/shop/profile" method="post" id="shopProfileForm">
+    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="${currentShop.id}">
+
+                <div class="profile-cols">
+                    <div class="profile-col">
+                <section class="panel profile-section">
+                    <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">storefront</span> Hồ sơ thương hiệu</div><span class="ps-sub">Hiển thị cho khách trên ứng dụng</span></div>
+                    <div class="panel-body">
                         <div class="form-grid">
                             <div class="form-group form-full">
                                 <label class="form-label" for="shopName">Tên cửa hàng <span class="required">*</span></label>
@@ -167,13 +184,38 @@
                                        placeholder="Ví dụ: Quán Cơm Tấm Cô Ba..."
                                        required autofocus>
                             </div>
-
                             <div class="form-group form-full">
                                 <label class="form-label" for="shopDescription">Mô tả cửa hàng</label>
                                 <textarea id="shopDescription" name="shopDescription" class="form-control form-textarea"
                                           placeholder="Giới thiệu ngắn về cửa hàng của bạn..."><c:out value="${formShop.shopDescription}"/></textarea>
                             </div>
-
+                            <div class="form-group">
+                                <label class="form-label" for="shopPhone">Số điện thoại <span class="required">*</span></label>
+                                <input type="text" id="shopPhone" name="shopPhone" class="form-control"
+                                       value="${fn:escapeXml(formShop.shopPhone)}"
+                                       placeholder="09xx xxx xxx"
+                                       required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="shopLogo">Ảnh Logo</label>
+                                <input type="text" id="shopLogo" name="shopLogo" class="form-control"
+                                       value="${fn:escapeXml(formShop.shopLogo)}"
+                                       placeholder="https://..."
+                                       oninput="previewLogo(this.value)">
+                                <div style="margin-top:8px;display:flex;align-items:center;gap:10px;">
+                                    <input type="file" id="shopLogoFileInput" accept="image/*" style="display:none;">
+                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('shopLogoFileInput').click();">📤 Tải ảnh lên</button>
+                                    <span id="shopLogoUploadStatus" style="font-size:12px;color:var(--text-muted);"></span>
+                                </div>
+                                <div class="form-hint">Tải ảnh lên (lưu trên Cloudinary) hoặc dán trực tiếp đường dẫn ảnh logo.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="panel profile-section">
+                    <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">location_on</span> Địa chỉ &amp; vị trí</div><span class="ps-sub">Dùng để tính khoảng cách và phí ship</span></div>
+                    <div class="panel-body">
+                        <div class="form-grid">
                             <div class="form-group form-full">
                                 <label class="form-label" for="shopAddress">Địa chỉ cửa hàng <span class="required">*</span></label>
                                 <input type="text" id="shopAddress" name="shopAddress" class="form-control"
@@ -181,7 +223,6 @@
                                        placeholder="Số nhà, đường, quận/huyện, tỉnh/thành..."
                                        required>
                             </div>
-
                             <div class="form-group form-full">
                                 <label class="form-label">Vị trí cửa hàng trên bản đồ <span class="required">*</span></label>
                                 <button type="button" class="btn btn-ghost" id="shopLocationToggleBtn"
@@ -211,72 +252,33 @@
                                     </c:choose>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="shopPhone">Số điện thoại <span class="required">*</span></label>
-                                <input type="text" id="shopPhone" name="shopPhone" class="form-control"
-                                       value="${fn:escapeXml(formShop.shopPhone)}"
-                                       placeholder="09xx xxx xxx"
-                                       required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="shopLogo">Ảnh Logo</label>
-                                <input type="text" id="shopLogo" name="shopLogo" class="form-control"
-                                       value="${fn:escapeXml(formShop.shopLogo)}"
-                                       placeholder="https://..."
-                                       oninput="previewLogo(this.value)">
-                                <div style="margin-top:8px;display:flex;align-items:center;gap:10px;">
-                                    <input type="file" id="shopLogoFileInput" accept="image/*" style="display:none;">
-                                    <button type="button" class="btn btn-ghost" onclick="document.getElementById('shopLogoFileInput').click();">📤 Tải ảnh lên</button>
-                                    <span id="shopLogoUploadStatus" style="font-size:12px;color:var(--text-muted);"></span>
-                                </div>
-                                <div class="form-hint">Tải ảnh lên (lưu trên Cloudinary) hoặc dán trực tiếp đường dẫn ảnh logo.</div>
-                            </div>
-
+                        </div>
+                    </div>
+                </section>
+                    </div>
+                    <div class="profile-col">
+                <section class="panel profile-section">
+                    <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">schedule</span> Giờ hoạt động</div><span class="ps-sub">Ngoài khung giờ này khách không đặt được món</span></div>
+                    <div class="panel-body">
+                        <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label" for="openTime">Giờ mở cửa</label>
                                 <input type="time" id="openTime" name="openTime" class="form-control"
                                        value="${formShop.openTime}">
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label" for="closeTime">Giờ đóng cửa</label>
                                 <input type="time" id="closeTime" name="closeTime" class="form-control"
                                        value="${formShop.closeTime}">
                                 <div class="form-hint">Để trống cả 2 ô nếu cửa hàng mở cửa cả ngày. Hệ thống sẽ tự động chặn khách đặt hàng ngoài khung giờ này.</div>
                             </div>
-
-                            <div class="form-group form-full">
-                                <label class="form-label" for="clientKey">Client ID</label>
-                                <div class="secret-field">
-                                    <input type="password" id="clientKey" name="clientKey" class="form-control"
-                                           value="${fn:escapeXml(formShop.clientKey)}"
-                                           placeholder="Client ID dùng cho cổng thanh toán..." autocomplete="off">
-                                    <button type="button" class="btn-toggle-secret" onclick="toggleSecret('clientKey', this)">👁</button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="apiKey">API Key</label>
-                                <div class="secret-field">
-                                    <input type="password" id="apiKey" name="apiKey" class="form-control"
-                                           value="${fn:escapeXml(formShop.apiKey)}"
-                                           placeholder="API Key..." autocomplete="off">
-                                    <button type="button" class="btn-toggle-secret" onclick="toggleSecret('apiKey', this)">👁</button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="checkSumKey">Checksum Key</label>
-                                <div class="secret-field">
-                                    <input type="password" id="checkSumKey" name="checkSumKey" class="form-control"
-                                           value="${fn:escapeXml(formShop.checkSumKey)}"
-                                           placeholder="Checksum Key..." autocomplete="off">
-                                    <button type="button" class="btn-toggle-secret" onclick="toggleSecret('checkSumKey', this)">👁</button>
-                                </div>
-                            </div>
-
+                        </div>
+                    </div>
+                </section>
+                <section class="panel profile-section">
+                    <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">account_balance</span> Ngân hàng nhận tiền</div><span class="ps-sub">Tạo QR thanh toán &amp; nhận tiền rút từ ví</span></div>
+                    <div class="panel-body">
+                        <div class="form-grid">
                             <div class="form-group form-full" id="bankInfoSection">
                                 <label class="form-label" for="bankCode">Ngân hàng nhận tiền (QR)</label>
                                 <select id="bankCode" name="bankCode" class="form-control">
@@ -292,14 +294,12 @@
                                 </select>
                                 <div class="form-hint">Dùng để tạo mã QR chuyển khoản khi khách chọn thanh toán QR ở Bấm Bill, và cũng là tài khoản nhận tiền khi rút tiền ở Ví tiền Shop.</div>
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label" for="bankAccountNumber">Số tài khoản</label>
                                 <input type="text" id="bankAccountNumber" name="bankAccountNumber" class="form-control"
                                        value="${fn:escapeXml(formShop.bankAccountNumber)}"
                                        placeholder="Số tài khoản ngân hàng...">
                             </div>
-
                             <div class="form-group">
                                 <label class="form-label" for="bankAccountName">Tên chủ tài khoản</label>
                                 <input type="text" id="bankAccountName" name="bankAccountName" class="form-control"
@@ -307,68 +307,53 @@
                                        placeholder="VD: NGUYEN VAN A (không dấu, in hoa)...">
                             </div>
                         </div>
-
-                        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
-                            <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
-                            <a href="${pageContext.request.contextPath}/shop" class="btn btn-ghost">✕ Hủy</a>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <section class="panel">
-                <div class="panel-header"><div class="panel-title">📋 Tổng quan</div></div>
-                <div class="panel-body">
-                    <div class="logo-preview-wrap">
-                        <div class="logo-preview" id="logoPreview">
-                            <c:choose>
-                                <c:when test="${not empty currentShop.shopLogo}">
-                                    <img src="${currentShop.shopLogo}" alt="Logo" onerror="this.parentNode.innerHTML='🏪'">
-                                </c:when>
-                                <c:otherwise>🏪</c:otherwise>
-                            </c:choose>
-                        </div>
-                        <c:choose>
-                            <c:when test="${fn:toUpperCase(currentShop.status) == 'APPROVED' || fn:toUpperCase(currentShop.status) == 'ACCEPT' || fn:toUpperCase(currentShop.status) == 'ACTIVE'}">
-                                <span class="badge badge-success">✅ Đã duyệt - Đang hoạt động</span>
-                            </c:when>
-                            <c:when test="${fn:toUpperCase(currentShop.status) == 'REJECT' || fn:toUpperCase(currentShop.status) == 'REJECTED'}">
-                                <span class="badge badge-danger">✕ Bị từ chối</span>
-                            </c:when>
-                            <c:otherwise>
-                                <span class="badge badge-warning">⏳ Chờ duyệt</span>
-                            </c:otherwise>
-                        </c:choose>
                     </div>
-
-                    <div class="profile-info-row"><span class="lbl">Mã cửa hàng</span><span class="val">#${currentShop.id}</span></div>
-                    <div class="profile-info-row"><span class="lbl">Tên cửa hàng</span><span class="val"><c:out value="${currentShop.shopName}"/></span></div>
-                    <div class="profile-info-row"><span class="lbl">Số điện thoại</span><span class="val"><c:out value="${currentShop.shopPhone}"/></span></div>
-                    <div class="profile-info-row"><span class="lbl">Chủ sở hữu</span><span class="val"><c:out value="${sessionScope.account.userName}"/></span></div>
-                    <div class="profile-info-row">
-                        <span class="lbl">Giờ hoạt động</span>
-                        <span class="val">
-                            <c:choose>
-                                <c:when test="${not empty currentShop.openTime && not empty currentShop.closeTime}">
-                                    ${currentShop.openTime} - ${currentShop.closeTime}
-                                    <c:choose>
-                                        <c:when test="${currentShop.openNow}"> (🟢 Đang mở)</c:when>
-                                        <c:otherwise> (🔴 Đang đóng)</c:otherwise>
-                                    </c:choose>
-                                </c:when>
-                                <c:otherwise>Cả ngày</c:otherwise>
-                            </c:choose>
-                        </span>
-                    </div>
-
-                    <c:if test="${(fn:toUpperCase(currentShop.status) == 'REJECT' || fn:toUpperCase(currentShop.status) == 'REJECTED') && not empty currentShop.rejectionReason}">
-                        <div class="reject-box">
-                            <strong>⚠️ Lý do từ chối lần trước:</strong>
-                            <c:out value="${currentShop.rejectionReason}"/>
+                </section>
+                <section class="panel profile-section">
+                    <div class="panel-header"><div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">key</span> Cổng thanh toán PayOS</div><span class="ps-sub">Khóa API — không chia sẻ cho người khác</span></div>
+                    <div class="panel-body">
+                        <div class="form-grid">
+                            <div class="form-group form-full">
+                                <label class="form-label" for="clientKey">Client ID</label>
+                                <div class="secret-field">
+                                    <input type="password" id="clientKey" name="clientKey" class="form-control"
+                                           value="${fn:escapeXml(formShop.clientKey)}"
+                                           placeholder="Client ID dùng cho cổng thanh toán..." autocomplete="off">
+                                    <button type="button" class="btn-toggle-secret" onclick="toggleSecret('clientKey', this)">👁</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="apiKey">API Key</label>
+                                <div class="secret-field">
+                                    <input type="password" id="apiKey" name="apiKey" class="form-control"
+                                           value="${fn:escapeXml(formShop.apiKey)}"
+                                           placeholder="API Key..." autocomplete="off">
+                                    <button type="button" class="btn-toggle-secret" onclick="toggleSecret('apiKey', this)">👁</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="checkSumKey">Checksum Key</label>
+                                <div class="secret-field">
+                                    <input type="password" id="checkSumKey" name="checkSumKey" class="form-control"
+                                           value="${fn:escapeXml(formShop.checkSumKey)}"
+                                           placeholder="Checksum Key..." autocomplete="off">
+                                    <button type="button" class="btn-toggle-secret" onclick="toggleSecret('checkSumKey', this)">👁</button>
+                                </div>
+                            </div>
                         </div>
-                    </c:if>
+                    </div>
+                </section>
+                    </div>
                 </div>
-            </section>
+
+                <div class="save-bar">
+                    <span class="save-bar-note">Thay đổi chỉ được áp dụng sau khi bạn bấm lưu.</span>
+                    <div class="save-bar-actions">
+                        <a href="${pageContext.request.contextPath}/shop" class="btn btn-ghost">Hủy</a>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </main>

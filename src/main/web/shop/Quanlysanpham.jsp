@@ -17,6 +17,11 @@
     <title>Quản lý Sản Phẩm - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <style>
         .avatar-wrapper { position: relative; }
         .avatar-dropdown { display: none; position: fixed; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--dash-shadow-md); min-width: 220px; z-index: 500; }
@@ -38,18 +43,46 @@
         .result-count { font-size: 12px; color: var(--text-dim); }
         .result-count strong { color: var(--text-main); }
 
-        /* Sản phẩm trong bảng */
-        .product-img { width: 46px; height: 46px; border-radius: var(--radius-sm); background: var(--bg-input); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; overflow: hidden; }
-        .product-img img { width: 100%; height: 100%; object-fit: cover; }
-        .product-info { display: flex; align-items: center; gap: 12px; }
-        .product-name { font-weight: 700; color: var(--text-main); }
-        .product-category { font-size: 11px; color: var(--text-muted); margin-top: 2px; background: var(--bg-input); padding: 2px 8px; border-radius: 6px; display: inline-block; }
-        .product-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .price-main { font-weight: 800; color: var(--primary-dark); font-size: 14px; }
+        /* Chip loại sản phẩm */
+        .cat-chips { display: flex; gap: 8px; flex-wrap: wrap; padding: 16px 20px 4px; }
+        .cat-chip { display: inline-flex; align-items: center; gap: 8px; padding: 7px 15px; border-radius: 999px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-muted); font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+        .cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .cat-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 8px 20px rgba(227, 37, 10, .25); }
+        .cat-chip-count { font-size: 11px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: var(--bg-input); color: var(--text-main); }
+        .cat-chip.active .cat-chip-count { background: rgba(255, 255, 255, .25); color: #fff; }
+
+        /* Thẻ món */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); gap: 16px; padding: 16px 20px 20px; }
+        .menu-card { display: flex; gap: 16px; padding: 14px; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-panel); transition: transform .18s, box-shadow .18s; }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: var(--dash-shadow-md); }
+        .menu-thumb { position: relative; width: 116px; height: 116px; flex-shrink: 0; border-radius: 14px; overflow: hidden; background: var(--bg-input); display: flex; align-items: center; justify-content: center; }
+        .menu-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .menu-thumb-fallback { display: flex; align-items: center; justify-content: center; color: var(--text-dim); width: 100%; height: 100%; }
+        .menu-thumb-fallback .material-symbols-outlined { font-size: 42px; }
+        .menu-thumb-flag { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; padding: 4px 0; font-size: 11px; font-weight: 800; color: #fff; background: rgba(45, 36, 33, .72); }
+        .menu-card.is-oos .menu-thumb img, .menu-card.is-hidden .menu-thumb img { filter: grayscale(1); opacity: .7; }
+        .menu-card.is-hidden { background: var(--bg-input); }
+        .menu-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .menu-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+        .product-name { font-family: var(--font-display); font-weight: 700; font-size: 16.5px; color: var(--text-main); }
+        .menu-desc { font-size: 12.5px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .menu-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--text-dim); }
+        .menu-meta-item strong { color: var(--text-main); }
+        .product-category { font-size: 11px; font-weight: 700; color: var(--text-muted); background: var(--bg-input); padding: 2px 9px; border-radius: 999px; display: inline-block; }
+        .menu-price-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .price-main { font-family: var(--font-display); font-weight: 700; color: var(--primary); font-size: 18px; }
+        .menu-actions { margin-top: auto; display: flex; align-items: center; gap: 8px; }
+        .menu-actions .btn { gap: 4px; }
+        .menu-actions .material-symbols-outlined { font-size: 17px; }
+        @media (max-width: 560px) {
+            .menu-grid { grid-template-columns: 1fr; padding: 12px; }
+            .menu-card { flex-direction: column; }
+            .menu-thumb { width: 100%; height: 170px; }
+        }
 
         /* Size chips */
         .size-list { display: flex; flex-wrap: wrap; gap: 5px; }
-        .size-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 8px; font-size: 11px; font-weight: 700; background: var(--primary-light); color: var(--primary-dark); border: 1px solid rgba(255,87,34,.3); }
+        .size-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; background: var(--primary-light); color: var(--primary-dark); border: 1px solid rgba(227,37,10,.22); }
         .size-chip .size-price { color: var(--text-muted); font-weight: 500; }
 
         .stock-num { font-weight: 700; }
@@ -93,76 +126,16 @@
         .modal-footer { padding: 20px 26px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 12px; }
     </style>
 </head>
-<body class="dash-body">
+<body class="dash-body shop-theme">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🍔</div>
-        <div class="brand-text">
-            <span class="brand-title">${not empty currentShop.shopName ? currentShop.shopName : 'CỬA HÀNG'}</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
-        </div>
-    <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Tổng quan</div>
-        <a href="${pageContext.request.contextPath}/shop" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Trang chủ</span></span>
-        </a>
-
-        <div class="menu-title">Sản phẩm</div>
-        <a href="${pageContext.request.contextPath}/shop/products" class="menu-item active">
-            <span class="mi-left"><span class="mi-icon">🍽️</span><span class="mi-label"> Quản lý sản phẩm</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/product-types" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📂</span><span class="mi-label"> Quản lý loại sản phẩm</span></span>
-        </a>
-
-        <div class="menu-title">Topping</div>
-        <a href="${pageContext.request.contextPath}/shop/toppings" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧂</span><span class="mi-label"> Quản lý Topping</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/topping-categories" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏷️</span><span class="mi-label"> Quản lý loại Topping</span></span>
-        </a>
-
-        <div class="menu-title">Đơn hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/pos" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🧾</span><span class="mi-label"> Bấm Bill</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/bills" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Quản lý hóa đơn</span></span>
-        </a>
-
-        <div class="menu-title">Cửa hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/profile" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Thông tin cửa hàng</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Xem đánh giá</span></span>
-        </a>
-        <div class="menu-title">Khuyến mãi</div>
-        <a href="${pageContext.request.contextPath}/shop/combo" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🎁</span><span class="mi-label"> Quản lý Combo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/flash-sale" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⚡</span><span class="mi-label"> Flash Sale</span></span>
-        </a>
-        <div class="menu-title">Tài chính</div>
-        <a href="${pageContext.request.contextPath}/shop/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền Shop</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shopActive" value="/shop/products" scope="request"/>
+<%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
-            <h1>🍽️ Quản lý sản phẩm</h1>
+            <h1><span class="material-symbols-outlined tb-icon">menu_book</span> Quản lý sản phẩm</h1>
         </div>
         <div class="topbar-right">
             <input type="text" class="dash-input" style="width:220px;"
@@ -218,12 +191,6 @@
         <div class="panel">
             <div class="table-toolbar">
                 <div class="toolbar-left">
-                    <select class="dash-input" style="width:auto;" onchange="filterByType(this.value)">
-                        <option value="">Tất cả loại</option>
-                        <c:forEach var="pt" items="${danhsachLoai}">
-                            <option value="${pt.id}"><c:out value="${pt.categoryName}"/></option>
-                        </c:forEach>
-                    </select>
                     <select class="dash-input" style="width:auto;" onchange="filterByStatus(this.value)">
                         <option value="">Tất cả trạng thái</option>
                         <option value="ACTIVE">✅ Đang bán</option>
@@ -244,118 +211,99 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <div class="dash-table-wrap">
-                        <table class="dash-table" id="productTable">
-                            <thead>
-                                <tr>
-                                    <th>Sản phẩm</th>
-                                    <th>Loại SP</th>
-                                    <th>Giá bán</th>
-                                    <th>Size</th>
-                                    <th>Tồn kho</th>
-                                    <th>Đã bán</th>
-                                    <th>Trạng thái</th>
-                                    <th style="text-align:center;">Thao tác</th>
-                                </tr>
-                            </thead>
-                           <tbody>
-                               <c:forEach var="product" items="${danhsach}">
-                                   <tr data-name="${fn:toLowerCase(product.productName)}"
-                                       data-type="${product.categoryId}"
-                                       data-status="${fn:toUpperCase(product.staTus)}">
+                    <%-- Chip loại sản phẩm kèm số món (đếm từ danh sách thật) --%>
+                    <div class="cat-chips" id="catChips">
+                        <button type="button" class="cat-chip active" data-type="">Tất cả <span class="cat-chip-count">${fn:length(danhsach)}</span></button>
+                        <c:forEach var="pt" items="${danhsachLoai}">
+                            <c:set var="catCnt" value="0"/>
+                            <c:forEach var="pp" items="${danhsach}"><c:if test="${pp.categoryId == pt.id}"><c:set var="catCnt" value="${catCnt + 1}"/></c:if></c:forEach>
+                            <button type="button" class="cat-chip" data-type="${pt.id}"><c:out value="${pt.categoryName}"/> <span class="cat-chip-count">${catCnt}</span></button>
+                        </c:forEach>
+                    </div>
 
-                                       <td>
-                                           <div class="product-info">
-                                               <div class="product-img">
-                                                   <c:choose>
-                                                       <c:when test="${not empty product.imageUrl && product.imageUrl != 'null'}">
-                                                           <img src="${product.imageUrl}" alt="${product.productName}"
-                                                                onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-                                                           <span style="display:none">🍽️</span>
-                                                       </c:when>
-                                                       <c:otherwise>🍽️</c:otherwise>
-                                                   </c:choose>
-                                               </div>
-                                               <div>
-                                                   <div class="product-name"><c:out value="${product.productName}"/></div>
-                                                   <c:if test="${not empty product.description}">
-                                                       <div class="product-desc"><c:out value="${product.description}"/></div>
-                                                   </c:if>
-                                               </div>
-                                           </div>
-                                       </td>
+                    <div class="menu-grid" id="productList">
+                        <c:forEach var="product" items="${danhsach}">
+                            <c:set var="pStatus" value="${fn:toUpperCase(product.staTus)}"/>
+                            <div class="menu-card ${pStatus == 'HIDDEN' ? 'is-hidden' : ''} ${pStatus == 'OUT_OF_STOCK' ? 'is-oos' : ''}"
+                                 data-name="${fn:escapeXml(fn:toLowerCase(product.productName))}"
+                                 data-type="${product.categoryId}"
+                                 data-status="${pStatus}">
+                                <div class="menu-thumb">
+                                    <c:choose>
+                                        <c:when test="${not empty product.imageUrl && product.imageUrl != 'null'}">
+                                            <img src="<c:out value='${product.imageUrl}'/>" alt="<c:out value='${product.productName}'/>" loading="lazy"
+                                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                            <span class="menu-thumb-fallback" style="display:none"><span class="material-symbols-outlined">restaurant</span></span>
+                                        </c:when>
+                                        <c:otherwise><span class="menu-thumb-fallback"><span class="material-symbols-outlined">restaurant</span></span></c:otherwise>
+                                    </c:choose>
+                                    <c:if test="${pStatus == 'OUT_OF_STOCK'}"><span class="menu-thumb-flag">Hết hàng</span></c:if>
+                                    <c:if test="${pStatus == 'HIDDEN'}"><span class="menu-thumb-flag">Tạm ẩn</span></c:if>
+                                </div>
 
-                                       <td><span class="product-category"><c:out value="${product.categoryName}"/></span></td>
+                                <div class="menu-body">
+                                    <div class="menu-title-row">
+                                        <div class="product-name"><c:out value="${product.productName}"/></div>
+                                        <c:choose>
+                                            <c:when test="${pStatus == 'ACTIVE'}"><span class="badge badge-success"><span class="badge-dot"></span>Đang bán</span></c:when>
+                                            <c:when test="${pStatus == 'HIDDEN'}"><span class="badge badge-danger">Tạm ẩn</span></c:when>
+                                            <c:when test="${pStatus == 'OUT_OF_STOCK'}"><span class="badge badge-warning">Hết hàng</span></c:when>
+                                            <c:otherwise><span class="badge badge-neutral"><c:out value="${product.staTus}"/></span></c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <c:if test="${not empty product.description}">
+                                        <div class="menu-desc"><c:out value="${product.description}"/></div>
+                                    </c:if>
 
-                                       <td>
-                                           <div class="price-main">
-                                               <c:choose>
-                                                   <c:when test="${not empty product.sizes && product.sizes.size() > 0}">
-                                                       <fmt:formatNumber value="${product.sizes[0].price}" type="number" maxFractionDigits="0"/>đ
-                                                   </c:when>
-                                                   <c:otherwise><span style="color:var(--text-dim);">Chưa có giá</span></c:otherwise>
-                                               </c:choose>
-                                           </div>
-                                       </td>
+                                    <div class="menu-meta">
+                                        <span class="product-category"><c:out value="${product.categoryName}"/></span>
+                                        <span class="menu-meta-item">Tồn kho <strong class="stock-num ${product.stockQuantity <= 5 ? 'low' : 'ok'}">${product.stockQuantity}</strong></span>
+                                        <span class="menu-meta-item">Đã bán <strong>${product.soldCount}</strong></span>
+                                    </div>
 
-                                       <td>
-                                            <c:choose>
-                                                <c:when test="${not empty product.sizes}">
+                                    <div class="menu-price-row">
+                                        <c:choose>
+                                            <c:when test="${not empty product.sizes && product.sizes.size() > 0}">
+                                                <span class="price-main"><fmt:formatNumber value="${product.sizes[0].price}" type="number" maxFractionDigits="0"/>đ</span>
+                                                <c:if test="${not (product.sizes.size() == 1 and (product.sizes[0].sizeName == 'Mặc định' or product.sizes[0].sizeName == 'Tiêu chuẩn'))}">
                                                     <div class="size-list">
-                                                        <c:choose>
-                                                            <c:when test="${product.sizes.size() == 1 and (product.sizes[0].sizeName == 'Mặc định' or product.sizes[0].sizeName == 'Tiêu chuẩn')}">
-                                                                <span style="font-size:12.5px;color:var(--text-dim);font-weight:500;">Không chia size</span>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:forEach var="sz" items="${product.sizes}">
-                                                                    <span class="size-chip">
-                                                                        ${sz.sizeName}
-                                                                        <span class="size-price"><fmt:formatNumber value="${sz.price}" type="number" maxFractionDigits="0"/>đ</span>
-                                                                    </span>
-                                                                </c:forEach>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                        <c:forEach var="sz" items="${product.sizes}">
+                                                            <span class="size-chip">
+                                                                <c:out value="${sz.sizeName}"/>
+                                                                <span class="size-price"><fmt:formatNumber value="${sz.price}" type="number" maxFractionDigits="0"/>đ</span>
+                                                            </span>
+                                                        </c:forEach>
                                                     </div>
-                                                </c:when>
-                                                <c:otherwise><span style="font-size:12px;color:var(--text-dim);">Không có size</span></c:otherwise>
-                                            </c:choose>
-                                        </td>
+                                                </c:if>
+                                            </c:when>
+                                            <c:otherwise><span style="font-size:12.5px;color:var(--text-dim);">Chưa có giá / size</span></c:otherwise>
+                                        </c:choose>
+                                    </div>
 
-                                       <td><span class="stock-num ${product.stockQuantity <= 5 ? 'low' : 'ok'}">${product.stockQuantity}</span></td>
-                                       <td><strong>${product.soldCount}</strong></td>
-
-                                       <td>
-                                           <c:choose>
-                                               <c:when test="${fn:toUpperCase(product.staTus) == 'ACTIVE'}"><span class="badge badge-success">✅ Đang bán</span></c:when>
-                                               <c:when test="${fn:toUpperCase(product.staTus) == 'HIDDEN'}"><span class="badge badge-danger">🙈 Tạm ẩn</span></c:when>
-                                               <c:when test="${fn:toUpperCase(product.staTus) == 'OUT_OF_STOCK'}"><span class="badge badge-warning">⏸️ Hết hàng</span></c:when>
-                                               <c:otherwise><span class="badge badge-neutral"><c:out value="${product.staTus}"/></span></c:otherwise>
-                                           </c:choose>
-                                       </td>
-
-                                       <td>
-                                           <div class="action-cell">
-                                               <a href="${pageContext.request.contextPath}/shop/products?action=edit&id=${product.id}"
-                                                  class="btn btn-sm btn-outline">✏️ Sửa</a>
-                                               <form class="inline-form"
-                                                     action="${pageContext.request.contextPath}/shop/products"
-                                                     method="post"
-                                                     onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa sản phẩm <strong>«${fn:escapeXml(product.productName)}»</strong> không?', 'Xóa sản phẩm')">
-<input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                                                   <input type="hidden" name="action" value="delete">
-                                                   <input type="hidden" name="id" value="${product.id}">
-                                                   <button type="submit" class="btn btn-sm btn-danger-outline">🗑️</button>
-                                               </form>
-                                           </div>
-                                       </td>
-                                   </tr>
-                               </c:forEach>
-                           </tbody>
-                        </table>
+                                    <div class="menu-actions">
+                                        <a href="${pageContext.request.contextPath}/shop/products?action=edit&id=${product.id}"
+                                           class="btn btn-sm btn-ghost"><span class="material-symbols-outlined">edit</span> Sửa món</a>
+                                        <form class="inline-form"
+                                              action="${pageContext.request.contextPath}/shop/products"
+                                              method="post"
+                                              onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa sản phẩm <strong>«${fn:escapeXml(product.productName)}»</strong> không?', 'Xóa sản phẩm')">
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="${product.id}">
+                                            <button type="submit" class="btn btn-sm btn-danger-outline"><span class="material-symbols-outlined">delete</span></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                    <div class="empty-state" id="menuFilterEmpty" style="display:none;">
+                        <div class="e-icon">🔎</div>
+                        <div class="e-title">Không có món nào khớp bộ lọc.</div>
                     </div>
                     <div class="table-footer">
                         <span>Hiển thị <strong id="showCount">${fn:length(danhsach)}</strong> sản phẩm</span>
-                        <span style="color:var(--text-dim);font-size:11px;">💡 Click ✏️ Sửa để quản lý các size của từng sản phẩm</span>
+                        <span style="color:var(--text-dim);font-size:11px;">Bấm "Sửa món" để quản lý các size của từng sản phẩm</span>
                     </div>
                 </c:otherwise>
             </c:choose>
@@ -638,28 +586,41 @@
     function filterByType(typeId) { applyFilters(); }
     function filterByStatus(status) { applyFilters(); }
 
+    var activeCatType = '';
+    var catChips = document.getElementById('catChips');
+    if (catChips) {
+        catChips.addEventListener('click', function (e) {
+            var btn = e.target.closest('.cat-chip');
+            if (!btn) return;
+            catChips.querySelectorAll('.cat-chip').forEach(function (b) { b.classList.toggle('active', b === btn); });
+            activeCatType = btn.getAttribute('data-type') || '';
+            applyFilters();
+        });
+    }
+
     function applyFilters() {
         const kw     = document.querySelector('.topbar-right .dash-input').value.toLowerCase().trim();
-        const selects = document.querySelectorAll('.toolbar-left select');
-        const typeId = selects[0] ? selects[0].value : '';
-        const status = selects[1] ? selects[1].value : '';
+        const statusSel = document.querySelector('.toolbar-left select');
+        const status = statusSel ? statusSel.value : '';
 
-        const rows = document.querySelectorAll('#productTable tbody tr');
+        const cards = document.querySelectorAll('#productList .menu-card');
         let visible = 0;
-        rows.forEach(row => {
-            const name  = (row.getAttribute('data-name')   || '').toLowerCase();
-            const rType = row.getAttribute('data-type')    || '';
-            const rStat = row.getAttribute('data-status')  || '';
+        cards.forEach(card => {
+            const name  = (card.getAttribute('data-name')   || '').toLowerCase();
+            const rType = card.getAttribute('data-type')    || '';
+            const rStat = card.getAttribute('data-status')  || '';
             const show  = (!kw || name.includes(kw))
-                       && (!typeId || rType === typeId)
+                       && (!activeCatType || rType === activeCatType)
                        && (!status || rStat === status);
-            row.style.display = show ? '' : 'none';
+            card.style.display = show ? '' : 'none';
             if (show) visible++;
         });
         const el = document.getElementById('visibleCount');
         if (el) el.textContent = visible;
         const sel = document.getElementById('showCount');
         if (sel) sel.textContent = visible;
+        const emptyNote = document.getElementById('menuFilterEmpty');
+        if (emptyNote && cards.length) emptyNote.style.display = visible === 0 ? '' : 'none';
     }
 
     document.querySelectorAll('.alert').forEach(el => {

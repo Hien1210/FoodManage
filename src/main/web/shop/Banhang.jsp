@@ -15,6 +15,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bấm Bill - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base:      #FFF8F1;
@@ -49,31 +55,10 @@
             --sh-md:  0 8px 20px rgba(58,42,30,.10);
         }
 
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Plus Jakarta Sans','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
         a{text-decoration:none;color:inherit;}
         ul{list-style:none;}
         body{background:var(--bg-base);color:var(--text-muted);display:flex;height:100vh;overflow:hidden;}
-
-        /* ── SIDEBAR ── */
-        .sidebar{width:260px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-x:hidden;}
-        .sidebar-brand{padding:22px 24px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--border);}
-        .brand-row{display:flex;align-items:center;gap:12px;}
-        .logo-icon{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;box-shadow:0 4px 10px rgba(255,122,48,.35);}
-        .brand-text{display:flex;flex-direction:column;}
-        .brand-title{color:var(--text-main);font-weight:800;font-size:15px;}
-        .brand-subtitle{color:var(--primary);font-size:11px;font-weight:600;}
-        .hi-owner{font-size:12px;color:var(--text-muted);}
-        .hi-owner strong{color:var(--primary-dk);}
-        .menu-section{padding:16px 0;overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--primary-lt) transparent;}
-        .menu-section::-webkit-scrollbar{width:8px;}
-        .menu-section::-webkit-scrollbar-track{background:transparent;margin:8px 0;}
-        .menu-section::-webkit-scrollbar-thumb{background:var(--primary-lt);border-radius:4px;border:2px solid transparent;background-clip:padding-box;}
-        .menu-section::-webkit-scrollbar-thumb:hover{background:var(--primary);background-clip:padding-box;}
-        .menu-title{font-size:11px;text-transform:uppercase;color:var(--text-dim);margin:16px 24px 8px;font-weight:700;letter-spacing:.5px;}
-        .menu-item{padding:12px 24px;margin:0 8px 3px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;color:var(--text-muted);font-size:13.5px;font-weight:500;transition:all .2s cubic-bezier(.4,0,.2,1);}
-        .menu-item:hover{background:var(--bg-hover);color:var(--primary-dk);transform:translateX(3px);}
-        .menu-item.active{background:var(--primary-lt);color:var(--primary-dk);font-weight:700;}
-        .menu-item-left{display:flex;align-items:center;gap:12px;}
 
         /* ── MAIN ── */
         .main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -172,74 +157,17 @@
         .dropdown-link.danger { color: var(--accent); }
         .dropdown-link.danger:hover { background: rgba(230,57,70,0.10); }</style>
 </head>
-<body>
+<body class="shop-theme">
 
-<aside class="sidebar">
-    <div class="sidebar-brand">
-        <div class="brand-row">
-            <div class="logo-icon">🍔</div>
-            <div class="brand-text">
-                <span class="brand-title">${not empty currentShop.shopName ? fn:escapeXml(currentShop.shopName) : 'CỬA HÀNG'}</span>
-                <span class="brand-subtitle">SHOP OWNER</span>
-            </div>
-        </div>
-        <div class="hi-owner">👋 Hi, <strong>${fn:escapeXml(sessionScope.account.userName)}</strong></div>
-    </div>
-
-    <div class="menu-section">
-        <div class="menu-title">Tổng quan</div>
-        <a href="${pageContext.request.contextPath}/shop" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">📊</span> Trang chủ</div>
-        </a>
-
-        <div class="menu-title">Sản phẩm</div>
-        <a href="${pageContext.request.contextPath}/shop/products" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">🍽️</span> Quản lý sản phẩm</div>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/product-types" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">📂</span> Quản lý loại sản phẩm</div>
-        </a>
-
-        <div class="menu-title">Topping</div>
-        <a href="${pageContext.request.contextPath}/shop/toppings" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">🧂</span> Quản lý Topping</div>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/topping-categories" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">🏷️</span> Quản lý loại Topping</div>
-        </a>
-
-        <div class="menu-title">Đơn hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/pos" class="menu-item active">
-            <div class="menu-item-left"><span style="font-size:16px;">🧾</span> Bấm Bill</div>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/bills" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">📋</span> Quản lý hóa đơn</div>
-        </a>
-
-        <div class="menu-title">Cửa hàng</div>
-        <a href="${pageContext.request.contextPath}/shop/profile" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">🏪</span> Thông tin cửa hàng</div>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/danh-gia" class="menu-item">
-            <div class="menu-item-left"><span style="font-size:16px;">⭐</span> Xem đánh giá</div>
-        </a>
-        <div class="menu-title">Khuyến mãi</div>
-        <a href="${pageContext.request.contextPath}/shop/combo" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🎁</span><span class="mi-label"> Quản lý Combo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shop/flash-sale" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⚡</span><span class="mi-label"> Flash Sale</span></span>
-        </a>
-        <div class="menu-title">Tài chính</div>
-        <a href="${pageContext.request.contextPath}/shop/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền Shop</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shopActive" value="/shop/pos" scope="request"/>
+<%@ include file="_shopSidebar.jspf" %>
 
 <main class="main-content">
     <header class="top-header">
-        <h2>🧾 BẤM BILL</h2>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
+            <h2><span class="material-symbols-outlined tb-icon">point_of_sale</span> BẤM BILL</h2>
+        </div>
         <div class="header-actions">
             <input type="text" class="search-bar" id="searchBox" placeholder="🔍 Tìm món..." oninput="filterProducts(this.value)">
             <div class="avatar-btn" id="avatarBtn"><c:choose><c:when test="${not empty sessionScope.account.avatarUrl}"><img src="${sessionScope.account.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></c:when><c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName,0,2))}</c:otherwise></c:choose></div>
@@ -643,7 +571,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function() { avatarDropdown.classList.remove('open'); });
     }
 });
-</script></body>
+</script>
+<script src="${pageContext.request.contextPath}/assets/js/dashboard-theme.js"></script>
+</body>
 </html>
 
 

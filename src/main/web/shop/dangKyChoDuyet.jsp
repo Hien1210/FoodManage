@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký thành công - Chờ duyệt | POB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Đăng ký thành công - Chờ duyệt | FOOD MANAGE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e8f5f3 100%);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F7EBDD 0%, #FFEFE6 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -21,7 +21,7 @@
         .card {
             background: #fff;
             border-radius: 24px;
-            box-shadow: 0 24px 64px rgba(26,32,53,0.12);
+            box-shadow: 0 24px 64px rgba(99,44,20,0.12);
             padding: 56px 48px;
             max-width: 520px;
             width: 100%;
@@ -32,10 +32,10 @@
         .icon-wrap {
             width: 88px; height: 88px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #0f766e, #115e59);
+            background: linear-gradient(135deg, #FF3B1F, #E02A10);
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 24px;
-            box-shadow: 0 12px 32px rgba(15,118,110,0.35);
+            box-shadow: 0 12px 32px rgba(255,59,31,0.35);
         }
         .icon-wrap svg { width: 44px; height: 44px; color: #fff; }
 
@@ -47,28 +47,29 @@
             letter-spacing: 0.03em;
         }
 
+        h1, .steps h3 { font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif; }
         h1 {
-            font-size: 26px; font-weight: 800; color: #0f172a;
+            font-size: 26px; font-weight: 800; color: #2D2421;
             letter-spacing: -0.02em; margin-bottom: 10px;
         }
         .subtitle {
-            font-size: 15px; color: #64748b; line-height: 1.7; margin-bottom: 32px;
+            font-size: 15px; color: #635752; line-height: 1.7; margin-bottom: 32px;
         }
-        .subtitle strong { color: #0f766e; }
+        .subtitle strong { color: #FF3B1F; }
 
         .steps {
-            background: #f8fafc; border-radius: 16px; padding: 24px;
+            background: #FFF4EC; border-radius: 16px; padding: 24px;
             text-align: left; margin-bottom: 32px;
         }
         .steps h3 {
-            font-size: 12px; font-weight: 800; color: #94a3b8;
+            font-size: 12px; font-weight: 800; color: #8A7B6C;
             text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px;
         }
         .step {
             display: flex; align-items: center; gap: 14px;
             padding: 10px 0;
         }
-        .step:not(:last-child) { border-bottom: 1px solid #e2e8f0; }
+        .step:not(:last-child) { border-bottom: 1px solid #F1E4D6; }
         .step-dot {
             width: 32px; height: 32px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
@@ -77,29 +78,29 @@
         .step-dot.done  { background: #dcfce7; color: #16a34a; }
         .step-dot.done::after { content: '✓'; font-weight: 800; }
         .step-dot.wait  { background: #fef3c7; font-weight: 800; }
-        .step-dot.later { background: #f1f5f9; color: #94a3b8; font-weight: 800; }
-        .step-info strong { display: block; font-size: 13.5px; font-weight: 700; color: #0f172a; }
-        .step-info span   { font-size: 12px; color: #64748b; }
+        .step-dot.later { background: #F7EBDD; color: #8A7B6C; font-weight: 800; }
+        .step-info strong { display: block; font-size: 13.5px; font-weight: 700; color: #2D2421; }
+        .step-info span   { font-size: 12px; color: #635752; }
 
         .tip-box {
-            background: #f0fdfa; border: 1px solid #6ee7b7; border-radius: 12px;
+            background: #FFF2F0; border: 1px solid #FFC7BE; border-radius: 12px;
             padding: 16px 20px; margin-bottom: 28px; text-align: left;
             display: flex; gap: 12px;
         }
         .tip-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-        .tip-text { font-size: 13px; color: #0f766e; line-height: 1.6; }
+        .tip-text { font-size: 13px; color: #FF3B1F; line-height: 1.6; }
         .tip-text strong { font-weight: 700; }
 
         .btn-login {
             display: inline-flex; align-items: center; gap: 8px;
-            background: linear-gradient(135deg, #0f766e, #115e59);
+            background: linear-gradient(135deg, #FF3B1F, #E02A10);
             color: #fff; font-weight: 700; font-size: 14px;
             padding: 13px 32px; border-radius: 12px; text-decoration: none;
-            transition: all 0.2s; box-shadow: 0 4px 16px rgba(15,118,110,0.35);
+            transition: all 0.2s; box-shadow: 0 4px 16px rgba(255,59,31,0.35);
         }
-        .btn-login:hover { transform: translateY(-1.5px); box-shadow: 0 6px 22px rgba(15,118,110,0.45); }
+        .btn-login:hover { transform: translateY(-1.5px); box-shadow: 0 6px 22px rgba(255,59,31,0.45); }
 
-        .footer-note { font-size: 12px; color: #cbd5e1; margin-top: 20px; }
+        .footer-note { font-size: 12px; color: #D9C9BA; margin-top: 20px; }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(28px) scale(0.97); }

@@ -4,15 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Đăng ký thông tin shop</title>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; background: #f1f5f9; color: #0f172a; }
+        :root { --primary:#FF3B1F; --primary-dark:#E02A10; --bg:#FFF9F2; --text:#2D2421; --muted:#635752; --line:#F1E4D6; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', Arial, sans-serif; background: var(--bg); color: var(--text); }
+        h1 { font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif; font-weight: 700; margin-top: 0; }
+        a { color: var(--primary-dark); font-weight: 700; }
+        label { display: block; margin-top: 16px; font-weight: 700; font-size: 13px; }
+        input, textarea { width: 100%; margin-top: 7px; padding: 12px 14px; border: 1px solid #E7D3C9; border-radius: 12px; background: #FFFCF9; font-family: inherit; font-size: 14px; color: var(--text); outline: none; }
+        input:focus, textarea:focus { border-color: #FF6B2C; box-shadow: 0 0 0 3px rgba(255,107,44,.2); }
+        textarea { min-height: 100px; resize: vertical; }
+        button { margin-top: 22px; padding: 12px 22px; border: 0; border-radius: 999px; background: var(--primary); color: #fff; font-weight: 800; font-family: inherit; cursor: pointer; box-shadow: 0 8px 20px rgba(255,59,31,.3); }
+        button:hover { background: var(--primary-dark); }
         .wrap { max-width: 760px; margin: 44px auto; padding: 0 18px; }
-        .card { background: #fff; border-radius: 18px; padding: 32px; box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12); }
-        label { display: block; margin-top: 16px; font-weight: 700; }
-        input, textarea { width: 100%; box-sizing: border-box; margin-top: 7px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; }
-        textarea { min-height: 110px; resize: vertical; }
-        button { margin-top: 22px; padding: 12px 18px; border: 0; border-radius: 999px; background: #0f766e; color: white; font-weight: 800; cursor: pointer; }
-        .hint { color: #64748b; line-height: 1.6; }
+        .card { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 32px; box-shadow: 0 12px 28px -4px rgba(99,44,20,.12); }
+        .hint { color: var(--muted); line-height: 1.6; }
     </style>
 </head>
 <body>

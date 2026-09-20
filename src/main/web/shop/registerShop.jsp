@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký Shop - POB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Đăng ký Shop - FOOD MANAGE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        .logo-text-main, .page-title, .deco-headline, .logo-badge, .step-num { font-family: 'Quicksand', 'Plus Jakarta Sans', sans-serif; }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f0f4f8;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F7EBDD;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,7 +25,7 @@
             max-width: 1080px;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(26,32,53,0.12);
+            box-shadow: 0 20px 60px rgba(99,44,20,0.12);
             animation: fadeInUp 0.4s cubic-bezier(0.16,1,0.3,1);
         }
 
@@ -39,20 +40,20 @@
             max-height: 95vh;
         }
         .form-panel::-webkit-scrollbar { width: 5px; }
-        .form-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .form-panel::-webkit-scrollbar-thumb { background: #D9C9BA; border-radius: 10px; }
 
         .logo-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-        .logo-badge { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #172554, #0f766e); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 13px; box-shadow: 0 4px 12px rgba(15,118,110,0.3); }
-        .logo-text-main { font-size: 11px; font-weight: 800; color: #0f766e; letter-spacing: 0.12em; text-transform: uppercase; display: block; }
-        .logo-text-sub  { font-size: 9px; font-weight: 600; color: #94a3b8; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-top: 2px; }
+        .logo-badge { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #FF3B1F, #E02A10); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 13px; box-shadow: 0 4px 12px rgba(255,59,31,0.3); }
+        .logo-text-main { font-size: 11px; font-weight: 800; color: #FF3B1F; letter-spacing: 0.12em; text-transform: uppercase; display: block; }
+        .logo-text-sub  { font-size: 9px; font-weight: 600; color: #8A7B6C; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-top: 2px; }
 
-        .page-title { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; margin-bottom: 4px; }
-        .page-sub   { font-size: 13px; color: #94a3b8; margin-bottom: 18px; }
+        .page-title { font-size: 22px; font-weight: 800; color: #2D2421; letter-spacing: -0.02em; margin-bottom: 4px; }
+        .page-sub   { font-size: 13px; color: #8A7B6C; margin-bottom: 18px; }
 
         .section-label {
-            font-size: 11px; font-weight: 800; color: #0f766e; text-transform: uppercase;
-            letter-spacing: 0.08em; padding: 8px 12px; background: #f0fdfa;
-            border-radius: 8px; border-left: 3px solid #0f766e; margin: 16px 0 12px;
+            font-size: 11px; font-weight: 800; color: #FF3B1F; text-transform: uppercase;
+            letter-spacing: 0.08em; padding: 8px 12px; background: #FFF2F0;
+            border-radius: 8px; border-left: 3px solid #FF3B1F; margin: 16px 0 12px;
         }
 
         .alert { display: flex; align-items: center; gap: 10px; border-radius: 12px; padding: 12px 16px; font-size: 13px; font-weight: 500; margin-bottom: 14px; }
@@ -61,68 +62,68 @@
 
         .form-group { margin-bottom: 12px; }
         .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .field-label { display: block; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+        .field-label { display: block; font-size: 11px; font-weight: 700; color: #4A3934; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
         .field-wrap { position: relative; }
-        .field-icon-left { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #b0bcc9; pointer-events: none; transition: color 0.2s; }
+        .field-icon-left { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #C9B8A8; pointer-events: none; transition: color 0.2s; }
         .input-field {
-            width: 100%; background: #f8fafc; border: 1.5px solid #e2e8f0;
+            width: 100%; background: #FFF4EC; border: 1.5px solid #F1E4D6;
             border-radius: 12px; padding: 11px 14px 11px 42px;
-            font-size: 13.5px; color: #0f172a; font-weight: 500; font-family: inherit;
+            font-size: 13.5px; color: #2D2421; font-weight: 500; font-family: inherit;
             outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         }
         textarea.input-field { padding-top: 11px; padding-bottom: 11px; min-height: 72px; resize: vertical; }
-        .input-field:focus { border-color: #0f766e; background: #fff; box-shadow: 0 0 0 4px rgba(15,118,110,0.12); }
-        .input-field::placeholder { color: #b0bcc9; font-weight: 400; font-size: 12.5px; }
-        .field-wrap:focus-within .field-icon-left { color: #0f766e; }
+        .input-field:focus { border-color: #FF3B1F; background: #fff; box-shadow: 0 0 0 4px rgba(255,59,31,0.12); }
+        .input-field::placeholder { color: #C9B8A8; font-weight: 400; font-size: 12.5px; }
+        .field-wrap:focus-within .field-icon-left { color: #FF3B1F; }
 
-        .toggle-pw { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #b0bcc9; padding: 4px; transition: color 0.2s; display: flex; align-items: center; }
-        .toggle-pw:hover { color: #0f766e; }
+        .toggle-pw { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #C9B8A8; padding: 4px; transition: color 0.2s; display: flex; align-items: center; }
+        .toggle-pw:hover { color: #FF3B1F; }
         .hidden { display: none !important; }
 
-        .btn-primary { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #0f766e, #115e59); color: #fff; font-weight: 700; font-size: 14px; padding: 13px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(15,118,110,0.35); font-family: inherit; margin-top: 6px; }
-        .btn-primary:hover { transform: translateY(-1.5px); box-shadow: 0 6px 22px rgba(15,118,110,0.45); }
+        .btn-primary { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #FF3B1F, #E02A10); color: #fff; font-weight: 700; font-size: 14px; padding: 13px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(255,59,31,0.35); font-family: inherit; margin-top: 6px; }
+        .btn-primary:hover { transform: translateY(-1.5px); box-shadow: 0 6px 22px rgba(255,59,31,0.45); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-        .form-footer { text-align: center; font-size: 13px; color: #94a3b8; margin-top: 12px; }
-        .form-footer a { color: #0f766e; font-weight: 700; text-decoration: none; }
-        .form-footer a:hover { color: #115e59; }
+        .form-footer { text-align: center; font-size: 13px; color: #8A7B6C; margin-top: 12px; }
+        .form-footer a { color: #FF3B1F; font-weight: 700; text-decoration: none; }
+        .form-footer a:hover { color: #E02A10; }
 
-        .role-divider { text-align: center; font-size: 10.5px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.08em; margin: 14px 0 10px; }
+        .role-divider { text-align: center; font-size: 10.5px; font-weight: 700; color: #D9C9BA; text-transform: uppercase; letter-spacing: 0.08em; margin: 14px 0 10px; }
         .role-btn-row { display: flex; gap: 10px; }
         .role-btn {
             flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-            border: 1.5px solid #e2e8f0; border-radius: 12px;
-            padding: 10px 8px; font-size: 12.5px; font-weight: 700; color: #475569;
-            background: #f8fafc; text-decoration: none; transition: all 0.2s;
+            border: 1.5px solid #F1E4D6; border-radius: 12px;
+            padding: 10px 8px; font-size: 12.5px; font-weight: 700; color: #4A3934;
+            background: #FFF4EC; text-decoration: none; transition: all 0.2s;
         }
-        .role-btn:hover { border-color: #0f766e; color: #0f766e; background: #f0fdfa; transform: translateY(-1px); }
+        .role-btn:hover { border-color: #FF3B1F; color: #FF3B1F; background: #FFF2F0; transform: translateY(-1px); }
 
         /* OTP Section */
         #otpSection { display: none; }
         #otpSection.visible { display: block; }
 
         .otp-header { text-align: center; margin-bottom: 20px; }
-        .otp-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
-        .otp-header p { font-size: 13px; color: #64748b; line-height: 1.6; }
-        .otp-header .email-badge { display: inline-block; background: #f0fdfa; border: 1px solid #6ee7b7; color: #0f766e; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin-top: 6px; }
+        .otp-header h3 { font-size: 18px; font-weight: 800; color: #2D2421; margin-bottom: 6px; }
+        .otp-header p { font-size: 13px; color: #635752; line-height: 1.6; }
+        .otp-header .email-badge { display: inline-block; background: #FFF2F0; border: 1px solid #6ee7b7; color: #FF3B1F; font-weight: 700; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin-top: 6px; }
 
         .otp-inputs { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
         .otp-box {
             width: 48px; height: 56px; text-align: center; font-size: 22px; font-weight: 800;
-            border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc;
-            color: #0f172a; outline: none; font-family: 'Courier New', monospace;
+            border: 2px solid #F1E4D6; border-radius: 12px; background: #FFF4EC;
+            color: #2D2421; outline: none; font-family: 'Courier New', monospace;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .otp-box:focus { border-color: #0f766e; box-shadow: 0 0 0 4px rgba(15,118,110,0.12); background: #fff; }
+        .otp-box:focus { border-color: #FF3B1F; box-shadow: 0 0 0 4px rgba(255,59,31,0.12); background: #fff; }
 
-        .otp-timer { text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+        .otp-timer { text-align: center; font-size: 12px; color: #8A7B6C; margin-bottom: 12px; }
         .otp-timer span { font-weight: 700; color: #dc2626; }
         .otp-resend { text-align: center; margin-bottom: 16px; }
-        .btn-ghost { background: none; border: none; color: #0f766e; font-weight: 700; font-size: 13px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
-        .btn-ghost:hover { background: #f0fdfa; }
-        .btn-ghost:disabled { color: #94a3b8; cursor: not-allowed; }
-        .btn-back { background: none; border: 1.5px solid #e2e8f0; color: #64748b; font-weight: 600; font-size: 13px; cursor: pointer; padding: 10px 20px; border-radius: 10px; font-family: inherit; transition: all 0.2s; margin-right: 8px; }
-        .btn-back:hover { border-color: #94a3b8; color: #0f172a; }
+        .btn-ghost { background: none; border: none; color: #FF3B1F; font-weight: 700; font-size: 13px; cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; font-family: inherit; }
+        .btn-ghost:hover { background: #FFF2F0; }
+        .btn-ghost:disabled { color: #8A7B6C; cursor: not-allowed; }
+        .btn-back { background: none; border: 1.5px solid #F1E4D6; color: #635752; font-weight: 600; font-size: 13px; cursor: pointer; padding: 10px 20px; border-radius: 10px; font-family: inherit; transition: all 0.2s; margin-right: 8px; }
+        .btn-back:hover { border-color: #8A7B6C; color: #2D2421; }
 
         .btn-row { display: flex; margin-top: 8px; }
         .btn-row .btn-primary { flex: 1; }
@@ -130,19 +131,19 @@
         /* RIGHT */
         .deco-panel {
             flex: 1;
-            background: linear-gradient(155deg, #172554 0%, #0c1631 100%);
-            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(155deg, #172554 0%, #0c1631 100%);
+            background: linear-gradient(155deg, #3A1206 0%, #1A0A04 100%);
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(155deg, #3A1206 0%, #1A0A04 100%);
             background-size: 20px 20px, 100% 100%;
             padding: 48px 40px;
             display: flex; flex-direction: column; justify-content: space-between;
             position: relative; overflow: hidden;
         }
-        .deco-panel::before { content: ''; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(15,118,110,0.26) 0%, transparent 70%); pointer-events: none; }
-        .deco-panel::after  { content: ''; position: absolute; bottom: -60px; left: -60px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(250,204,21,0.14) 0%, transparent 70%); pointer-events: none; }
+        .deco-panel::before { content: ''; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(255,59,31,0.26) 0%, transparent 70%); pointer-events: none; }
+        .deco-panel::after  { content: ''; position: absolute; bottom: -60px; left: -60px; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, rgba(255,179,0,0.14) 0%, transparent 70%); pointer-events: none; }
 
         .stats-row { display: flex; gap: 10px; position: relative; z-index: 1; margin-bottom: 22px; }
         .stat-item { flex: 1; text-align: center; padding: 12px 6px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
-        .stat-value { font-size: 17px; font-weight: 800; color: #facc15; }
+        .stat-value { font-size: 17px; font-weight: 800; color: #FFB300; }
         .stat-label { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 600; margin-top: 2px; }
 
         .deco-brand { display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
@@ -151,13 +152,13 @@
 
         .deco-body { position: relative; z-index: 1; }
         .deco-headline { font-size: 27px; font-weight: 800; color: #fff; line-height: 1.3; letter-spacing: -0.02em; margin-bottom: 12px; }
-        .deco-headline span { color: #facc15; }
+        .deco-headline span { color: #FFB300; }
         .deco-desc { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.7; margin-bottom: 24px; }
 
         .step-list { display: flex; flex-direction: column; gap: 10px; }
         .step-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); position: relative; }
         .step-item:not(:last-child)::after { content: ''; position: absolute; left: 32px; top: 46px; width: 1px; height: 18px; background: rgba(255,255,255,0.12); }
-        .step-num { width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #facc15; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.05); }
+        .step-num { width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #FFB300; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.05); }
         .step-title { font-size: 13.5px; font-weight: 700; color: #fff; margin-bottom: 3px; }
         .step-desc  { font-size: 11.5px; color: rgba(255,255,255,0.38); line-height: 1.5; }
         .deco-footer { font-size: 11px; color: rgba(255,255,255,0.2); position: relative; z-index: 1; }
@@ -278,7 +279,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="field-label">Logo URL <span style="color:#94a3b8;font-weight:400;text-transform:none;">(tùy chọn)</span></label>
+                    <label class="field-label">Logo URL <span style="color:#8A7B6C;font-weight:400;text-transform:none;">(tùy chọn)</span></label>
                     <div class="field-wrap">
                         <input type="url" id="shopLogo" placeholder="https://..." class="input-field">
                         <svg class="field-icon-left" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -295,7 +296,7 @@
             </div>
 
             <div class="form-group">
-                <label class="field-label">Mô tả shop <span style="color:#94a3b8;font-weight:400;text-transform:none;">(tùy chọn)</span></label>
+                <label class="field-label">Mô tả shop <span style="color:#8A7B6C;font-weight:400;text-transform:none;">(tùy chọn)</span></label>
                 <div class="field-wrap">
                     <textarea id="shopDescription" placeholder="Mô tả ngắn về cửa hàng, loại đồ ăn, đặc điểm nổi bật..." class="input-field" style="padding-left:42px;"></textarea>
                     <svg class="field-icon-left" width="15" height="15" style="top:16px;transform:none;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
