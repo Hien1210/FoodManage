@@ -1,0 +1,128 @@
+<%-- Sidebar dùng chung cho toàn bộ trang dashboard của role Super Admin (roleId = 1).
+     Trang nhúng phải:
+       - khai báo taglib "c" (jakarta.tags.core)
+       - <c:set var="adminActive" value="/admin/khieu-nai" scope="request"/> (đường dẫn mục menu đang mở)
+     rồi nhúng bằng <%@ include file="_adminSidebar.jspf" %> (nhúng tĩnh, cùng request scope).
+     Badge số lượng dùng lại đúng các attribute request mà từng servlet đã set sẵn
+     (shopChoDuyet, pendingShippers, pendingProducts, pendingCount) — trang nào không set thì badge ẩn.
+     KHÔNG khai báo lại taglib "c"/"fn" ở đây: trang admin/*.jsp không đồng nhất URI của "c" (một số dùng
+     URI cũ http://java.sun.com/jsp/jstl/core thay vì jakarta.tags.core) nên khai báo lại sẽ vỡ biên dịch
+     ("Attempt to redefine the prefix"). Mọi trang include file này đều đã tự khai báo "c" và "fn" sẵn.
+     VẪN PHẢI khai báo pageEncoding: với include tĩnh, Jasper xác định encoding CỦA TỪNG FILE VẬT LÝ riêng
+     — file này không có BOM nên nếu thiếu dòng dưới, tiếng Việt trong chính file này bị đọc nhầm thành
+     ISO-8859-1 (dù trang chủ vẫn hiển thị đúng). Khai báo lại "UTF-8" giống hệt mọi trang admin/*.jsp nên
+     không xung đột (page directive trùng giá trị luôn được phép, chỉ taglib trùng prefix khác URI mới lỗi). --%>
+<%@ page pageEncoding="UTF-8" %>
+<c:set var="_abCtx" value="${pageContext.request.contextPath}"/>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="logo-mark-dash">
+            <c:choose>
+                <c:when test="${not empty sessionScope.account.logoUrl}">
+                    <img src="${sessionScope.account.logoUrl}" alt="logo" class="logo-mark-img"/>
+                </c:when>
+                <c:otherwise><span class="material-symbols-outlined">restaurant</span></c:otherwise>
+            </c:choose>
+        </div>
+        <div class="brand-text">
+            <span class="brand-title">FoodManage</span>
+            <span class="brand-subtitle">Super Admin</span>
+        </div>
+        <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+    </div>
+
+    <div class="sb-admin">
+        <div class="sb-admin-avatar">
+            <c:choose>
+                <c:when test="${not empty sessionScope.account.avatarUrl}">
+                    <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                </c:when>
+                <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+            </c:choose>
+            <span class="sb-admin-dot"></span>
+        </div>
+        <div style="min-width:0;">
+            <div class="sb-admin-name"><c:out value="${sessionScope.account.userName}"/></div>
+            <div class="sb-admin-role">Toàn quyền hệ thống</div>
+        </div>
+    </div>
+
+    <div class="menu">
+        <div class="menu-group">
+            <div class="menu-title">Tổng quan &amp; phân tích</div>
+            <a href="${_abCtx}/tong-quan" class="menu-item${adminActive eq '/tong-quan' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">dashboard</span><span class="mi-label">Tổng quan hệ thống</span></span>
+            </a>
+            <a href="${_abCtx}/admin/bao-cao-van-hanh" class="menu-item${adminActive eq '/admin/bao-cao-van-hanh' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">bar_chart</span><span class="mi-label">Báo cáo vận hành</span></span>
+            </a>
+            <a href="${_abCtx}/admin/heatmap-don-hang" class="menu-item${adminActive eq '/admin/heatmap-don-hang' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">map</span><span class="mi-label">Heatmap đặt hàng</span></span>
+            </a>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title">Kiểm duyệt &amp; điều phối</div>
+            <a href="${_abCtx}/super-admin/shop-requests" class="menu-item${adminActive eq '/super-admin/shop-requests' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">storefront</span><span class="mi-label">Duyệt Shop</span></span>
+                <c:if test="${shopChoDuyet > 0}"><span class="menu-badge yellow">${shopChoDuyet}</span></c:if>
+            </a>
+            <a href="${_abCtx}/super-admin/shipper-requests" class="menu-item${adminActive eq '/super-admin/shipper-requests' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">moped</span><span class="mi-label">Duyệt Shipper</span></span>
+                <c:if test="${not empty pendingShippers}"><span class="menu-badge yellow">${pendingShippers.size()}</span></c:if>
+            </a>
+            <a href="${_abCtx}/admin/kiem-duyet-noi-dung" class="menu-item${adminActive eq '/admin/kiem-duyet-noi-dung' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">flag</span><span class="mi-label">Kiểm duyệt nội dung</span></span>
+                <c:if test="${not empty pendingProducts}"><span class="menu-badge yellow">${pendingProducts.size()}</span></c:if>
+            </a>
+            <a href="${_abCtx}/admin/kiem-duyet-binh-luan" class="menu-item${adminActive eq '/admin/kiem-duyet-binh-luan' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">rate_review</span><span class="mi-label">Kiểm duyệt bình luận</span></span>
+            </a>
+            <a href="${_abCtx}/admin/khieu-nai" class="menu-item${adminActive eq '/admin/khieu-nai' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">campaign</span><span class="mi-label">Quản lý khiếu nại</span></span>
+            </a>
+            <a href="${_abCtx}/admin/appeals" class="menu-item${adminActive eq '/admin/appeals' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">gavel</span><span class="mi-label">Kháng nghị</span></span>
+                <c:if test="${pendingCount > 0}"><span class="menu-badge yellow">${pendingCount}</span></c:if>
+            </a>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title">Quản lý tài chính</div>
+            <a href="${_abCtx}/admin/doi-soat-doanh-thu-shop" class="menu-item${adminActive eq '/admin/doi-soat-doanh-thu-shop' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">payments</span><span class="mi-label">Đối soát doanh thu Shop</span></span>
+            </a>
+            <a href="${_abCtx}/admin/duyet-rut-tien-shipper" class="menu-item${adminActive eq '/admin/duyet-rut-tien-shipper' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">account_balance_wallet</span><span class="mi-label">Duyệt rút tiền Shipper</span></span>
+            </a>
+            <a href="${_abCtx}/admin/duyet-rut-tien-shop" class="menu-item${adminActive eq '/admin/duyet-rut-tien-shop' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">account_balance</span><span class="mi-label">Duyệt rút tiền Shop</span></span>
+            </a>
+            <a href="${_abCtx}/admin/hoan-tien" class="menu-item${adminActive eq '/admin/hoan-tien' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">assignment_return</span><span class="mi-label">Hoàn tiền khách hàng</span></span>
+            </a>
+            <a href="${_abCtx}/admin/vouchers" class="menu-item${adminActive eq '/admin/vouchers' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">confirmation_number</span><span class="mi-label">Voucher / Khuyến mãi</span></span>
+            </a>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title">Cấu hình &amp; hệ thống</div>
+            <a href="${_abCtx}/quanlitaikhoan" class="menu-item${adminActive eq '/quanlitaikhoan' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">manage_accounts</span><span class="mi-label">Người dùng</span></span>
+            </a>
+            <a href="${_abCtx}/admin/tham-so-van-hanh" class="menu-item${adminActive eq '/admin/tham-so-van-hanh' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">tune</span><span class="mi-label">Tham số vận hành</span></span>
+            </a>
+            <a href="${_abCtx}/admin/faq" class="menu-item${adminActive eq '/admin/faq' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">quiz</span><span class="mi-label">FAQ / Hướng dẫn</span></span>
+            </a>
+            <a href="${_abCtx}/admin/audit-logs" class="menu-item${adminActive eq '/admin/audit-logs' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">history</span><span class="mi-label">Nhật ký hệ thống</span></span>
+            </a>
+        </div>
+    </div>
+</aside>

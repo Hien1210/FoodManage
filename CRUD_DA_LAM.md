@@ -1,5 +1,79 @@
 # CRUD da lam
 
+## 153. Áp bộ thiết kế Stitch (zip 2) cho role SUPER ADMIN: theme riêng + sidebar dùng chung
+
+**Yêu cầu:** User gửi zip Stitch thứ 2 (`stitch_remix_of_foodmanage_ui_design (1).zip`: 12 trang mẫu Admin + 1 file
+sidebar tham chiếu riêng + `DESIGN.md`, cùng bộ màu với zip Shop nhưng bảng màu Admin dùng primary `#FF3B1F` thay vì
+`#E3250A`). User nói "của admin" — hiểu là làm role Super Admin theo đúng cách đã làm với Shop (mục 150-152): áp
+theme trước, dựng lại bố cục sau nếu được yêu cầu.
+
+**Ánh xạ mock → trang thật (theo route, không theo tên hiển thị):**
+- "Trung Tâm Quản Trị Hệ Thống & Vận Hành Toàn Sàn" (dashboard) → `TongQuanHeThong.jsp` (`/tong-quan`)
+- "Báo Cáo Vận Hành & Phân Tích Hiệu Suất" → `BaoCaoVanHanh.jsp`
+- "Heatmap Đơn Hàng & Giám Sát Điểm Nóng" → `HeatmapDonHang.jsp`
+- "Hồ Sơ Thẩm Định #HS-..." → `chiTietYeuCauShop.jsp`
+- "Thẩm Định Lệnh Rút Tiền Bất Thường" → `DuyetRutTienShop.jsp` / `DuyetRutTienShipper.jsp`
+- "Kiểm Duyệt Sản Phẩm & Món Ăn Chờ Duyệt" → `KiemDuyetNoiDung.jsp`
+- "Quản Trị Đánh Giá & AI Moderation" → `KiemDuyetBinhLuan.jsp`
+- "Quản Lý Tài Khoản Toàn Hệ Thống" → `quanlitaikhoan.jsp`
+- "Quản Lý Voucher & Chiến Dịch" → `QuanLyVoucher.jsp`
+- "Quản Lý FAQ & Trung Tâm Trợ Giúp" → `faqDanhSach.jsp` / `faqThemSua.jsp`
+- "Quản Trị Logo & Giao Diện Toàn Sàn" (CDN đa kênh, theme chiến dịch Tết...) → KHÔNG có trang thật tương ứng
+  (`LogoUploadServlet` chỉ là 1 form upload ẩn trong trang khác, không phải trang riêng) — bỏ qua.
+- "Xử Lý Khẩn Cấp — Điều Phối Nhà Hàng" (đơn `#FM-98241`, AI cứu hộ tài xế GPS) → không có servlet/JSP tương ứng
+  (gần nhất là `QuanLyKhieuNai.jsp` nhưng không có định vị GPS/điều phối tài xế thật) — bỏ qua.
+- File sidebar riêng (không phải 1 trang, chỉ có `<aside>`) dùng làm bản đồ điều hướng đầy đủ 4 nhóm × 12 mục để
+  đối chiếu với 18 mục điều hướng thật hiện có (nhiều hơn mock — mock không có Duyệt Shipper, Kháng nghị, Duyệt rút
+  tiền Shipper, Hoàn tiền khách hàng, Tham số vận hành, Nhật ký hệ thống).
+
+**Thiết kế thực hiện (CSS-first, không đổi logic/servlet), y hệt phương pháp đã dùng cho Shop:**
+- Tạo `assets/css/admin-theme.css`, nạp SAU `dashboard.css`, chỉ có tác dụng khi `<body class="dash-body admin-theme">`.
+  **Khác Shop:** Super Admin có dark mode thật (nút đổi theme ở topbar, `dashboard.css` có nhánh
+  `:root[data-theme="dark"]`) mà Stitch không có bản thiết kế tối, nên chỉ đè token màu trong
+  `html[data-theme="light"] body.admin-theme { ... }` (primary `#FF3B1F`, nền kem `#FEF8F1`...); nhánh dark GIỮ
+  NGUYÊN token xanh than gốc của `dashboard.css`. Bố cục/hình khối/font (Quicksand + Plus Jakarta Sans, bo góc,
+  sidebar, topbar, card, nút, bảng) áp dụng cho CẢ 2 theme vì không phụ thuộc màu.
+- Tạo `admin/_adminSidebar.jspf` dùng chung cho 23 trang, tái tạo đúng 18 route/label/badge cũ (`shopChoDuyet`,
+  `pendingShippers`, `pendingProducts`, `pendingCount`), chỉ đổi icon emoji → Material Symbols và đóng gói thành
+  4 nhóm giống mock (Tổng quan & phân tích / Kiểm duyệt & điều phối / Quản lý tài chính / Cấu hình & hệ thống).
+  **Bẫy gặp phải:** 15/22 trang admin khai báo taglib `c` bằng URI JSTL CŨ (`http://java.sun.com/jsp/jstl/core`)
+  thay vì `jakarta.tags.core`; fragment khai báo lại `c` bằng URI khác gây lỗi biên dịch "Attempt to redefine the
+  prefix" → sửa bằng cách KHÔNG khai báo lại taglib `c`/`fn` trong fragment (dựa vào khai báo sẵn có của từng
+  trang chủ), chỉ bổ sung `fn` còn thiếu ở `QuanLyHoanTien.jsp`. Bẫy thứ 2: bỏ luôn `pageEncoding="UTF-8"` khiến
+  Jasper đọc nhầm file fragment (không BOM) thành ISO-8859-1 → toàn bộ tiếng Việt trong sidebar bị mojibake dù
+  trang chủ vẫn đúng — phải khai báo lại `pageEncoding="UTF-8"` riêng (an toàn vì trùng giá trị với mọi trang chủ,
+  không như taglib).
+  Icon tiêu đề topbar của 22 trang đổi emoji → Material Symbols; 5 trang tiêu đề IN HOA
+  (`BaoCaoVanHanh`, `DoiSoatDoanhThuShop`, `DuyetRutTienShipper`, `HeatmapDonHang`, `QuanLyVoucher`) đổi sang chữ
+  thường viết hoa đầu câu.
+- Vá màu lẻ: `#FF5722` (cam cũ) → `#FF3B1F` ở `HeatmapDonHang.jsp`, `TongQuanHeThong.jsp`.
+
+**Trang đã áp theme (toàn bộ 23 trang admin, chỉ đổi phong cách — CHƯA dựng lại bố cục theo mock):**
+`TongQuanHeThong, BaoCaoVanHanh, HeatmapDonHang, KiemDuyetBinhLuan, KiemDuyetNoiDung, QuanLyHoanTien, QuanLyKhieuNai,
+QuanLyVoucher, ThamSoVanHanh, AuditLogs, DoiSoatDoanhThuShop, DuyetRutTienShipper, DuyetRutTienShop, appeals,
+chiTietYeuCauShipper, chiTietYeuCauShop, doiMatKhauAdmin, faqDanhSach, faqThemSua, hoSoAdmin, quanlitaikhoan,
+yeuCauShipper, yeuCauShop`.
+
+**KHÔNG áp dụng (cố ý):** mọi tính năng chỉ có trong mock mà hệ thống không có — AI phát hiện gian lận rút tiền
+(score/confidence, Sentinel-Fraud Core), điều phối tài xế cứu hộ real-time qua GPS/vệ tinh, CDN đa kênh + theme
+chiến dịch cho logo, eKYC OCR giấy tờ, Live Cluster Health/Omnichannel Preview. Không tạo trang mới cho "Logo &
+Giao diện" hay "Xử lý khẩn cấp" vì không có servlet tương ứng.
+
+### Files sửa:
+- `src/main/web/assets/css/admin-theme.css` (mới), `src/main/web/admin/_adminSidebar.jspf` (mới)
+- 22 JSP còn lại trong `src/main/web/admin/` (danh sách ở trên) + `QuanLyHoanTien.jsp` (bổ sung taglib `fn` thiếu)
+- `PROJECT_STRUCTURE.md`
+
+### Ghi chú:
+Không đổi schema/servlet/DAO nên không cập nhật `database.md`. Đã build WAR bằng Maven portable, chạy Tomcat riêng
+cổng 8090 với DB thật, đăng nhập tài khoản Super Admin test (`Hien123`): toàn bộ 23 trang trả 200 + đủ `</html>`
+(gặp và tự vá 2 lỗi biên dịch — taglib trùng prefix và mojibake tiếng Việt — trước khi đạt trạng thái này). Đã kiểm
+tra: sidebar 4 nhóm hiển thị đúng tiếng Việt/icon/badge/mục active ở cả 2 theme sáng/tối, dark mode đổi đúng token
+(không vỡ do chỉ override nhánh sáng), thu gọn sidebar (276↔68px) và menu mobile (☰, 375px không tràn ngang) đều
+hoạt động, 3 trang nội dung thật (Khiếu nại, Duyệt rút tiền Shop, Quản lý tài khoản) render đúng theme. **Chưa kiểm
+chứng:** dữ liệu thật trong bảng/danh sách (test account chưa có shop/đơn/khiếu nại nào để xem), thao tác submit
+form. Đề nghị user tự click qua bằng dữ liệu thật.
+
 ## 152. Dựng lại bố cục các trang Shop còn lại theo mock Stitch (trang chủ, đánh giá, hồ sơ cửa hàng, flash sale, danh mục/topping, đổi mật khẩu)
 
 **Yêu cầu:** Sau mục 151 (4 trang Combo/Hóa đơn/Thực đơn/Ví), user bảo "làm tiếp các trang còn lại". Vẫn chỉ dùng

@@ -1,0 +1,188 @@
+/* ====
+   FOOD MANAGE — Theme "Super Admin Portal" theo bộ thiết kế Stitch (zip 2: file_manage_experience/DESIGN.md
+   là bản CHỈNH SỬA riêng cho Admin — primary #FF3B1F, secondary #A83900, "Live Cluster" sidebar).
+   Nạp SAU theme.css + dashboard.css và chỉ có tác dụng khi <body class="dash-body admin-theme">,
+   nên KHÔNG ảnh hưởng tới Shop (dùng shop-theme.css riêng) / Shipper (không nạp file này).
+   Khác với Shop: Super Admin CÓ dark mode thật (nút đổi theme ở topbar) nên màu chỉ override ở nhánh
+   light — nhánh dark GIỮ NGUYÊN token xanh than của dashboard.css (Stitch không có bản thiết kế dark).
+   Bố cục/hình khối/font thì áp dụng cho CẢ 2 theme.
+   Cần nạp kèm Google Fonts: Plus Jakarta Sans, Quicksand, Material Symbols Outlined.
+   ==== */
+
+/* ---- Màu: chỉ đổi nhánh sáng ---- */
+html[data-theme="light"] body.admin-theme {
+    --primary: #FF3B1F;
+    --primary-dark: #C4340C;
+    --primary-darker: #900E00;
+    --primary-light: rgba(255, 59, 31, .09);
+    --secondary: #A83900;
+    --brand-gradient: linear-gradient(135deg, #C4340C, #FF6B2C);
+    --cta-shadow: 0 8px 20px rgba(255, 59, 31, .28);
+
+    --bg-base: #FEF8F1;
+    --bg-sidebar: #FFFFFF;
+    --bg-panel: #FFFFFF;
+    --bg-input: #F9F3EC;
+    --bg-hover: #F3EDE6;
+    --border-color: #EDE1D8;
+    --text-main: #1D1B17;
+    --text-muted: #5D3F3A;
+    --text-dim: #926F68;
+    --topbar-bg: rgba(255, 255, 255, .85);
+    --dash-shadow-sm: 0 4px 16px -2px rgba(99, 44, 20, .06);
+    --dash-shadow-md: 0 12px 28px -4px rgba(99, 44, 20, .12);
+
+    --warning: #FFB300;
+    --warning-dark: #9B6B00;
+    --success-dark: #15803D;
+    --danger: #BA1A1A;
+    --danger-dark: #93000A;
+}
+
+/* ---- Bố cục/hình khối/font: áp dụng cả sáng lẫn tối ---- */
+body.admin-theme {
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, Tahoma, sans-serif;
+    --font-display: 'Quicksand', 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+    font-family: var(--font-family);
+}
+body.admin-theme h1, body.admin-theme h2, body.admin-theme h3,
+body.admin-theme .topbar h1, body.admin-theme .panel-title,
+body.admin-theme .brand-title, body.admin-theme .stat-num,
+body.admin-theme .section-title, body.admin-theme .modal-title {
+    font-family: var(--font-display);
+    letter-spacing: -.005em;
+}
+body.admin-theme .topbar h1 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+body.admin-theme .tb-icon { font-size: 24px; color: var(--primary); }
+
+body.admin-theme .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: 400; font-style: normal; line-height: 1;
+    letter-spacing: normal; text-transform: none; white-space: nowrap;
+    display: inline-block; vertical-align: middle;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    -webkit-font-feature-settings: 'liga'; font-feature-settings: 'liga';
+}
+
+/* === SIDEBAR === */
+body.admin-theme .sidebar:not(.collapsed) { width: 276px; }
+body.admin-theme .sidebar-brand { padding: 18px 18px 12px; border-bottom: none; }
+body.admin-theme .logo-mark-dash {
+    width: 38px; height: 38px; border-radius: 11px;
+    background: #fff; border: 1px solid var(--border-color); box-shadow: var(--dash-shadow-sm);
+    color: var(--primary);
+}
+body.admin-theme .logo-mark-dash .material-symbols-outlined { font-size: 21px; }
+body.admin-theme .brand-title { font-size: 17px; font-weight: 700; color: var(--text-main); line-height: 1.1; }
+body.admin-theme .brand-subtitle {
+    display: inline-flex; align-items: center; gap: 5px; margin-top: 2px;
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--primary); background: var(--primary-light); border: 1px solid rgba(255, 59, 31, .2);
+    padding: 1px 7px; border-radius: 5px; width: fit-content;
+}
+
+/* Thẻ admin đang đăng nhập, thay cho dòng "👋 username" đơn giản */
+body.admin-theme .sb-admin {
+    margin: 10px 14px 4px; padding: 10px 12px;
+    background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 14px;
+    display: flex; align-items: center; gap: 10px;
+}
+body.admin-theme .sb-admin-avatar {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; position: relative;
+    background: var(--brand-gradient); color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 12px; overflow: hidden;
+}
+body.admin-theme .sb-admin-avatar img { width: 100%; height: 100%; object-fit: cover; }
+body.admin-theme .sb-admin-dot {
+    position: absolute; bottom: -1px; right: -1px; width: 9px; height: 9px; border-radius: 50%;
+    background: #22C55E; border: 2px solid var(--bg-input);
+}
+body.admin-theme .sb-admin-name { font-size: 12.5px; font-weight: 700; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.admin-theme .sb-admin-role { font-size: 10.5px; color: var(--text-dim); }
+
+body.admin-theme .menu { padding: 8px 12px 14px; }
+body.admin-theme .menu-title {
+    font-size: 10.5px; font-weight: 800; color: var(--text-dim);
+    letter-spacing: .08em; margin: 14px 8px 5px;
+}
+body.admin-theme .menu-item {
+    padding: 9px 12px; border-radius: 11px; font-size: 13px; font-weight: 600;
+    color: var(--text-muted); margin-bottom: 2px;
+}
+body.admin-theme .menu-item:hover { background: var(--bg-hover); color: var(--text-main); transform: none; }
+body.admin-theme .menu-item .mi-icon {
+    font-size: 20px; width: 20px; height: 20px; color: var(--text-dim); transition: color .15s;
+}
+body.admin-theme .menu-item:hover .mi-icon { color: var(--primary); }
+body.admin-theme .menu-item.active {
+    background: var(--primary); color: #fff; font-weight: 700; box-shadow: var(--cta-shadow);
+}
+body.admin-theme .menu-item.active .mi-icon { color: #fff; font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+body.admin-theme .menu-badge { background: var(--danger); color: #fff; }
+body.admin-theme .menu-badge.yellow { background: var(--warning); color: #3A2A1E; }
+body.admin-theme .sidebar.collapsed .sb-admin { display: none; }
+body.admin-theme .sidebar.collapsed .menu-item.active { box-shadow: none; }
+
+/* === TOPBAR / CONTENT === */
+body.admin-theme .topbar { padding: 14px 30px; border-bottom: 1px solid var(--border-color); box-shadow: 0 6px 20px -14px rgba(99, 44, 20, .18); }
+body.admin-theme .content { padding: 26px 30px 40px; gap: 22px; }
+body.admin-theme .avatar-circle { background: var(--brand-gradient); box-shadow: 0 4px 12px rgba(255, 59, 31, .25); }
+body.admin-theme .theme-toggle, body.admin-theme .menu-toggle-btn { border-radius: 12px; }
+body.admin-theme .btn-logout-dash { border-radius: 999px; }
+body.admin-theme .avatar-dropdown { border-radius: 16px; }
+
+/* === CARD / PANEL / STAT === */
+body.admin-theme .panel, body.admin-theme .stat-card, body.admin-theme .info-card, body.admin-theme .card {
+    border-radius: 16px;
+}
+body.admin-theme .panel-header { padding: 16px 22px; }
+body.admin-theme .panel-body { padding: 22px; }
+body.admin-theme .panel-title { font-size: 16px; font-weight: 700; }
+body.admin-theme .stats-grid { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+body.admin-theme .stat-card { transition: transform .18s, box-shadow .18s; }
+body.admin-theme .stat-card:hover { transform: translateY(-3px); }
+body.admin-theme .stat-num { font-size: 24px; font-weight: 700; }
+body.admin-theme .stat-card .stat-label,
+html[data-theme="light"] body.admin-theme .stat-card > div > div:first-child {
+    font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+}
+
+/* === BUTTONS === */
+body.admin-theme .btn { border-radius: 999px; font-family: var(--font-family); font-weight: 700; }
+html[data-theme="light"] body.admin-theme .btn-primary { box-shadow: var(--cta-shadow); }
+body.admin-theme .btn-sm { padding: 6px 14px; }
+
+/* === FORM / BADGE / TABLE === */
+body.admin-theme .form-control, body.admin-theme .form-select, body.admin-theme .form-textarea,
+body.admin-theme textarea.form-control, body.admin-theme select.form-control, body.admin-theme .dash-input {
+    border-radius: 12px;
+}
+html[data-theme="light"] body.admin-theme .form-control:focus,
+html[data-theme="light"] body.admin-theme .dash-input:focus {
+    border-color: #FF6B2C; box-shadow: 0 0 0 3px rgba(255, 107, 44, .2);
+}
+body.admin-theme .badge { padding: 3px 11px; }
+body.admin-theme .alert { border-radius: 14px; }
+body.admin-theme .table-wrap { border-radius: 16px; }
+html[data-theme="light"] body.admin-theme table.dash-table th,
+html[data-theme="light"] body.admin-theme table.pob-table th { background: #F9F3EC; color: var(--text-dim); letter-spacing: .05em; }
+html[data-theme="light"] body.admin-theme table.dash-table tbody tr:hover,
+html[data-theme="light"] body.admin-theme table.pob-table tbody tr:hover { background: #FFF6EE; }
+
+/* === MODAL === */
+body.admin-theme .pob-modal-box { border-radius: 24px; }
+
+/* === SCROLLBAR (chỉ nhánh sáng, giữ dark mode nguyên bản) === */
+html[data-theme="light"] body.admin-theme ::-webkit-scrollbar-thumb { background: #E7BDB5; border-radius: 999px; }
+html[data-theme="light"] body.admin-theme ::-webkit-scrollbar-thumb:hover { background: #926F68; }
+
+@media (max-width: 900px) {
+    body.admin-theme .sidebar:not(.collapsed) { width: 280px; }
+    body.admin-theme .topbar { flex-wrap: wrap; row-gap: 8px; padding: 12px 16px; }
+    body.admin-theme .topbar h1 { font-size: 17px; }
+    body.admin-theme .topbar-right { min-width: 0; margin-left: auto; gap: 8px; }
+    body.admin-theme .content { padding: 18px 16px 32px; }
+}

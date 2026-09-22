@@ -16,6 +16,11 @@
     <title>Dashboard Phân Tích Mật Độ Đơn Hàng - Super Admin</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
@@ -61,7 +66,7 @@
         .kpi-icon { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
         .kpi-icon.blue { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
         .kpi-icon.green { background: rgba(34, 197, 94, 0.12); color: #22c55e; }
-        .kpi-icon.orange { background: rgba(255, 87, 34, 0.12); color: #FF5722; }
+        .kpi-icon.orange { background: rgba(255, 59, 31, 0.12); color: #FF3B1F; }
         .kpi-icon.purple { background: rgba(168, 85, 247, 0.12); color: #a855f7; }
         .kpi-info { display: flex; flex-direction: column; }
         .kpi-label { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -78,7 +83,7 @@
         /* View Mode Controls */
         .view-mode-toggle { display: inline-flex; background: var(--bg-input); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color); gap: 4px; }
         .view-mode-btn { border: none; background: transparent; padding: 6px 12px; font-size: 12px; font-weight: 600; color: var(--text-muted); border-radius: 6px; cursor: pointer; transition: all .15s; }
-        .view-mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(255,87,34,.3); }
+        .view-mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(255, 59, 31,.3); }
 
         #heatmapMap { width: 100%; height: 580px; border-radius: 10px; border: 1px solid var(--border-color); z-index: 1; }
 
@@ -92,120 +97,30 @@
         .regions-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
         .region-list { display: flex; flex-direction: column; gap: 10px; max-height: 595px; overflow-y: auto; padding-right: 4px; }
         .region-item { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all .15s; }
-        .region-item:hover { border-color: var(--primary); transform: translateX(3px); background: rgba(255, 87, 34, 0.05); }
+        .region-item:hover { border-color: var(--primary); transform: translateX(3px); background: rgba(255, 59, 31, 0.05); }
         .region-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .region-name { font-size: 13.5px; font-weight: 700; color: var(--text-main); }
         .region-count { font-size: 12px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 12px; }
         .region-progress-bg { height: 6px; background: rgba(0,0,0,0.08); border-radius: 3px; overflow: hidden; }
-        .region-progress-bar { height: 100%; background: linear-gradient(90deg, #FF5722, #f59e0b); border-radius: 3px; }
+        .region-progress-bar { height: 100%; background: linear-gradient(90deg, #FF3B1F, #f59e0b); border-radius: 3px; }
 
         /* Leaflet popup styling */
         .leaflet-popup-content-wrapper { border-radius: 10px; padding: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
         .popup-order-card { font-family: inherit; font-size: 13px; line-height: 1.4; color: #1e293b; min-width: 210px; }
-        .popup-order-title { font-weight: 700; color: #FF5722; font-size: 14px; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px; display: flex; justify-content: space-between; }
+        .popup-order-title { font-weight: 700; color: #FF3B1F; font-size: 14px; margin-bottom: 6px; border-bottom: 1px solid #eee; padding-bottom: 4px; display: flex; justify-content: space-between; }
         .popup-order-info { margin-bottom: 4px; font-size: 12px; color: #475569; }
         .popup-order-info strong { color: #0f172a; }
     </style>
 </head>
-<body class="dash-body">
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">
-            <c:choose>
-                <c:when test="${not empty sessionScope.account.logoUrl}">
-                    <img src="${sessionScope.account.logoUrl}" alt="logo" class="logo-mark-img"/>
-                </c:when>
-                <c:otherwise>S</c:otherwise>
-            </c:choose>
-        </div>
-        <div class="brand-text">
-            <span class="brand-title">SUPER ADMIN</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
-        </div>
-        <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-    </div>
-    <div class="menu">
-        <div class="menu-group">
-            <div class="menu-title" onclick="pobToggleMenuGroup(this)"><span>📊 Tổng quan &amp; phân tích</span><span class="menu-caret">▾</span></div>
-            <a href="${pageContext.request.contextPath}/tong-quan" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">⊞</span><span class="mi-label"> Tổng quan hệ thống</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/bao-cao-van-hanh" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">📈</span><span class="mi-label"> Báo cáo vận hành</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/heatmap-don-hang" class="menu-item active">
-                <span class="mi-left"><span class="mi-icon">🗺️</span><span class="mi-label"> Heatmap đặt hàng</span></span>
-            </a>
-        </div>
-        <div class="menu-group">
-            <div class="menu-title" onclick="pobToggleMenuGroup(this)"><span>⚖️ Kiểm duyệt &amp; điều phối</span><span class="menu-caret">▾</span></div>
-            <a href="${pageContext.request.contextPath}/super-admin/shop-requests" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Duyệt Shop</span></span>
-                <c:if test="${shopChoDuyet > 0}"><span class="menu-badge yellow">${shopChoDuyet}</span></c:if>
-            </a>
-            <a href="${pageContext.request.contextPath}/super-admin/shipper-requests" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🛵</span><span class="mi-label"> Duyệt Shipper</span></span>
-                <c:if test="${not empty pendingShippers}"><span class="menu-badge yellow">${pendingShippers.size()}</span></c:if>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/kiem-duyet-noi-dung" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🚩</span><span class="mi-label"> Kiểm duyệt nội dung</span></span>
-                <c:if test="${not empty pendingProducts}"><span class="menu-badge yellow">${pendingProducts.size()}</span></c:if>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/kiem-duyet-binh-luan" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">💬</span><span class="mi-label"> Kiểm duyệt bình luận</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/khieu-nai" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">📢</span><span class="mi-label"> Quản lý khiếu nại</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/appeals" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Kháng nghị</span></span>
-                <c:if test="${pendingCount > 0}"><span class="menu-badge yellow">${pendingCount}</span></c:if>
-            </a>
-        </div>
-        <div class="menu-group">
-            <div class="menu-title" onclick="pobToggleMenuGroup(this)"><span>💰 Quản lý tài chính</span><span class="menu-caret">▾</span></div>
-            <a href="${pageContext.request.contextPath}/admin/doi-soat-doanh-thu-shop" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">💵</span><span class="mi-label"> Đối soát doanh thu Shop</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/duyet-rut-tien-shipper" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">💳</span><span class="mi-label"> Duyệt rút tiền Shipper</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/duyet-rut-tien-shop" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🏪</span><span class="mi-label"> Duyệt rút tiền Shop</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/hoan-tien" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">↩️</span><span class="mi-label"> Hoàn tiền khách hàng</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/vouchers" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🎟️</span><span class="mi-label"> Voucher / Khuyến mãi</span></span>
-            </a>
-        </div>
-        <div class="menu-group">
-            <div class="menu-title" onclick="pobToggleMenuGroup(this)"><span>⚙️ Cấu hình &amp; hệ thống</span><span class="menu-caret">▾</span></div>
-            <a href="${pageContext.request.contextPath}/quanlitaikhoan" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">👤</span><span class="mi-label"> Người dùng</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/tham-so-van-hanh" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🛠️</span><span class="mi-label"> Tham số vận hành</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/faq" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">❓</span><span class="mi-label"> FAQ / Hướng dẫn</span></span>
-            </a>
-            <a href="${pageContext.request.contextPath}/admin/audit-logs" class="menu-item">
-                <span class="mi-left"><span class="mi-icon">🕒</span><span class="mi-label"> Nhật ký hệ thống</span></span>
-            </a>
-        </div>
-    </div>
-</aside>
+<body class="dash-body admin-theme">
+<c:set var="adminActive" value="/admin/heatmap-don-hang" scope="request"/>
+<%@ include file="_adminSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:10px;">
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
-            <h1>HEATMAP &amp; PHÂN TÍCH ĐƠN HÀNG</h1>
+            <h1><span class="material-symbols-outlined tb-icon">map</span> Heatmap &amp; phân tích đơn hàng</h1>
         </div>
         <div class="topbar-right">
             <button type="button" class="theme-toggle" onclick="pobToggleTheme()" title="Chuyển đổi giao diện"><span data-theme-icon>🌙</span></button>
@@ -481,7 +396,7 @@
             // Custom Marker Icon to prevent broken PNG image icons
             var customOrderIcon = L.divIcon({
                 className: 'custom-leaflet-marker',
-                html: '<div style="background:linear-gradient(135deg,#FF5722,#f59e0b);color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 12px rgba(255,87,34,0.45);border:2px solid #ffffff;">📍</div>',
+                html: '<div style="background:linear-gradient(135deg,#FF3B1F,#f59e0b);color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 12px rgba(255, 59, 31,0.45);border:2px solid #ffffff;">📍</div>',
                 iconSize: [30, 30],
                 iconAnchor: [15, 15],
                 popupAnchor: [0, -15]
