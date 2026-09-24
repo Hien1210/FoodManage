@@ -57,6 +57,9 @@ body.admin-theme .section-title, body.admin-theme .modal-title {
 }
 body.admin-theme .topbar h1 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 body.admin-theme .tb-icon { font-size: 24px; color: var(--primary); }
+body.admin-theme .tb-icon-sm { font-size: 20px; color: var(--primary); vertical-align: middle; }
+body.admin-theme .chart-box { position: relative; height: 260px; }
+body.admin-theme .stat-card.danger.stat-alert { border-color: var(--danger); box-shadow: 0 0 0 2px var(--danger-light), var(--dash-shadow-sm); }
 
 body.admin-theme .material-symbols-outlined {
     font-family: 'Material Symbols Outlined';

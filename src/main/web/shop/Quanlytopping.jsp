@@ -323,7 +323,9 @@
 <script>
     const modal = document.getElementById('toppingModal');
     const isEditMode = ${ not empty toppingSua ? 'true' : 'false' };
-    const hasError   = ${ not empty loi ? 'true' : 'false' };
+    // Chỉ tự mở modal khi lỗi đến từ chính form (server luôn set currentShop trước khi set lỗi validate)
+    // — tránh mở modal rỗng khi lỗi thực ra không liên quan tới form này (vd "chưa có cửa hàng").
+    const hasError   = ${ (not empty loi and not empty currentShop) ? 'true' : 'false' };
 
     function openToppingModal() { modal.classList.add('open'); }
     function closeToppingModal() {

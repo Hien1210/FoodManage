@@ -490,7 +490,10 @@
 <script>
     const modal = document.getElementById('productModal');
     const isEditMode = ${ not empty productSua ? 'true' : 'false' };
-    const hasError   = ${ not empty loi ? 'true' : 'false' };
+    // Chỉ tự mở modal khi lỗi đến từ chính form thêm/sửa (server luôn set currentShop trước khi set các
+    // lỗi validate form) — trước đây hễ có "loi" là mở modal rỗng, kể cả lỗi "Bạn chưa có cửa hàng!" hoàn
+    // toàn không liên quan, khiến thông báo lỗi thật bị modal che mất, người dùng chỉ thấy 1 form trống.
+    const hasError   = ${ (not empty loi and not empty currentShop) ? 'true' : 'false' };
 
     function openProductModal() { modal.classList.add('open'); }
     function closeProductModal() {

@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="/app-functions" prefix="app" %>
 
 <c:if test="${empty sessionScope.account || sessionScope.account.roleId != 1}">
     <c:redirect url="/dangnhap"/>
@@ -22,61 +23,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <style>
-        .filter-bar { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px 20px; display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-        .filter-field { display: flex; flex-direction: column; gap: 5px; }
-        .filter-field label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text-muted); font-weight: 700; }
-        .filter-field select { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 9px 12px; color: var(--text-main); font-size: 13px; min-width: 180px; }
+        .avatar-wrapper { position: relative; }
+        .avatar-dropdown { display: none; position: fixed; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--dash-shadow-md); min-width: 220px; z-index: 500; }
+        .avatar-dropdown.open { display: block; animation: pobFadeUp .18s ease both; }
+        .dropdown-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
+        .dropdown-header .d-name { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .dropdown-header .d-email { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .dropdown-header .d-role { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary); }
+        .dropdown-body { padding: 6px 0 8px; }
+        .dropdown-link { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+        .dropdown-link:hover { background: var(--bg-input); color: var(--text-main); }
+        .dropdown-divider { height: 1px; background: var(--border-color); margin: 4px 0; }
+        .dropdown-link.danger { color: var(--danger); }
+        .dropdown-link.danger:hover { background: var(--danger-light); color: var(--danger); }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 18px; border-top: 3px solid var(--border-color); }
-        .stat-card.pending { border-top-color: var(--warning); }
-        .stat-card.approved { border-top-color: var(--primary); }
-        .stat-card.rejected { border-top-color: var(--danger); }
-        .stat-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 8px; }
-        .stat-value { font-size: 26px; font-weight: 800; color: var(--text-main); }
+        /* Tab lọc theo trạng thái, kèm số lượng thật từ DB — thay cho <select> cũ */
+        .status-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .status-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--border-color); background: var(--bg-panel); color: var(--text-muted); font-size: 13px; font-weight: 700; text-decoration: none; }
+        .status-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .status-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: var(--cta-shadow, 0 8px 20px rgba(255,59,31,.25)); }
+        .status-tab-count { font-size: 11px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: var(--bg-input); color: var(--text-main); }
+        .status-tab.active .status-tab-count { background: rgba(255,255,255,.25); color: #fff; }
 
-        .panel { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; }
-        .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
-        .panel-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
-
-        .table-wrapper { overflow-x: auto; }
-        table.wd-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 900px; }
-        table.wd-table th { text-align: left; color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 10px 14px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-        table.wd-table td { padding: 13px 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        table.wd-table tr:last-child td { border-bottom: none; }
-        table.wd-table tr:hover td { background: var(--bg-input); }
 
         .shop-cell { font-weight: 700; color: var(--text-main); }
         .bank-info { display: flex; flex-direction: column; gap: 2px; }
-        .bank-name { font-weight: 600; }
-        .bank-account { font-size: 12px; color: var(--text-muted); font-family: monospace; }
-        .bank-holder { font-size: 11px; color: var(--text-dim); }
+        .bank-name { font-weight: 600; color: var(--text-main); }
+        .bank-account { font-size: 12px; color: var(--text-muted); font-family: 'Courier New', monospace; }
+        .bank-holder { font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
 
         .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-        .status-pill.PENDING  { background: var(--warning-light); color: var(--warning); }
-        .status-pill.APPROVED { background: var(--primary-light); color: var(--primary); }
-        .status-pill.REJECTED { background: var(--danger-light); color: var(--danger); }
+        .status-pill.PENDING  { background: var(--warning-light); color: var(--warning-dark); }
+        .status-pill.APPROVED { background: var(--success-light); color: var(--success-dark); }
+        .status-pill.REJECTED { background: var(--danger-light); color: var(--danger-dark); }
         .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-        .action-group { display: flex; gap: 8px; }
-        .btn-approve { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: .18s; }
-        .btn-approve:hover { background: var(--primary-dark); }
-        .btn-reject { background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: .18s; }
-        .btn-reject:hover { background: var(--danger-light); }
+        .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
         .action-done { font-size: 12px; color: var(--text-dim); font-style: italic; }
 
-        /* Reject modal */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
-        .modal-box { background: var(--bg-panel); border-radius: 14px; padding: 28px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
-        .modal-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 16px; }
+        /* Reject modal — dùng lại .pob-modal-overlay/.pob-modal-box chung, chỉ thêm phần thân riêng */
+        .modal-icon { font-size: 36px; margin-bottom: 14px; color: var(--danger); }
+        .modal-title { font-size: 17px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; }
         .modal-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .modal-textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1.5px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; resize: vertical; min-height: 90px; }
+        .modal-textarea { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--border-color); background: var(--bg-input); color: var(--text-main); font-size: 14px; resize: vertical; min-height: 90px; }
         .modal-textarea:focus { outline: none; border-color: var(--danger); }
         .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-        .modal-btn { flex: 1; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; border: none; }
-        .modal-btn-cancel { background: var(--bg-input); color: var(--text-muted); }
-        .modal-btn-reject { background: var(--danger); color: #fff; }
 
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 700; z-index: 9999; display: none; animation: slideUp .3s ease; }
         .toast.success { background: #16a34a; color: #fff; }
@@ -84,9 +75,11 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .pager { display: flex; gap: 8px; padding: 16px; justify-content: center; }
-        .pager a { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px; font-weight: 600; }
+        .pager a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px; font-weight: 600; }
         .pager a.active, .pager a:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+
+        .note-box { margin-top: 16px; background: var(--warning-light); border: 1px solid rgba(255,179,0,.35); border-radius: 14px; padding: 14px 16px; font-size: 13px; color: var(--warning-dark); display: flex; gap: 10px; align-items: flex-start; }
+        .note-box .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
     </style>
 </head>
 <body class="dash-body admin-theme">
@@ -100,52 +93,84 @@
             <button type="button" class="menu-toggle-btn" onclick="pobToggleSidebar()">☰</button>
             <h1><span class="material-symbols-outlined tb-icon">account_balance</span> Duyệt rút tiền Shop</h1>
         </div>
+        <div class="topbar-right">
+            <button type="button" class="theme-toggle" id="themeToggleBtn" onclick="pobToggleTheme()" title="Chuyển đổi giao diện"><span data-theme-icon>🌙</span></button>
+            <div class="avatar-wrapper" id="avatarWrapper">
+                <div class="avatar-circle" id="avatarBtn">
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.account.avatarUrl}">
+                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                        </c:when>
+                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
     </header>
     <div class="content">
 
-        <%-- Stats --%>
+        <%-- Thống kê thật từ DB, không phải toàn bộ hệ thống rút tiền tự động như mock --%>
         <div class="stats-grid">
-            <div class="stat-card pending">
-                <div class="stat-title">⏳ Đang chờ duyệt</div>
-                <div class="stat-value">${pendingCount}</div>
+            <div class="stat-card${pendingCount > 0 ? ' danger stat-alert' : ''}">
+                <div>
+                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Đang chờ duyệt</div>
+                    <div class="stat-num">${pendingCount}</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">hourglass_top</span></div>
             </div>
-            <c:set var="totalCount" value="${0}"/>
-            <c:forEach var="w" items="${withdrawals}">
-                <c:set var="totalCount" value="${totalCount + 1}"/>
-            </c:forEach>
+            <div class="stat-card">
+                <div>
+                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Đã duyệt</div>
+                    <div class="stat-num">${approvedCount}</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">check_circle</span></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Từ chối</div>
+                    <div class="stat-num">${rejectedCount}</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">cancel</span></div>
+            </div>
+            <div class="stat-card">
+                <div>
+                    <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Tổng yêu cầu</div>
+                    <div class="stat-num">${totalAll}</div>
+                </div>
+                <div class="stat-icon"><span class="material-symbols-outlined">receipt_long</span></div>
+            </div>
         </div>
 
-        <%-- Filter --%>
-        <form method="get" action="" class="filter-bar">
-            <div class="filter-field">
-                <label>Trạng thái</label>
-                <select name="status" onchange="this.form.submit()">
-                    <option value="" ${statusFilter eq '' ? 'selected' : ''}>Tất cả</option>
-                    <option value="PENDING"  ${statusFilter eq 'PENDING'  ? 'selected' : ''}>⏳ Đang chờ</option>
-                    <option value="APPROVED" ${statusFilter eq 'APPROVED' ? 'selected' : ''}>✅ Đã duyệt</option>
-                    <option value="REJECTED" ${statusFilter eq 'REJECTED' ? 'selected' : ''}>❌ Từ chối</option>
-                </select>
-            </div>
-        </form>
+        <%-- Tab lọc trạng thái (server-side, có phân trang thật nên không lọc phía client) --%>
+        <div class="status-tabs">
+            <a href="?" class="status-tab${empty statusFilter ? ' active' : ''}">Tất cả <span class="status-tab-count">${totalAll}</span></a>
+            <a href="?status=PENDING" class="status-tab${statusFilter eq 'PENDING' ? ' active' : ''}">Đang chờ <span class="status-tab-count">${pendingCount}</span></a>
+            <a href="?status=APPROVED" class="status-tab${statusFilter eq 'APPROVED' ? ' active' : ''}">Đã duyệt <span class="status-tab-count">${approvedCount}</span></a>
+            <a href="?status=REJECTED" class="status-tab${statusFilter eq 'REJECTED' ? ' active' : ''}">Từ chối <span class="status-tab-count">${rejectedCount}</span></a>
+        </div>
 
         <%-- Table --%>
         <div class="panel">
             <div class="panel-header">
-                <span class="panel-title">Danh sách yêu cầu rút tiền</span>
+                <div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">account_balance</span> Danh sách yêu cầu rút tiền</div>
             </div>
-            <div class="table-wrapper">
+            <div class="panel-body" style="padding:0;">
                 <c:choose>
                     <c:when test="${empty withdrawals}">
-                        <div class="empty-state">Không có yêu cầu nào</div>
+                        <div class="empty-state">
+                            <div class="e-icon">🏦</div>
+                            <div class="e-title">Không có yêu cầu rút tiền nào</div>
+                        </div>
                     </c:when>
                     <c:otherwise>
-                    <table class="wd-table">
+                    <div class="dash-table-wrap">
+                    <table class="dash-table">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Shop</th>
                                 <th>Số tiền</th>
-                                <th>Ngân hàng</th>
+                                <th>Ngân hàng nhận</th>
                                 <th>Thời gian</th>
                                 <th>Trạng thái</th>
                                 <th>Thao tác</th>
@@ -154,25 +179,23 @@
                         <tbody>
                             <c:forEach var="w" items="${withdrawals}" varStatus="st">
                                 <tr id="row-${w.id}">
-                                    <td style="font-size:12px;color:var(--text-muted)">${w.id}</td>
-                                    <td class="shop-cell">${w.shopName}</td>
-                                    <td style="font-weight:800;font-size:15px;color:#dc2626">
+                                    <td style="font-size:12px;color:var(--text-dim)">#${w.id}</td>
+                                    <td class="shop-cell"><c:out value="${w.shopName}"/></td>
+                                    <td style="font-weight:800;font-size:14.5px;color:var(--danger)">
                                         -₫<fmt:formatNumber value="${w.amount}" pattern="#,##0"/>
                                     </td>
                                     <td>
                                         <div class="bank-info">
-                                            <span class="bank-name">${w.bankName}</span>
-                                            <span class="bank-account">${w.bankAccountNumber}</span>
-                                            <span class="bank-holder">${w.bankAccountHolder}</span>
+                                            <span class="bank-name"><c:out value="${w.bankName}"/></span>
+                                            <span class="bank-account"><c:out value="${w.bankAccountNumber}"/></span>
+                                            <span class="bank-holder"><c:out value="${w.bankAccountHolder}"/></span>
                                         </div>
                                     </td>
                                     <td style="font-size:12px;white-space:nowrap">
-                                        <c:set var="wReqAt" value="${w.requestedAt}"/>
-                                        ${fn:substring(wReqAt,8,10)}/${fn:substring(wReqAt,5,7)}/${fn:substring(wReqAt,0,4)} ${fn:substring(wReqAt,11,16)}
+                                        ${app:formatDateTime(w.requestedAt)}
                                         <c:if test="${not empty w.processedAt}">
-                                            <c:set var="wProcAt" value="${w.processedAt}"/>
                                             <div style="color:var(--text-dim);margin-top:2px">
-                                                → ${fn:substring(wProcAt,8,10)}/${fn:substring(wProcAt,5,7)}/${fn:substring(wProcAt,0,4)} ${fn:substring(wProcAt,11,16)}
+                                                → ${app:formatDateTime(w.processedAt)}
                                             </div>
                                         </c:if>
                                     </td>
@@ -186,20 +209,20 @@
                                             </c:choose>
                                         </span>
                                         <c:if test="${not empty w.rejectReason}">
-                                            <div style="font-size:11px;color:var(--danger);margin-top:3px">${w.rejectReason}</div>
+                                            <div style="font-size:11px;color:var(--danger);margin-top:3px"><c:out value="${w.rejectReason}"/></div>
                                         </c:if>
                                     </td>
                                     <td>
                                         <c:choose>
                                             <c:when test="${w.status eq 'PENDING'}">
                                                 <div class="action-group">
-                                                    <button class="btn-approve" onclick="doApprove(${w.id}, '${w.shopName}', ${w.amount})">✅ Duyệt</button>
-                                                    <button class="btn-reject"  onclick="openReject(${w.id})">❌ Từ chối</button>
+                                                    <button type="button" class="btn btn-sm btn-primary js-approve" data-id="${w.id}" data-shop="${fn:escapeXml(w.shopName)}" data-amount="${w.amount}"><span class="material-symbols-outlined" style="font-size:15px;">check</span> Duyệt</button>
+                                                    <button type="button" class="btn btn-sm btn-danger-outline js-reject" data-id="${w.id}"><span class="material-symbols-outlined" style="font-size:15px;">close</span> Từ chối</button>
                                                 </div>
                                             </c:when>
                                             <c:otherwise>
                                                 <span class="action-done">
-                                                    ${w.processedByName != null ? w.processedByName : 'Admin'}
+                                                    <c:out value="${not empty w.processedByName ? w.processedByName : 'Admin'}"/>
                                                 </span>
                                             </c:otherwise>
                                         </c:choose>
@@ -208,6 +231,7 @@
                             </c:forEach>
                         </tbody>
                     </table>
+                    </div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -223,30 +247,49 @@
         </div>
 
         <%-- Note about manual transfer --%>
-        <div style="margin-top:16px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:14px 16px;font-size:13px;color:#92400e">
-            <strong>📌 Lưu ý:</strong> Sau khi duyệt, vui lòng <strong>chuyển khoản thủ công</strong> đến số tài khoản ngân hàng của shop.
-            Hệ thống chỉ ghi nhận trạng thái — không tự động chuyển tiền.
+        <div class="note-box">
+            <span class="material-symbols-outlined">info</span>
+            <div><strong>Lưu ý:</strong> Sau khi duyệt, vui lòng <strong>chuyển khoản thủ công</strong> đến số tài khoản ngân hàng của shop.
+            Hệ thống chỉ ghi nhận trạng thái — không tự động chuyển tiền.</div>
         </div>
 
     </div>
 </main>
 
+<div class="avatar-dropdown" id="avatarDropdown">
+    <div class="dropdown-header">
+        <div class="d-name">${sessionScope.account.userName}</div>
+        <div class="d-email">${sessionScope.account.email}</div>
+        <span class="d-role">Super Admin</span>
+    </div>
+    <div class="dropdown-body">
+        <a href="${pageContext.request.contextPath}/admin/profile" class="dropdown-link"><span class="material-symbols-outlined" style="font-size:16px;">person</span> Hồ sơ cá nhân</a>
+        <a href="${pageContext.request.contextPath}/admin/change-password" class="dropdown-link"><span class="material-symbols-outlined" style="font-size:16px;">lock</span> Đổi mật khẩu</a>
+        <div class="dropdown-divider"></div>
+        <a href="${pageContext.request.contextPath}/logout" class="dropdown-link danger"><span class="material-symbols-outlined" style="font-size:16px;">logout</span> Đăng xuất</a>
+    </div>
+</div>
+
 <%-- Reject Modal --%>
-<div class="modal-overlay" id="rejectModal">
-    <div class="modal-box">
-        <div class="modal-title">❌ Từ chối yêu cầu rút tiền</div>
-        <div class="modal-label">Lý do từ chối *</div>
-        <textarea class="modal-textarea" id="rejectReason" placeholder="Nhập lý do từ chối..."></textarea>
-        <div class="modal-actions">
-            <button class="modal-btn modal-btn-cancel" onclick="closeRejectModal()">Hủy</button>
-            <button class="modal-btn modal-btn-reject" onclick="doReject()">Xác nhận từ chối</button>
+<div class="pob-modal-overlay" id="rejectModal">
+    <div class="pob-modal-box">
+        <div style="padding:28px;">
+            <div class="modal-icon">✕</div>
+            <div class="modal-title">Từ chối yêu cầu rút tiền</div>
+            <div class="modal-label">Lý do từ chối *</div>
+            <textarea class="modal-textarea" id="rejectReason" placeholder="Nhập lý do từ chối..."></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" style="flex:1;" onclick="closeRejectModal()">Hủy</button>
+                <button type="button" class="btn btn-danger" style="flex:1;" onclick="doReject()">Xác nhận từ chối</button>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="${pageContext.request.contextPath}/assets/js/dashboard.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/dashboard-theme.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/pob-dialog.js"></script>
 <script>
     var rejectId = 0;
     var BASE = '${pageContext.request.contextPath}/admin/duyet-rut-tien-shop';
@@ -293,19 +336,45 @@
             .then(function(r){ return r.json(); })
             .then(function(json) {
                 if (json.success) {
-                    showToast(action === 'approve' ? '✅ Đã duyệt thành công!' : '✅ Đã từ chối!', 'success');
+                    showToast(action === 'approve' ? 'Đã duyệt thành công!' : 'Đã từ chối!', 'success');
                     setTimeout(function(){ location.reload(); }, 1200);
                 } else {
-                    showToast('⚠️ ' + (json.message || 'Thao tác thất bại'), 'error');
+                    showToast(json.message || 'Thao tác thất bại', 'error');
                 }
             })
-            .catch(function(){ showToast('⚠️ Lỗi kết nối server', 'error'); });
+            .catch(function(){ showToast('Lỗi kết nối server', 'error'); });
     }
 
     document.getElementById('rejectModal').addEventListener('click', function(e) {
         if (e.target === this) closeRejectModal();
     });
+
+    // Nút Duyệt/Từ chối dùng data-attribute thay vì nhét tên shop thẳng vào chuỗi JS trong onclick
+    // (tên shop có thể chứa dấu nháy đơn và làm vỡ cú pháp JS) — an toàn hơn cách cũ.
+    document.querySelectorAll('.js-approve').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            doApprove(Number(btn.dataset.id), btn.dataset.shop, Number(btn.dataset.amount));
+        });
+    });
+    document.querySelectorAll('.js-reject').forEach(function (btn) {
+        btn.addEventListener('click', function () { openReject(Number(btn.dataset.id)); });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var avatarBtn = document.getElementById('avatarBtn');
+        var avatarDropdown = document.getElementById('avatarDropdown');
+        if (avatarBtn && avatarDropdown) {
+            avatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var rect = avatarBtn.getBoundingClientRect();
+                avatarDropdown.style.top = (rect.bottom + 10) + 'px';
+                avatarDropdown.style.right = (window.innerWidth - rect.right) + 'px';
+                avatarDropdown.classList.toggle('open');
+            });
+            avatarDropdown.addEventListener('click', function(e) { e.stopPropagation(); });
+            document.addEventListener('click', function() { avatarDropdown.classList.remove('open'); });
+        }
+    });
 </script>
-<script src="${pageContext.request.contextPath}/assets/js/pob-dialog.js"></script>
 </body>
 </html>

@@ -34,12 +34,20 @@ public class DuyetRutTienShopServlet extends HttpServlet {
         List<ShopWithdrawal> withdrawals = walletDAO.getAllWithdrawals(statusFilter, pageSize, offset);
         int total = walletDAO.countWithdrawals(statusFilter.isEmpty() ? null : statusFilter);
         int pendingCount = walletDAO.countWithdrawals("PENDING");
+        // Đếm theo từng trạng thái để hiển thị tab lọc kèm số lượng (giống mẫu thiết kế) — mỗi lần load trang
+        // chỉ thêm 3 câu COUNT(*) rẻ, không ảnh hưởng truy vấn danh sách chính.
+        int totalAll = statusFilter.isEmpty() ? total : walletDAO.countWithdrawals(null);
+        int approvedCount = walletDAO.countWithdrawals("APPROVED");
+        int rejectedCount = walletDAO.countWithdrawals("REJECTED");
 
         req.setAttribute("withdrawals", withdrawals);
         req.setAttribute("currentPage", page);
         req.setAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
         req.setAttribute("statusFilter", statusFilter);
         req.setAttribute("pendingCount", pendingCount);
+        req.setAttribute("totalAll", totalAll);
+        req.setAttribute("approvedCount", approvedCount);
+        req.setAttribute("rejectedCount", rejectedCount);
         req.getRequestDispatcher("/admin/DuyetRutTienShop.jsp").forward(req, resp);
     }
 

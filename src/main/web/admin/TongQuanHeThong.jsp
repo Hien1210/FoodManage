@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib uri="/app-functions" prefix="app" %>
 
 <%-- BẢO MẬT: KIỂM TRA QUYỀN SUPER ADMIN --%>
 <c:if test="${empty sessionScope.account || sessionScope.account.roleId != 1}">
@@ -39,6 +40,35 @@
         .stat-card.info .stat-icon { background: var(--info-light); color: var(--info); }
         .stat-card.warning .stat-icon { background: var(--warning-light); color: var(--warning-dark); }
         .stat-card.danger .stat-icon { background: var(--danger-light); color: var(--danger); }
+
+        /* Bố cục 2 cột: biểu đồ (trái, rộng hơn) + danh sách shop chờ duyệt (phải) */
+        .ov-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+        .ov-grid > .panel { margin: 0; height: 100%; min-width: 0; }
+        @media (max-width: 1100px) { .ov-grid { grid-template-columns: minmax(0, 1fr); } }
+
+        .panel-cta { font-size: 12.5px; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 3px; }
+        .panel-cta .material-symbols-outlined { font-size: 16px; }
+
+        /* Danh sách shop mới đăng ký chờ duyệt */
+        .pending-list { display: flex; flex-direction: column; gap: 10px; }
+        .pending-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: var(--bg-input); }
+        .pending-avatar { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; background: var(--brand-gradient, var(--primary)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; }
+        .pending-info { min-width: 0; flex: 1; }
+        .pending-name { font-size: 13px; font-weight: 700; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pending-meta { font-size: 11.5px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Bảng xếp hạng shop doanh thu cao nhất — thay cho biểu đồ cột, đọc rõ hơn với chỉ 5 dòng */
+        .rank-list { display: flex; flex-direction: column; }
+        .rank-row { display: flex; align-items: center; gap: 14px; padding: 12px 4px; border-bottom: 1px dashed var(--border-color); }
+        .rank-row:last-child { border-bottom: none; }
+        .rank-badge { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12.5px; font-weight: 800; background: var(--bg-input); color: var(--text-muted); }
+        .rank-row.top1 .rank-badge { background: var(--brand-gradient, var(--primary)); color: #fff; }
+        .rank-row.top2 .rank-badge { background: #FFDBCF; color: #802900; }
+        .rank-row.top3 .rank-badge { background: #FFDEAC; color: #604100; }
+        .rank-info { flex: 1; min-width: 0; }
+        .rank-name { font-weight: 700; color: var(--text-main); font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rank-sub { font-size: 11.5px; color: var(--text-dim); }
+        .rank-revenue { font-weight: 800; color: var(--primary); font-size: 13.5px; white-space: nowrap; }
     </style>
 </head>
 <body class="dash-body admin-theme">
@@ -90,10 +120,13 @@
                 </div>
                 <div class="stat-icon">🛵</div>
             </div>
-            <div class="stat-card danger">
+            <div class="stat-card danger${canhBaoViPham > 0 ? ' stat-alert' : ''}">
                 <div>
                     <div style="font-size:12px;color:var(--text-dim);font-weight:600;">Cảnh báo vi phạm</div>
                     <div class="stat-num">${canhBaoViPham}</div>
+                    <c:if test="${canhBaoViPham > 0}">
+                        <div style="font-size:11px;font-weight:700;color:var(--danger);margin-top:2px;">Shop bị khóa, tài khoản đình chỉ &amp; đánh giá ≤2 sao</div>
+                    </c:if>
                 </div>
                 <div class="stat-icon">⚠️</div>
             </div>
@@ -106,61 +139,73 @@
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">📈 Đơn hàng &amp; doanh thu toàn sàn (7 ngày gần đây)</div>
-            </div>
-            <div class="panel-body"><canvas id="dailyStatsChart" height="90"></canvas></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">🏆 Top 5 shop doanh thu cao nhất</div>
-            </div>
-            <div class="panel-body"><canvas id="topShopChart" height="90"></canvas></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">📋 Yêu cầu duyệt shop gần đây</div>
-            </div>
-            <div class="panel-body" style="padding:0;">
-                <div class="dash-table-wrap">
-                    <table class="dash-table">
-                        <thead>
-                        <tr>
-                            <th>Người đăng ký</th>
-                            <th>Email</th>
-                            <th>Ngày đăng ký</th>
-                            <th>Trạng thái</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach var="account" items="${top5Shop}">
-                            <tr>
-                                <td>
-                                    <strong style="color: var(--text-main);">${fn:escapeXml(account.fullName)}</strong><br>
-                                    <span style="font-size: 12px; color: var(--text-dim);">📞 ${account.phone}</span>
-                                </td>
-                                <td>${account.email}</td>
-                                <td>${account.createdAt}</td>
-                                <td><span class="badge badge-warning">⏳ Chờ xử lý</span></td>
-                            </tr>
-                        </c:forEach>
-                        <c:if test="${empty top5Shop}">
-                            <tr>
-                                <td colspan="4">
-                                    <div class="empty-state" style="padding:36px 24px;">
-                                        <div class="e-icon">🏪</div>
-                                        <div class="e-title">Chưa có yêu cầu đăng ký shop nào</div>
-                                        <div class="e-sub">Bấm vào menu "Duyệt Shop" để xem toàn bộ danh sách.</div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </c:if>
-                        </tbody>
-                    </table>
+        <div class="ov-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">show_chart</span> Đơn hàng &amp; doanh thu toàn sàn (7 ngày gần đây)</div>
                 </div>
+                <div class="panel-body"><div class="chart-box"><canvas id="dailyStatsChart"></canvas></div></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">storefront</span> Shop mới chờ duyệt</div>
+                    <a href="${pageContext.request.contextPath}/super-admin/shop-requests" class="panel-cta">Xem tất cả <span class="material-symbols-outlined">arrow_forward</span></a>
+                </div>
+                <div class="panel-body">
+                    <c:choose>
+                        <c:when test="${empty top5Shop}">
+                            <div class="empty-state" style="padding:30px 10px;">
+                                <div class="e-icon">🏪</div>
+                                <div class="e-title">Chưa có yêu cầu đăng ký shop nào</div>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="pending-list">
+                                <c:forEach var="account" items="${top5Shop}">
+                                    <div class="pending-item">
+                                        <div class="pending-avatar">${fn:toUpperCase(fn:substring(account.fullName, 0, 1))}</div>
+                                        <div class="pending-info">
+                                            <div class="pending-name"><c:out value="${account.fullName}"/></div>
+                                            <div class="pending-meta"><c:out value="${account.email}"/> · ${app:formatDateTime(account.createdAt)}</div>
+                                        </div>
+                                        <span class="badge badge-warning">Chờ duyệt</span>
+                                    </div>
+                                </c:forEach>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title"><span class="material-symbols-outlined tb-icon-sm">emoji_events</span> Top 5 shop doanh thu cao nhất</div>
+            </div>
+            <div class="panel-body">
+                <c:choose>
+                    <c:when test="${empty top5ShopDoanhThu}">
+                        <div class="empty-state" style="padding:30px 10px;">
+                            <div class="e-icon">🏆</div>
+                            <div class="e-title">Chưa có dữ liệu doanh thu.</div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="rank-list">
+                            <c:forEach var="s" items="${top5ShopDoanhThu}" varStatus="vs">
+                                <div class="rank-row top${vs.index + 1}">
+                                    <span class="rank-badge">${vs.index + 1}</span>
+                                    <div class="rank-info">
+                                        <div class="rank-name"><c:out value="${s.shopName}"/></div>
+                                        <div class="rank-sub">${s.tongDon} đơn</div>
+                                    </div>
+                                    <div class="rank-revenue"><fmt:formatNumber value="${s.doanhThu}" type="number" groupingUsed="true" maxFractionDigits="0"/> đ</div>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>
@@ -211,6 +256,7 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 scales: {
                     y: { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Số đơn' } },
@@ -219,26 +265,6 @@
             }
         });
 
-        var shopLabels = [
-            <c:forEach var="s" items="${top5ShopDoanhThu}">'${fn:escapeXml(s.shopName)}',</c:forEach>
-        ];
-        var shopRevenue = [
-            <c:forEach var="s" items="${top5ShopDoanhThu}">${s.doanhThu},</c:forEach>
-        ];
-
-        new Chart(document.getElementById('topShopChart'), {
-            type: 'bar',
-            data: {
-                labels: shopLabels,
-                datasets: [{ label: 'Doanh thu (đ)', data: shopRevenue, backgroundColor: '#FF9800', borderRadius: 6 }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { x: { beginAtZero: true } }
-            }
-        });
     })();
 
     document.addEventListener('DOMContentLoaded', function() {

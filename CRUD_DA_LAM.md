@@ -1,5 +1,170 @@
 # CRUD da lam
 
+## 156. Chạy Tomcat rà lại toàn bộ giao diện Shop + Admin, vá 2 lỗi thật tìm thấy
+
+**Yêu cầu:** User bảo "chạy tomcat rồi xem lại giao diện xem có chỗ nào lỗi hay xấu thì sửa lại rồi kiểm tra lại
+xem đã hết lỗi chưa" — rà soát toàn diện, không giới hạn 1 trang cụ thể.
+
+**Cách làm:** Build WAR, chạy Tomcat cổng 8090 với DB thật, duyệt qua **toàn bộ 25 trang Shop + 23 trang Admin**
+(cả qua route servlet thật lẫn JSP harness tạm có dữ liệu giả để xem đủ trạng thái), ở cả 2 theme sáng/tối
+(Admin), cả desktop lẫn mobile 375px. Phát hiện và vá 2 lỗi thật lan rộng nhiều trang (không phải do đợt đổi
+theme trước đó gây ra — là bug có sẵn trong code cũ, đợt rà soát này mới phát hiện ra):
+
+**Lỗi 1 — Modal "Thêm mới" tự bật che mất thông báo lỗi thật (4 trang Shop):** `Quanlysanpham.jsp`,
+`Quanlyloaisanpham.jsp`, `Quanlytopping.jsp`, `Quanlyloaitopping.jsp` đều có logic JS
+`if (isEditMode || hasError) openProductModal();` — hễ trang có BẤT KỲ lỗi nào (kể cả lỗi hoàn toàn không liên
+quan như "Bạn chưa có cửa hàng! Vui lòng đăng ký shop.") thì tự động bật modal "Thêm sản phẩm mới" TRỐNG, che kín
+màn hình và giấu mất thông báo lỗi thật phía sau. Người dùng chỉ thấy 1 form trống, không hiểu vì sao. Sửa: chỉ
+tự mở modal khi lỗi thực sự đến từ chính form (server luôn set `currentShop` trước khi set lỗi validate form, chỉ
+riêng lỗi "chưa có cửa hàng" là set lỗi mà KHÔNG có `currentShop") — đổi điều kiện thành
+`(not empty loi and not empty currentShop)`.
+
+**Lỗi 2 — `QuanLyHoanTien.jsp` (Hoàn tiền khách hàng) là bản sao y hệt `DuyetRutTienShop.jsp` TRƯỚC KHI dựng lại ở
+mục 155, mang đúng các lỗi đã vá ở đó nhưng chưa ai để ý trang này:**
+- Thiếu hẳn topbar-right (không có nút đổi theme sáng/tối, không có menu avatar/đăng xuất) — trang duy nhất
+  trong 23 trang admin thiếu cụm này.
+- Script nạp `assets/js/dashboard.js` — file không tồn tại (404 âm thầm).
+- Tự định nghĩa `.stat-card`/`.panel`/`.pager`/`.empty-state`/table riêng đè lên style dùng chung, khiến trang
+  hiện thẻ số liệu kiểu viền-trên-phẳng thay vì kiểu thẻ-icon như mọi trang khác — lệch tông toàn bộ.
+- Nút "Đã chuyển khoản" nhét thẳng `${r.accountName}` (tên khách hàng) vào chuỗi JS trong `onclick="..."` không
+  escape đúng ngữ cảnh JS — cùng lỗ hổng JS injection như `DuyetRutTienShop.jsp` trước khi vá.
+- Chỉ có 1 chỉ số (`pendingCount`), thiếu số liệu Đã hoàn/Từ chối/Tổng yêu cầu.
+
+Áp đúng bộ sửa đã dùng cho `DuyetRutTienShop.jsp`: thêm topbar-right + avatar-dropdown, dùng lại
+`.stats-grid`/`.stat-card`/`.dash-table`/`.pob-modal-overlay` chung, tab lọc trạng thái kèm số lượng thật (thêm
+`totalAll`/`completedCount`/`rejectedCount` vào `AdminRefundServlet.java`, tái dùng `refundDAO.countAll()` sẵn
+có), đổi nút hành động sang `data-*` + `addEventListener` thay vì nhét tên khách vào chuỗi JS, sửa lại đúng
+`dashboard-theme.js`.
+
+**Đã rà nhưng KHÔNG sửa (cân nhắc rồi quyết định để nguyên):**
+- `DuyetRutTienShipper.jsp`, `BaoCaoVanHanh.jsp`, `DoiSoatDoanhThuShop.jsp` cũng tự định nghĩa `.stat-card` kiểu
+  viền-trên-phẳng riêng (khác kiểu icon-card chung) — NHƯNG cả 3 trang đều CÓ đủ topbar-right/avatar/theme-toggle,
+  không lỗi injection, không script hỏng, dark mode vẫn đọc rõ (đã kiểm tra riêng `BaoCaoVanHanh` — số liệu
+  tưởng như bị mất chữ trong ảnh chụp màn hình hóa ra chỉ là ảnh chụp bị lỗi thời điểm, kiểm tra lại bằng DOM
+  computed style thì màu chữ/nền tương phản đúng). Đây là khác biệt phong cách (thẻ KPI viền màu vs thẻ icon),
+  không phải lỗi — để nguyên, có thể đồng bộ sau nếu user muốn dựng lại bố cục sâu cho các trang đó.
+- Một số servlet Shop chuyển hướng không đồng nhất khi shop chưa tồn tại (`/dangnhap` ở vài servlet,
+  `/shop` ở vài servlet khác, forward kèm lỗi ở 2 servlet) — chỉ ảnh hưởng tài khoản test `Bao` (chưa từng đăng ký
+  shop thật); với shop thật đã duyệt thì nhánh này gần như không bao giờ chạy tới. Đây là logic điều hướng/access
+  control sâu trong nhiều file Java không liên quan tới giao diện, ngoài phạm vi "xem giao diện" — không tự sửa.
+
+### Files sửa:
+- `src/main/web/shop/Quanlysanpham.jsp`, `Quanlyloaisanpham.jsp`, `Quanlytopping.jsp`, `Quanlyloaitopping.jsp`
+- `src/main/web/admin/QuanLyHoanTien.jsp`
+- `src/main/java/org/example/controllers/AdminRefundServlet.java`
+
+### Ghi chú:
+Không đổi DB nên không cập nhật `database.md`. Kiểm chứng: build lại WAR 2 lần (trước và sau khi vá), chạy
+Tomcat cổng 8090 với DB thật, quét lại toàn bộ 25 trang Shop (đăng nhập `Bao`) + 23 trang Admin (đăng nhập
+`Hien123`) qua route servlet thật — cả 48 trang đều 200 + đủ `</html>`, không còn lỗi biên dịch. Đã xác nhận
+trực quan bằng ảnh chụp: modal không còn tự bật che lỗi; `QuanLyHoanTien.jsp` giờ có đủ avatar/theme-toggle, tab
+lọc đúng số liệu thật, chế độ tối đọc rõ. Đã kiểm tra không tràn ngang ở 375px trên các trang vừa sửa. **Chưa
+kiểm chứng:** submit form thật (thêm sản phẩm khi có lỗi validate thật để xác nhận modal vẫn tự mở lại đúng lúc
+cần — chỉ xác nhận qua đọc code logic; bấm nút "Đã chuyển khoản"/"Từ chối" thật trên `QuanLyHoanTien.jsp` với dữ
+liệu thật).
+
+## 155. Dựng lại bố cục trang Duyệt rút tiền Shop theo mock Stitch
+
+**Yêu cầu:** Sau mục 154 (Tổng quan hệ thống), user bảo "làm tiếp trang duyệt rút tiền shop" — dựng lại bố cục
+`DuyetRutTienShop.jsp` theo mock "Thẩm Định Lệnh Rút Tiền Bất Thường" (chỉ lấy phần khung sườn: thẻ số liệu, tab
+lọc, bảng danh sách — mock có điểm rủi ro AI/eKYC/đối soát ngân hàng không có trong hệ thống thật, bỏ qua).
+
+**Phát hiện quan trọng khi đọc lại trang cũ:** trang này KHÔNG dùng chung style/markup với các trang admin khác
+như tưởng — nó tự định nghĩa nguyên bộ `.stats-grid`/`.stat-card`/`.panel`/`.pager`/`table.wd-table` riêng (đè lên
+class cùng tên của `dashboard.css`/`admin-theme.css` vì `<style>` trang nằm sau trong thứ tự nạp), và **thiếu hẳn
+cụm avatar-dropdown + nút đổi theme sáng/tối** mà mọi trang admin khác đều có — đây là 2 lỗi có thật, không phải
+do đợt áp theme trước đó (đợt trước chỉ đổi màu biến CSS, không đụng cấu trúc). Đồng thời script nạp
+`assets/js/dashboard.js` — **file này không tồn tại** (404 âm thầm từ trước), khiến `pobToggleSidebar()` chỉ chạy
+được nhờ trùng tên hàm ở nơi khác; đã sửa đúng thành `dashboard-theme.js`.
+
+**Đã làm:**
+- Bỏ toàn bộ CSS tự định nghĩa trùng tên, chuyển sang dùng lại `.stats-grid`/`.stat-card`/`.panel`/`.dash-table`/
+  `.empty-state` dùng chung — trang này giờ trông đồng bộ với các trang admin khác thay vì lệch tông.
+  Thêm cụm avatar-dropdown + nút đổi theme (copy đúng markup/JS từ trang khác) — trang này lần đầu tiên có đủ 2
+  thứ đó.
+- 4 thẻ thống kê thật: Đang chờ duyệt (nổi viền đỏ khi >0, tái dùng `.stat-alert` mới đưa vào `admin-theme.css`
+  ở mục 154), Đã duyệt, Từ chối, Tổng yêu cầu — 3 số cuối trước đây KHÔNG hề có, phải sửa
+  `DuyetRutTienShopServlet.java` thêm 3 câu `COUNT(*)` qua `walletDAO.countWithdrawals(...)` sẵn có (không đổi DB).
+- Tab lọc trạng thái kèm số lượng thật (Tất cả/Đang chờ/Đã duyệt/Từ chối) thay `<select>` — vẫn là link server-side
+  thật (trang có phân trang thật nên không lọc phía client như đã làm cho Shop).
+- Bảng: gộp lại dùng `.dash-table`, ngày giờ đổi sang `app:formatDateTime` (trước in `LocalDateTime` dạng
+  `fn:substring` thủ công — vẫn đúng nhưng không đồng bộ với trang khác).
+- **Vá lỗ hổng JS injection thật:** nút "Duyệt" cũ nhét thẳng `${w.shopName}` vào chuỗi JS trong `onclick="..."`
+  không hề escape cho ngữ cảnh JS (chỉ cần tên shop có dấu nháy đơn là vỡ cú pháp, và về lý thuyết có thể chèn JS
+  tùy ý nếu shop tự đặt tên ác ý) — đổi sang `data-id`/`data-shop`/`data-amount` + gắn sự kiện qua
+  `addEventListener`, đọc lại bằng `dataset` (trình duyệt tự giải mã HTML entity đúng cách, an toàn).
+- Modal từ chối đổi sang dùng khung `.pob-modal-overlay`/`.pob-modal-box` dùng chung (giống `quanlitaikhoan.jsp`)
+  thay vì tự vẽ modal riêng.
+
+**Không làm (mock có, hệ thống không có):** điểm rủi ro gian lận AI (Sentinel-Fraud Core), đối chiếu danh tính
+ngân hàng qua eKYC, biểu đồ đột biến doanh thu 7 ngày, đơn hàng bị gắn cờ nghi vấn, thao tác "khóa vĩnh viễn tài
+khoản/tạm giữ 14 ngày" — không có nghiệp vụ/bảng dữ liệu tương ứng.
+
+### Files sửa:
+- `src/main/web/admin/DuyetRutTienShop.jsp`
+- `src/main/java/org/example/controllers/DuyetRutTienShopServlet.java` (thêm `totalAll`/`approvedCount`/
+  `rejectedCount`)
+- `src/main/web/assets/css/admin-theme.css` (đưa `.stat-card.danger.stat-alert` từ chỗ trùng lặp ở 2 trang thành
+  1 rule dùng chung, cùng `.tb-icon-sm`/`.chart-box` đã thêm ở mục 154)
+
+### Ghi chú:
+Không đổi DB nên không cập nhật `database.md` — chỉ thêm truy vấn COUNT(*) tái dùng DAO sẵn có. Kiểm chứng: build
+lại WAR, chạy Tomcat cổng 8090, trang thật `/admin/duyet-rut-tien-shop` (dữ liệu thật rỗng) trả 200 render đủ;
+dùng JSP harness tạm (chỉ trong webapp test, không nằm trong repo) dựng 4 yêu cầu rút tiền đủ 3 trạng thái để xem
+bảng/status-pill/nút hành động/modal từ chối. Đã test: cả theme sáng/tối đều đúng (lần đầu trang này có dark mode
+hoạt động), modal mở/đóng đúng, không tràn ngang ở 375px (bảng tự cuộn ngang trong khung riêng — hành vi chuẩn).
+Đã quét lại cả 23 trang admin để chắc chắn việc gộp `.stat-card.danger.stat-alert`/`.tb-icon-sm` vào
+`admin-theme.css` không làm vỡ trang nào khác. **Chưa kiểm chứng:** bấm nút "Duyệt"/"Từ chối" thật với dữ liệu
+thật (test account chưa có yêu cầu rút tiền nào), chỉ xác nhận request CSRF-hợp lệ gửi đúng field.
+
+## 154. Dựng lại bố cục trang Tổng quan hệ thống (Super Admin) theo mock Stitch
+
+**Yêu cầu:** Sau mục 153 (chỉ đổi phong cách chung cho Admin), user bảo "làm tiếp Tổng quan hệ thống trước" —
+dựng lại bố cục `TongQuanHeThong.jsp` theo mock "Trung Tâm Quản Trị Hệ Thống & Vận Hành Toàn Sàn", chỉ dùng dữ
+liệu thật do `TongQuanServlet` cung cấp (không bịa Live Stream/GPS/AI như mock).
+
+**Dữ liệu thật có sẵn** (`TongQuanServlet`): `tongTaiKhoan`, `shopChoDuyet`, `shipperHoatDong`, `canhBaoViPham`,
+`tongDoanhThuSan`, `top5Shop` (5 tài khoản shop mới đăng ký chờ duyệt), `top5ShopDoanhThu` (5 shop doanh thu cao
+nhất — chỉ có tên/doanh thu/số đơn, KHÔNG có rating/tỷ lệ hủy/thời gian làm món như mock), `thongKeTheoNgay` (7
+ngày gần đây).
+
+**Đã làm:**
+- Thẻ "Cảnh báo vi phạm" nổi viền đỏ khi `canhBaoViPham > 0`, thêm dòng phụ giải thích cách tính (shop khóa +
+  tài khoản đình chỉ + đánh giá ≤2 sao) — số liệu này trước đó hiển thị trơ trụi, không ai biết nó gồm những gì.
+- Bố cục 2 cột: biểu đồ đơn hàng & doanh thu 7 ngày (trái, giữ nguyên Chart.js, thêm `maintainAspectRatio:false` +
+  khung `.chart-box` cao cố định) cạnh danh sách "Shop mới chờ duyệt" (phải, từ `top5Shop`, mỗi dòng có avatar chữ
+  cái đầu, tên/email/ngày đăng ký định dạng qua `app:formatDateTime` — trước đó in thẳng `LocalDateTime.toString()`
+  dạng `2026-09-...T...`), có link "Xem tất cả →" sang `/super-admin/shop-requests`.
+- "Top 5 shop doanh thu cao nhất": đổi từ biểu đồ cột ngang (canvas riêng, chỉ đọc được khi hover) sang danh sách
+  xếp hạng có huy hiệu #1/#2/#3 (giống trang chủ Shop), đọc rõ hơn với đúng 5 dòng dữ liệu.
+- Escape XSS: tên shop chờ duyệt trước đó in bằng `fn:escapeXml` (giữ nguyên), nhưng email/ngày tạo dùng
+  `${account.email}`/`${account.createdAt}` thô — đổi sang `<c:out>` và `app:formatDateTime`.
+
+**Bug tự vá trong lúc dựng (CSS Grid "blowout" — không phải lỗi cũ, do chính mục này gây ra rồi tự phát hiện qua
+test mobile):** cột 2-cột dùng `grid-template-columns: minmax(0,1.6fr) minmax(0,1fr)`, mobile fallback về
+`1fr` trần — thiếu `minmax(0, ...)` nên track co theo min-content của canvas Chart.js (biểu đồ đòi rộng hơn màn
+hình), khiến `.content` tràn ngang ~450px trên viewport 375px dù `document.documentElement.scrollWidth` vẫn báo
+đúng 375 (chỉ `.content` tự cuộn ngang, dễ bỏ sót nếu không đo `scrollWidth` của từng phần tử). Sửa bằng
+`.ov-grid > .panel { min-width: 0; }` + mobile fallback `minmax(0, 1fr)` thay vì `1fr` trần.
+
+**Không làm (mock có, hệ thống không có):** Live Stream cập nhật realtime, cảnh báo vận hành dạng banner, GPS
+Dispatcher/heatmap khu vực (trang Heatmap riêng đã có, không lặp lại ở đây), đối soát & rút tiền tự động, khiếu
+nại chậm giao, phương thức thanh toán toàn nền tảng (%FoodPay/Napas/COD), bảng điều khiển take-rate/thưởng nóng
+tài xế, rating/tỷ lệ hủy/thời gian làm món trong bảng xếp hạng shop (dữ liệu không tồn tại).
+
+### Files sửa:
+- `src/main/web/admin/TongQuanHeThong.jsp`
+- `src/main/web/assets/css/admin-theme.css` (thêm `.tb-icon-sm`, `.chart-box` dùng chung — sẽ tái dùng cho các
+  trang admin khác khi rebuild tiếp)
+
+### Ghi chú:
+Không đổi DB/servlet nên không cập nhật `database.md`. Kiểm chứng: build lại WAR, chạy Tomcat cổng 8090, dùng
+JSP harness tạm (chỉ trong webapp test, không nằm trong repo) dựng 5 shop chờ duyệt + 5 shop doanh thu + 7 ngày
+thống kê giả để xem đủ trạng thái có dữ liệu (tài khoản Super Admin test thật không có shop chờ duyệt nào). Đã
+test: trang thật `/tong-quan` (dữ liệu thật, phần lớn rỗng) và bản harness (đầy dữ liệu) đều render đúng ở cả
+theme sáng/tối, không tràn ngang ở 375px sau khi vá bug Grid. **Chưa kiểm chứng:** link "Xem tất cả →" có thật sự
+dẫn đúng tới danh sách duyệt shop khi bấm (chỉ xác nhận đúng URL, chưa click qua để duyệt thử).
+
 ## 153. Áp bộ thiết kế Stitch (zip 2) cho role SUPER ADMIN: theme riêng + sidebar dùng chung
 
 **Yêu cầu:** User gửi zip Stitch thứ 2 (`stitch_remix_of_foodmanage_ui_design (1).zip`: 12 trang mẫu Admin + 1 file
