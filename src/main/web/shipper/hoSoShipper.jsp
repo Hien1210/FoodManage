@@ -128,6 +128,9 @@
         <c:if test="${param.success == '1'}">
             <div class="alert alert-success">✅ Cập nhật hồ sơ thành công!</div>
         </c:if>
+        <c:if test="${param.error == 'invalid_input'}">
+            <div class="alert alert-danger">❌ Họ tên hoặc số điện thoại không hợp lệ (quá dài hoặc chứa ký tự không cho phép).</div>
+        </c:if>
         <c:if test="${param.error == '1'}">
             <div class="alert alert-danger">❌ Có lỗi xảy ra, vui lòng thử lại.</div>
         </c:if>

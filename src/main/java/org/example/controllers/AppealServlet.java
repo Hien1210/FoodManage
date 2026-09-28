@@ -30,6 +30,11 @@ public class AppealServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         Object sessionAccountId = session != null ? session.getAttribute("suspendedAccountId") : null;
 
+        if (message != null && org.example.utils.InputValidationUtil.checkMultiline("Nội dung kháng nghị", message, 1000) != null) {
+            resp.sendRedirect(req.getContextPath() + "/dangnhap?appealError=invalid");
+            return;
+        }
+
         if (sessionAccountId == null || message == null || message.trim().isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/dangnhap?appealError=empty");
             return;

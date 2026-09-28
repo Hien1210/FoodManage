@@ -75,7 +75,7 @@ public class ContentModerationServlet extends HttpServlet {
             }
         } else if ("addWord".equals(action)) {
             String word = req.getParameter("word");
-            if (word != null && !word.isBlank()) {
+            if (word != null && !word.isBlank() && org.example.utils.InputValidationUtil.checkLine("Từ khóa", word.trim(), 100) == null) {
                 feedbackDAO.addBannedWord(word.trim());
                 resp.sendRedirect(req.getContextPath() + "/admin/kiem-duyet-noi-dung?success=wordAdded");
             } else {

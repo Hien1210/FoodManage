@@ -278,6 +278,12 @@ public class QuanLyLoaiToppingServlet extends HttpServlet {
             if (cat.getName().length() > 100) {
                 return "Tên loại topping không được vượt quá 100 ký tự!";
             }
+            String textError = org.example.utils.InputValidationUtil.firstError(
+                    org.example.utils.InputValidationUtil.checkLine("Tên loại topping", cat.getName(), 100),
+                    org.example.utils.InputValidationUtil.checkMultiline("Mô tả", cat.getDescription(), 2000));
+            if (textError != null) {
+                return textError;
+            }
             if (!cat.getCategoryIds().isEmpty()) {
                 // Chong IDOR: khong cho gan loai topping vao loai san pham cua SHOP KHAC.
                 List<Long> shopCategoryIds = productCategoryDAO.findByShopId(shopId).stream()

@@ -152,8 +152,12 @@ public class ShopProductServlet extends HttpServlet {
         String description = normalize(req.getParameter("description"));
 
         // Validation
-        if (name.isEmpty()) {
-            req.setAttribute("loi", "Tên sản phẩm không được để trống!");
+        String nameError = name.isEmpty() ? "Tên sản phẩm không được để trống!"
+                : org.example.utils.InputValidationUtil.firstError(
+                        org.example.utils.InputValidationUtil.checkLine("Tên sản phẩm", name, 255),
+                        org.example.utils.InputValidationUtil.checkMultiline("Mô tả sản phẩm", description, 2000));
+        if (nameError != null) {
+            req.setAttribute("loi", nameError);
             forwardProductPage(req, resp, shop.getId());
             return;
         }
@@ -316,8 +320,12 @@ public class ShopProductServlet extends HttpServlet {
         String description = normalize(req.getParameter("description"));
 
         // Validation
-        if (name.isEmpty()) {
-            req.setAttribute("loi", "Tên sản phẩm không được để trống!");
+        String nameError = name.isEmpty() ? "Tên sản phẩm không được để trống!"
+                : org.example.utils.InputValidationUtil.firstError(
+                        org.example.utils.InputValidationUtil.checkLine("Tên sản phẩm", name, 255),
+                        org.example.utils.InputValidationUtil.checkMultiline("Mô tả sản phẩm", description, 2000));
+        if (nameError != null) {
+            req.setAttribute("loi", nameError);
             req.setAttribute("productSua", existing);
             forwardProductPage(req, resp, shop.getId());
             return;

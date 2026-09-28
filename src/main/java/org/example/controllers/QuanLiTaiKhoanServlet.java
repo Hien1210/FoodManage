@@ -328,6 +328,14 @@ public class QuanLiTaiKhoanServlet extends HttpServlet {
     }
 
     private String validateAccount(Account account, String password, boolean updating) {
+        String textError = org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Username", account.getUserName(), 100),
+                org.example.utils.InputValidationUtil.checkLine("Email", account.getEmail(), 100),
+                org.example.utils.InputValidationUtil.checkLine("Họ tên", account.getFullName(), org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", account.getPhone()));
+        if (textError != null) {
+            return textError;
+        }
         if (account.getUserName().isBlank()) {
             return "Username không được để trống";
         }

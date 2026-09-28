@@ -56,6 +56,12 @@ public class ShopHoSoServlet extends HttpServlet {
         String phone     = req.getParameter("phone");
         String email     = req.getParameter("email") != null ? req.getParameter("email").trim() : "";
         String avatarUrl = req.getParameter("avatarUrl");
+        if (org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Họ tên", fullName == null ? "" : fullName.trim(), org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", phone == null ? "" : phone.trim())) != null) {
+            resp.sendRedirect(req.getContextPath() + "/shop/ho-so?error=invalid_input");
+            return;
+        }
         String validAvatarUrl = (avatarUrl != null && UploadValidationUtil.isValidCloudinaryImageUrl(avatarUrl.trim()))
                 ? avatarUrl.trim() : account.getAvatarUrl();
 

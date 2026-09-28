@@ -72,6 +72,13 @@ public class ShipperProfileServlet extends HttpServlet {
         String email     = req.getParameter("email")     != null ? req.getParameter("email").trim()     : "";
         String avatarUrl = req.getParameter("avatarUrl") != null ? req.getParameter("avatarUrl").trim() : "";
 
+        String infoError = org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Họ tên", fullName, org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", phone));
+        if (infoError != null) {
+            redirectWithMsg(req, resp, "error", infoError);
+            return;
+        }
         if (fullName.isEmpty() || email.isEmpty()) {
             redirectWithMsg(req, resp, "error", "Họ tên và email không được để trống.");
             return;
@@ -162,6 +169,19 @@ public class ShipperProfileServlet extends HttpServlet {
         String bankName      = req.getParameter("bankName")      != null ? req.getParameter("bankName").trim()      : "";
         String bankAccountHolder = req.getParameter("bankAccountHolder") != null ? req.getParameter("bankAccountHolder").trim() : "";
 
+        String vehicleError = org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Số CCCD", cccd, 50),
+                org.example.utils.InputValidationUtil.checkLine("Số bằng lái", licenseNumber, 50),
+                org.example.utils.InputValidationUtil.checkLine("Loại phương tiện", vehicleType, 50),
+                org.example.utils.InputValidationUtil.checkLine("Biển số", vehiclePlate, 20),
+                org.example.utils.InputValidationUtil.checkLine("Mẫu xe", vehicleModel, 100),
+                org.example.utils.InputValidationUtil.checkLine("Số tài khoản", bankAccount, 30),
+                org.example.utils.InputValidationUtil.checkLine("Tên ngân hàng", bankName, 100),
+                org.example.utils.InputValidationUtil.checkLine("Chủ tài khoản", bankAccountHolder, 100));
+        if (vehicleError != null) {
+            redirectWithMsg(req, resp, "error", vehicleError);
+            return;
+        }
         if (vehicleType.isEmpty() || vehiclePlate.isEmpty()) {
             redirectWithMsg(req, resp, "error", "Loại phương tiện và biển số không được để trống.");
             return;

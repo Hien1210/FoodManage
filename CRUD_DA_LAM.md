@@ -6916,9 +6916,28 @@ Tạo đơn hàng qua checkout, bill, luồng shop xử lý đơn và shipper gi
 | XSS: cookie HttpOnly | Đạt; nay thêm `SameSite=Lax` cho cookie phiên (`web.xml`) | `Secure` chỉ bật khi chạy HTTPS |
 | Broken Access Control: kiểm tra quyền phía máy chủ + theo tài nguyên | Đạt: kiểm tra `roleId` ở servlet và chủ sở hữu (`BillServlet`, địa chỉ, sản phẩm theo `shop_id`); test 4 role + truy cập chéo | `AuthFilter` vẫn cho role shop vào `/admin/*`, dựa vào từng servlet tự chặn |
 | Mặc định từ chối + ghi log hành vi bị từ chối | **Đã làm**: `AppFilter`, `AuthFilter`, `AuditLogAuthFilter` ghi Audit Log (module Security, action "Truy cập bị từ chối") qua `filter/AccessDeniedLogger`; tối đa 1 dòng/phút cho mỗi (tài khoản, method, URL) để tránh làm đầy bảng | Chưa ghi các lần servlet tự chặn bằng redirect/403 riêng (vd `TongQuanServlet`) |
-| Kiểm tra định dạng đầu vào | **Đã làm** bằng `utils/InputValidationUtil` (giới hạn độ dài theo cột DB, từ chối ký tự điều khiển và `<` `>`, SĐT chỉ gồm số và + ( ) - .): đăng ký khách/shop/shipper, hồ sơ khách, hồ sơ shop, địa chỉ, khiếu nại | Chưa áp cho các form phụ (topping, loại sản phẩm, combo, voucher, hồ sơ shipper/admin) |
+| Kiểm tra định dạng đầu vào | **Đã làm** bằng `utils/InputValidationUtil` (giới hạn độ dài theo cột DB, từ chối ký tự điều khiển và `<` `>`, SĐT chỉ gồm số và + ( ) - .) cho form chính (đăng ký, hồ sơ, địa chỉ, khiếu nại) và form phụ (xem mục "Form phụ" bên dưới) | Chưa áp cho `CategoryServlet`/`ProductServlet` (trang legacy `/Category`, `/product` của admin), `VoucherServlet` (đã có regex riêng cho mã), `ThamSoVanHanhServlet` (chỉ nhận số) |
 
 ### Chi tiết kiểm tra đầu vào và log truy cập bị từ chối (mục 106)
 - **Giới hạn**: họ tên/tên người nhận ≤ 100, tên shop ≤ 255, địa chỉ ≤ 500, nhãn địa chỉ ≤ 50, mô tả/nội dung ≤ 2000, tiêu đề khiếu nại ≤ 200, SĐT ≤ 20 ký tự. Lỗi trả về theo cách sẵn có của từng form: `loi` + forward (đăng ký khách, hồ sơ shop, đăng ký shipper), JSON `jsonFail` (đăng ký shop), `error=invalid` (địa chỉ, khiếu nại), `error=invalid_input` (hồ sơ khách); đã thêm thông báo tương ứng vào `diaChi.jsp`, `khieuNai.jsp`, `thongTinCaNhan.jsp`.
 - **Kiểm chứng**: tên có `<`, tên/SĐT sai, mô tả 2100 ký tự đều bị từ chối; dữ liệu tiếng Việt hợp lệ ("Nguyễn Văn Á", SĐT `+84 900-000-000`) vẫn lưu được.
 - **Log truy cập bị từ chối**: kiểm chứng trên `/admin/audit-logs` — 5 URL bị chặn ở 4 role đều có dòng, 5 lần gọi lặp cùng URL chỉ tạo 1 dòng.
+
+### Form phụ áp `InputValidationUtil` (đợt 2)
+| Form | Trường và giới hạn | Cách báo lỗi |
+|---|---|---|
+| Sản phẩm shop (`ShopProductServlet`, tạo + sửa) | tên ≤ 255, mô tả ≤ 2000 | `loi` + forward |
+| Topping (`ShopToppingServlet`) | tên ≤ 100 | `loi` + forward |
+| Loại sản phẩm (`ShopProductTypeServlet`) | tên ≤ 100 | `loi` + forward |
+| Loại topping (`QuanLyLoaiToppingServlet`) | tên ≤ 100, mô tả ≤ 2000 | `loi` + forward |
+| Combo (`ShopComboServlet`) | tên ≤ 200, mô tả ≤ 500 | `?error=invalid` |
+| FAQ (`FaqServlet`, thêm + sửa) | câu hỏi ≤ 500, trả lời ≤ 5000, danh mục ≤ 100 | `loi` + forward |
+| Hồ sơ shop / admin / shipper (`ShopHoSoServlet`, `AdminProfileServlet`, `ShipperHoSoServlet`) | họ tên ≤ 100, SĐT | `?error=invalid_input` (đã thêm thông báo vào `hoSoShop.jsp`, `hoSoAdmin.jsp`, `hoSoShipper.jsp`) |
+| Shipper thông tin + phương tiện + ngân hàng (`ShipperProfileServlet`) | họ tên, SĐT, CCCD/bằng lái ≤ 50, loại xe ≤ 50, biển số ≤ 20, mẫu xe ≤ 100, STK ≤ 30, ngân hàng ≤ 100, chủ TK ≤ 100 | `redirectWithMsg` |
+| Kháng nghị (`AppealServlet`) | nội dung ≤ 1000 | `?appealError=invalid` |
+| Hoàn tiền (`RefundRequestServlet`) | ngân hàng ≤ 100, STK ≤ 50, chủ TK ≤ 200, ghi chú ≤ 500 | `error` + forward |
+| Đánh giá (`FeedbackServlet`) | nhận xét ≤ 1000 | `?error=1` |
+| Từ khóa cấm (`ContentModerationServlet`) | ≤ 100 | bỏ qua, quay lại trang |
+| Admin tạo/sửa tài khoản (`QuanLiTaiKhoanServlet`) | username/email/họ tên ≤ 100, SĐT | `loi` + forward |
+
+Đã test bằng dữ liệu có `<` hoặc quá dài trên 13 form; 95 JSP vẫn biên dịch.
