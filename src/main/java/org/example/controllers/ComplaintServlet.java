@@ -88,6 +88,13 @@ public class ComplaintServlet extends HttpServlet {
             return;
         }
 
+        if (org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Tiêu đề", subject, org.example.utils.InputValidationUtil.MAX_SUBJECT),
+                org.example.utils.InputValidationUtil.checkMultiline("Nội dung", content, org.example.utils.InputValidationUtil.MAX_DESCRIPTION)) != null) {
+            resp.sendRedirect(req.getContextPath() + "/khieu-nai?orderId=" + orderId + "&error=invalid");
+            return;
+        }
+
         Complaint complaint = new Complaint();
         complaint.setOrderId(orderId);
         complaint.setAccountId(account.getId());

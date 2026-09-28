@@ -6902,3 +6902,23 @@ Tạo đơn hàng qua checkout, bill, luồng shop xử lý đơn và shipper gi
 - JS trong `<script>` đang in dữ liệu bằng `fn:escapeXml` (an toàn), nhưng nếu đổi sang `textContent` thì chuỗi sẽ hiện entity thô.
 - Email OTP (Gmail 535) vẫn hỏng; `/cart`, `/cart-items` vẫn 404 nhưng còn vài JSP cũ link tới.
 - Quy ước mới: mọi `${...}` in dữ liệu người dùng phải dùng `<c:out>` hoặc `fn:escapeXml`; trong thuộc tính `on*` phải dùng dạng escape JS + HTML ở trên.
+
+## 106. Đối chiếu checklist "An ninh mạng web trong 5 phút" (FTES) và vá thêm
+
+| Mục checklist | Hiện trạng | Việc đã làm / còn lại |
+|---|---|---|
+| SQL: truy vấn tham số (prepared statement) | Đạt: toàn bộ DAO dùng `PreparedStatement`, chỗ nối `ORDER BY` có whitelist | — |
+| SQL: kiểm tra kiểu dữ liệu | Phần lớn đạt (`parseLong`/`parseInt` có xử lý lỗi); `quantity` ≤ 0 nay báo lỗi | — |
+| SQL: giới hạn quyền tài khoản DB | **Chưa đạt**: ứng dụng kết nối bằng `sa` | Cần tạo user DB riêng chỉ có quyền trên schema `POB` rồi đổi `db.user`/`db.password` trong `config.properties` |
+| SQL: không hiện lỗi SQL chi tiết | Đạt một phần | Đã thêm trang lỗi chung (`error.html`, khai báo trong `web.xml` cho 400/403/404/405/500 và `Throwable`) và bỏ `e.getMessage()` khỏi `DangKyServlet`, `DangKyShopServlet`, `ShopProductServlet` |
+| XSS: encode đầu ra theo ngữ cảnh | Đạt sau mục 105 (HTML text/attribute, thuộc tính `on*`, `innerHTML` ở POS) | — |
+| XSS: CSP | Có, nhưng `script-src 'unsafe-inline'` nên chỉ giảm nhẹ | Muốn chặt hơn phải chuyển JS inline/`onclick` ra file và dùng nonce — thay đổi lớn, chưa làm |
+| XSS: cookie HttpOnly | Đạt; nay thêm `SameSite=Lax` cho cookie phiên (`web.xml`) | `Secure` chỉ bật khi chạy HTTPS |
+| Broken Access Control: kiểm tra quyền phía máy chủ + theo tài nguyên | Đạt: kiểm tra `roleId` ở servlet và chủ sở hữu (`BillServlet`, địa chỉ, sản phẩm theo `shop_id`); test 4 role + truy cập chéo | `AuthFilter` vẫn cho role shop vào `/admin/*`, dựa vào từng servlet tự chặn |
+| Mặc định từ chối + ghi log hành vi bị từ chối | **Đã làm**: `AppFilter`, `AuthFilter`, `AuditLogAuthFilter` ghi Audit Log (module Security, action "Truy cập bị từ chối") qua `filter/AccessDeniedLogger`; tối đa 1 dòng/phút cho mỗi (tài khoản, method, URL) để tránh làm đầy bảng | Chưa ghi các lần servlet tự chặn bằng redirect/403 riêng (vd `TongQuanServlet`) |
+| Kiểm tra định dạng đầu vào | **Đã làm** bằng `utils/InputValidationUtil` (giới hạn độ dài theo cột DB, từ chối ký tự điều khiển và `<` `>`, SĐT chỉ gồm số và + ( ) - .): đăng ký khách/shop/shipper, hồ sơ khách, hồ sơ shop, địa chỉ, khiếu nại | Chưa áp cho các form phụ (topping, loại sản phẩm, combo, voucher, hồ sơ shipper/admin) |
+
+### Chi tiết kiểm tra đầu vào và log truy cập bị từ chối (mục 106)
+- **Giới hạn**: họ tên/tên người nhận ≤ 100, tên shop ≤ 255, địa chỉ ≤ 500, nhãn địa chỉ ≤ 50, mô tả/nội dung ≤ 2000, tiêu đề khiếu nại ≤ 200, SĐT ≤ 20 ký tự. Lỗi trả về theo cách sẵn có của từng form: `loi` + forward (đăng ký khách, hồ sơ shop, đăng ký shipper), JSON `jsonFail` (đăng ký shop), `error=invalid` (địa chỉ, khiếu nại), `error=invalid_input` (hồ sơ khách); đã thêm thông báo tương ứng vào `diaChi.jsp`, `khieuNai.jsp`, `thongTinCaNhan.jsp`.
+- **Kiểm chứng**: tên có `<`, tên/SĐT sai, mô tả 2100 ký tự đều bị từ chối; dữ liệu tiếng Việt hợp lệ ("Nguyễn Văn Á", SĐT `+84 900-000-000`) vẫn lưu được.
+- **Log truy cập bị từ chối**: kiểm chứng trên `/admin/audit-logs` — 5 URL bị chặn ở 4 role đều có dòng, 5 lần gọi lặp cùng URL chỉ tạo 1 dòng.

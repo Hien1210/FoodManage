@@ -132,7 +132,7 @@ public class ShopProductServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("loi", "Có lỗi xảy ra: " + e.getMessage());
+            req.setAttribute("loi", "Có lỗi xảy ra, vui lòng thử lại. Nếu lỗi lặp lại hãy liên hệ quản trị viên.");
             forwardProductPage(req, resp, shop.getId());
         }
     }

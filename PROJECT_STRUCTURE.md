@@ -18,8 +18,8 @@ src/main/java/org/example/
   controllers/   -> Servlet, mỗi servlet = 1    endpoint (@WebServlet)
   daos/          -> Data Access Object, có interface (XxxDAO) + impl (XxxDAOImpl)
   models/        -> POJO (entity), tên trùng bảng DB (số ít)
-  filter/        -> Servlet Filter (auth, chặn truy cập)
-  utils/         -> DBUtil (kết nối DB), EmailUtil (gửi mail OTP)
+  filter/        -> Servlet Filter (auth, chặn truy cập; AccessDeniedLogger ghi Audit Log khi bị từ chối)
+  utils/         -> DBUtil (kết nối DB), EmailUtil (gửi mail OTP), InputValidationUtil (giới hạn độ dài/ký tự cho form, CRUD_DA_LAM.md mục 106)
   websocket/     -> WebSocket endpoint theo dõi vị trí shipper realtime (không qua DAO/Servlet HTTP)
     - [HttpSessionConfigurator.java](src/main/java/org/example/websocket/HttpSessionConfigurator.java): copy `accountId` từ HttpSession vào WebSocket handshake để xác thực.
     - [TrackingEndpoint.java](src/main/java/org/example/websocket/TrackingEndpoint.java): `@ServerEndpoint("/ws/tracking")`, relay vị trí GPS shipper tới các khách hàng đang xem cùng đơn hàng (cache trong bộ nhớ, không có bảng DB mới) — xem [CRUD_DA_LAM.md](CRUD_DA_LAM.md) mục 25.
@@ -33,7 +33,7 @@ src/main/web/    -> JSP views (KHÔNG nằm trong WEB-INF nên có thể truy c�
   assets/css/admin-theme.css -> theme "Super Admin Portal" (bộ Stitch, primary #FF3B1F) cho role Admin: đè token của theme.css/dashboard.css chỉ ở nhánh light (dark giữ nguyên token xanh than gốc vì Stitch không có bản dark); áp dụng Quicksand + Plus Jakarta Sans, bo góc mềm, sidebar 4 nhóm cho CẢ 2 theme. Shop/Shipper không nạp nên không đổi.
   assets/css/shop-theme.css -> theme "Đối tác quán" (bộ Stitch) cho role Shop: đè token của theme.css/dashboard.css (màu #E3250A, nền kem, Quicksand + Plus Jakarta Sans, bo góc mềm, bóng ấm), restyle sidebar/topbar/nút pill/card, định nghĩa `.dash-card*`. Cần nạp SAU dashboard.css; Super Admin/Shipper không nạp nên không đổi.
   assets/js/     -> JS dùng chung nhiều trang, vd [orderTrackingMap.js](src/main/web/assets/js/orderTrackingMap.js) (bản đồ Leaflet 3-marker: shop, điểm giao, shipper realtime qua WebSocket; kèm tính khoảng cách Haversine + ETA hiển thị dưới bản đồ — xem mục 25c trong CRUD_DA_LAM.md)
-  WEB-INF/       -> web.xml, config
+  WEB-INF/       -> web.xml (cookie phiên HttpOnly + SameSite=Lax, trang lỗi chung `error.html` cho 400/403/404/405/500), config
 
 pom.xml          -> Maven dependencies (jakarta servlet, mssql-jdbc, jstl, jbcrypt, javax.mail, jakarta.websocket-api + jakarta.websocket-client-api cho tính năng theo dõi shipper realtime, org.apache.poi (poi + poi-ooxml) cho xuất Excel, com.itextpdf:itextpdf cho xuất PDF hóa đơn — xem CRUD_DA_LAM.md mục 58)
 CRUD_DA_LAM.md   -> log các CRUD đã hoàn thành (cart, order, cart-items, order-details)

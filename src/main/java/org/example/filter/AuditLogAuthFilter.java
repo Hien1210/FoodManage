@@ -44,6 +44,7 @@ public class AuditLogAuthFilter implements Filter {
         }
 
         if (account.getRoleId() != 1) {
+            AccessDeniedLogger.log(req, account, "Super Admin (Audit Log)");
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Chi Super Admin duoc xem Audit Log.");
             return;
         }

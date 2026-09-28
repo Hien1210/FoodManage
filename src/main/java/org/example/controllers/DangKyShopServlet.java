@@ -92,6 +92,15 @@ public class DangKyShopServlet extends HttpServlet {
         if (shopAddress.isEmpty()) { jsonFail(resp, "Địa chỉ shop không được để trống!"); return; }
         if (shopPhone.isEmpty())   { jsonFail(resp, "Số điện thoại shop không được để trống!"); return; }
 
+        String inputError = org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Họ tên", fullname, org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", phone),
+                org.example.utils.InputValidationUtil.checkLine("Tên shop", shopName, org.example.utils.InputValidationUtil.MAX_SHOP_NAME),
+                org.example.utils.InputValidationUtil.checkMultiline("Mô tả shop", shopDescription, org.example.utils.InputValidationUtil.MAX_DESCRIPTION),
+                org.example.utils.InputValidationUtil.checkLine("Địa chỉ shop", shopAddress, org.example.utils.InputValidationUtil.MAX_ADDRESS),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại shop", shopPhone));
+        if (inputError != null) { jsonFail(resp, inputError); return; }
+
         if (dao.tonTaiEmail(email))    { jsonFail(resp, "Email đã được đăng ký!"); return; }
         if (dao.tonTaiUsername(username)) { jsonFail(resp, "Tên đăng nhập đã được đăng ký!"); return; }
 
@@ -114,7 +123,7 @@ public class DangKyShopServlet extends HttpServlet {
             EmailUtil.sendEmail(email, "Xác nhận đăng ký Shop POB", buildShopOtpEmail(otp, email));
         } catch (Exception e) {
             e.printStackTrace();
-            jsonFail(resp, "Không thể gửi email, vui lòng thử lại! (" + e.getMessage() + ")");
+            jsonFail(resp, "Không thể gửi email, vui lòng thử lại sau ít phút.");
             return;
         }
 

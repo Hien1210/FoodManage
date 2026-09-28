@@ -60,6 +60,7 @@ public class AuthFilter implements Filter {
                 chain.doFilter(request, response);
                 return;
             } else {
+                AccessDeniedLogger.log(req, acc, "Chủ shop / Super Admin");
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN,
                         "Bạn không có quyền truy cập khu vực quản lý này!");
                 return;

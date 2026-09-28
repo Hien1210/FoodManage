@@ -275,6 +275,9 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     <c:if test="${param.error eq '1'}">
         <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Cập nhật thất bại, vui lòng thử lại.</div>
     </c:if>
+    <c:if test="${param.error eq 'invalid_input'}">
+        <div class="alert alert-danger">⚠️ Họ tên hoặc số điện thoại không hợp lệ (quá dài hoặc chứa ký tự không cho phép).</div>
+    </c:if>
     <c:if test="${param.error eq 'email_exists'}">
         <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Email này đã được sử dụng bởi tài khoản khác.</div>
     </c:if>

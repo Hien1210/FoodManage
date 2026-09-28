@@ -217,6 +217,9 @@
     <c:if test="${param.error eq 'empty'}">
         <div class="alert alert-danger">❌ Vui lòng nhập đủ tiêu đề và nội dung khiếu nại.</div>
     </c:if>
+    <c:if test="${param.error eq 'invalid'}">
+        <div class="alert alert-danger">⚠️ Tiêu đề hoặc nội dung không hợp lệ (quá dài hoặc chứa ký tự < >).</div>
+    </c:if>
     <c:if test="${param.error eq 'not_found'}">
         <div class="alert alert-danger">❌ Không tìm thấy đơn hàng hoặc đơn không thuộc về bạn.</div>
     </c:if>

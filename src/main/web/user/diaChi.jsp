@@ -343,6 +343,9 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     <c:if test="${param.success eq 'default'}">
         <div class="alert alert-info"><i class="fa-solid fa-star"></i> Đã đặt làm địa chỉ mặc định!</div>
     </c:if>
+    <c:if test="${param.error eq 'invalid'}">
+        <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Thông tin địa chỉ không hợp lệ (quá dài hoặc chứa ký tự không cho phép).</div>
+    </c:if>
     <c:if test="${param.error eq 'notfound'}">
         <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Không tìm thấy địa chỉ hoặc bạn không có quyền thao tác.</div>
     </c:if>

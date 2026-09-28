@@ -72,8 +72,15 @@ public class ShopProfileServlet extends HttpServlet {
         LocalTime openTime = parseTimeOrNull(req.getParameter("openTime"));
         LocalTime closeTime = parseTimeOrNull(req.getParameter("closeTime"));
 
-        if (shopName.isEmpty() || shopAddress.isEmpty() || shopPhone.isEmpty()) {
-            req.setAttribute("loi", "Tên cửa hàng, địa chỉ và số điện thoại không được để trống!");
+        String inputError = shopName.isEmpty() || shopAddress.isEmpty() || shopPhone.isEmpty()
+                ? "Tên cửa hàng, địa chỉ và số điện thoại không được để trống!"
+                : org.example.utils.InputValidationUtil.firstError(
+                        org.example.utils.InputValidationUtil.checkLine("Tên cửa hàng", shopName, org.example.utils.InputValidationUtil.MAX_SHOP_NAME),
+                        org.example.utils.InputValidationUtil.checkMultiline("Mô tả cửa hàng", shopDescription, org.example.utils.InputValidationUtil.MAX_DESCRIPTION),
+                        org.example.utils.InputValidationUtil.checkLine("Địa chỉ", shopAddress, org.example.utils.InputValidationUtil.MAX_ADDRESS),
+                        org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", shopPhone));
+        if (inputError != null) {
+            req.setAttribute("loi", inputError);
             Shop formShop = new Shop();
             formShop.setShopName(shopName);
             formShop.setShopDescription(shopDescription);
