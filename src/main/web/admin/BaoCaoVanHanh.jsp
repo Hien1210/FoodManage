@@ -111,9 +111,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -125,15 +125,15 @@
             <form class="filter-bar" method="get" action="${pageContext.request.contextPath}/admin/bao-cao-van-hanh">
                 <div class="filter-field">
                     <label for="tuNgay">Từ ngày</label>
-                    <input type="date" id="tuNgay" name="tuNgay" value="${tuNgay}" max="${denNgay}">
+                    <input type="date" id="tuNgay" name="tuNgay" value="${fn:escapeXml(tuNgay)}" max="${fn:escapeXml(denNgay)}">
                 </div>
                 <div class="filter-field">
                     <label for="denNgay">Đến ngày</label>
-                    <input type="date" id="denNgay" name="denNgay" value="${denNgay}" min="${tuNgay}">
+                    <input type="date" id="denNgay" name="denNgay" value="${fn:escapeXml(denNgay)}" min="${fn:escapeXml(tuNgay)}">
                 </div>
                 <button type="submit" class="btn-filter">🔍 Xem báo cáo</button>
                 <a class="btn-filter" style="background: var(--info, #3b82f6); color: #fff; text-decoration:none; display:inline-block;"
-                   href="${pageContext.request.contextPath}/admin/bao-cao-van-hanh?action=exportExcel&tuNgay=${tuNgay}&denNgay=${denNgay}">
+                   href="${pageContext.request.contextPath}/admin/bao-cao-van-hanh?action=exportExcel&tuNgay=${fn:escapeXml(tuNgay)}&denNgay=${fn:escapeXml(denNgay)}">
                     📊 Xuất thống kê (Excel)
                 </a>
             </form>
@@ -143,7 +143,7 @@
                 <div class="stat-card">
                     <span class="stat-title">Tổng Đơn Hàng Phát Sinh</span>
                     <span class="stat-value">${tongDonHang}</span>
-                    <span class="stat-hint">Từ ${tuNgay} đến ${denNgay}</span>
+                    <span class="stat-hint">Từ ${fn:escapeXml(tuNgay)} đến ${fn:escapeXml(denNgay)}</span>
                 </div>
                 <div class="stat-card">
                     <span class="stat-title">Tỷ Lệ Hoàn Thành Đơn</span>
@@ -230,8 +230,8 @@
 
     <div class="avatar-dropdown" id="avatarDropdown">
         <div class="dropdown-header">
-            <div class="d-name">${sessionScope.account.userName}</div>
-            <div class="d-email">${sessionScope.account.email}</div>
+            <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+            <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
             <span class="d-role">Super Admin</span>
         </div>
         <div class="dropdown-body">

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="/app-functions" prefix="app" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -72,11 +73,11 @@
                 </div>
                 <div class="form-group">
                     <label for="receiverName">Ten nguoi nhan *</label>
-                    <input type="text" id="receiverName" name="receiverName" value="${order.receiverName}" required>
+                    <input type="text" id="receiverName" name="receiverName" value="${fn:escapeXml(order.receiverName)}" required>
                 </div>
                 <div class="form-group">
                     <label for="receiverPhone">So dien thoai *</label>
-                    <input type="text" id="receiverPhone" name="receiverPhone" value="${order.receiverPhone}" required>
+                    <input type="text" id="receiverPhone" name="receiverPhone" value="${fn:escapeXml(order.receiverPhone)}" required>
                 </div>
                 <div class="form-group full">
                     <label for="shippingAddress">Dia chi giao hang *</label>

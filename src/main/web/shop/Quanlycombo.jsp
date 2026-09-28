@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Combo - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <title>Quản lý Combo - ${fn:escapeXml(not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -105,9 +105,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -234,7 +234,7 @@
                                         <div class="combo-actions">
                                             <button type="button" class="btn btn-ghost btn-sm" onclick="editCombo(this.closest('.combo-card'))"><span class="material-symbols-outlined">edit</span> Sửa</button>
                                             <form method="post" action="${pageContext.request.contextPath}/shop/combo" style="display:inline"
-                                                  onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa Combo <strong>${fn:escapeXml(combo.name)}</strong> không?', 'Xóa Combo')">
+                                                  onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa Combo <strong>${fn:escapeXml(fn:replace(fn:replace(combo.name,'\\','\\\\'),"'","\\'"))}</strong> không?', 'Xóa Combo')">
                                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="comboId" value="${combo.id}">
@@ -307,8 +307,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

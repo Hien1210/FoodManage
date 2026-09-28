@@ -118,22 +118,20 @@ public class UserAddressServlet extends HttpServlet {
 
     private void deleteAddress(HttpServletRequest req, HttpServletResponse resp, Account account) throws IOException {
         Long id = parseId(req.getParameter("id"));
-        if (id != null) {
-            UserAddress existing = userAddressDAO.findById(id);
-            if (existing != null && existing.getAccountId() == account.getId()) {
-                userAddressDAO.delete(id);
-            }
+        UserAddress existing = id == null ? null : userAddressDAO.findById(id);
+        if (existing == null || existing.getAccountId() != account.getId() || !userAddressDAO.delete(id)) {
+            resp.sendRedirect(req.getContextPath() + "/user/dia-chi?error=notfound");
+            return;
         }
         resp.sendRedirect(req.getContextPath() + "/user/dia-chi?success=deleted");
     }
 
     private void setDefaultAddress(HttpServletRequest req, HttpServletResponse resp, Account account) throws IOException {
         Long id = parseId(req.getParameter("id"));
-        if (id != null) {
-            UserAddress existing = userAddressDAO.findById(id);
-            if (existing != null && existing.getAccountId() == account.getId()) {
-                userAddressDAO.setDefault(id, account.getId());
-            }
+        UserAddress existing = id == null ? null : userAddressDAO.findById(id);
+        if (existing == null || existing.getAccountId() != account.getId() || !userAddressDAO.setDefault(id, account.getId())) {
+            resp.sendRedirect(req.getContextPath() + "/user/dia-chi?error=notfound");
+            return;
         }
         resp.sendRedirect(req.getContextPath() + "/user/dia-chi?success=default");
     }

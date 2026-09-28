@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="/app-functions" prefix="app" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -138,7 +139,7 @@
         <h2>${empty cart || cart.id == 0 ? '➕ Thêm giỏ hàng mới' : '✏️ Chỉnh sửa giỏ hàng'}</h2>
 
         <c:if test="${not empty error}">
-            <div class="alert-error">❌ ${error}</div>
+            <div class="alert-error">❌ ${fn:escapeXml(error)}</div>
         </c:if>
 
         <form method="post" action="${pageContext.request.contextPath}/cart">

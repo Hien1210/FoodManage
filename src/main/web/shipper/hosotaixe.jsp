@@ -128,9 +128,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -150,18 +150,18 @@
             <div class="avatar-hero">
                 <c:choose>
                     <c:when test="${not empty sessionScope.account.avatarUrl}">
-                        <img src="${sessionScope.account.avatarUrl}" alt="Avatar"
-                             onerror="this.style.display='none';this.parentNode.innerText='${fn:toUpperCase(fn:substring(sessionScope.account.fullName,0,1))}'"/>
+                        <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="Avatar"
+                             onerror="this.style.display='none';this.parentNode.innerText='${fn:escapeXml(fn:replace(fn:replace(fn:toUpperCase(fn:substring(sessionScope.account.fullName,0,1)),'\\','\\\\'),"'","\\'"))}'"/>
                     </c:when>
                     <c:otherwise>
-                        ${fn:toUpperCase(fn:substring(sessionScope.account.fullName,0,1))}
+                        ${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.fullName,0,1)))}
                     </c:otherwise>
                 </c:choose>
             </div>
             <div class="hero-info">
                 <h2>${fn:escapeXml(sessionScope.account.fullName)}</h2>
-                <div class="sub">@${fn:escapeXml(sessionScope.account.userName)} · ${sessionScope.account.email}</div>
-                <div class="sub" style="margin-top:2px;">📞 ${sessionScope.account.phone}</div>
+                <div class="sub">@${fn:escapeXml(sessionScope.account.userName)} · ${fn:escapeXml(sessionScope.account.email)}</div>
+                <div class="sub" style="margin-top:2px;">📞 ${fn:escapeXml(sessionScope.account.phone)}</div>
                 <c:choose>
                     <c:when test="${sessionScope.account.online}">
                         <span class="online-pill online">● Đang Online</span>
@@ -186,15 +186,15 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" name="phone" value="${sessionScope.account.phone}" placeholder="0901234567"/>
+                            <input type="text" class="form-control" name="phone" value="${fn:escapeXml(sessionScope.account.phone)}" placeholder="0901234567"/>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email <span class="required">*</span></label>
-                            <input type="email" class="form-control" name="email" value="${sessionScope.account.email}" required placeholder="you@example.com"/>
+                            <input type="email" class="form-control" name="email" value="${fn:escapeXml(sessionScope.account.email)}" required placeholder="you@example.com"/>
                         </div>
                         <div class="form-group">
                             <label class="form-label">URL ảnh đại diện</label>
-                            <input type="url" class="form-control" name="avatarUrl" value="${sessionScope.account.avatarUrl}" placeholder="https://..."/>
+                            <input type="url" class="form-control" name="avatarUrl" value="${fn:escapeXml(sessionScope.account.avatarUrl)}" placeholder="https://..."/>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary" style="margin-top:16px;">💾 Lưu thông tin</button>
@@ -240,10 +240,10 @@
                         <div class="form-group">
                             <label class="form-label">Ảnh CCCD / CMND - Mặt trước</label>
                             <div class="doc-upload-box">
-                                <img id="idCardFrontPreview" src="${profile.idCardFrontUrl}"
-                                     style="${empty profile.idCardFrontUrl ? 'display:none;' : ''}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
+                                <img id="idCardFrontPreview" src="${fn:escapeXml(profile.idCardFrontUrl)}"
+                                     style="${fn:escapeXml(empty profile.idCardFrontUrl ? 'display:none;' : '')}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
                                 <button type="button" id="idCardFrontDeleteBtn" class="btn btn-danger-outline btn-sm"
-                                        style="${empty profile.idCardFrontUrl ? 'display:none;' : 'display:block;'}width:fit-content;margin-bottom:10px;"
+                                        style="${fn:escapeXml(empty profile.idCardFrontUrl ? 'display:none;' : 'display:block;')}width:fit-content;margin-bottom:10px;"
                                         onclick="deleteDocImage('/shipper/upload-id-card','front','idCardFrontPreview','idCardFrontDeleteBtn','idCardFrontMsg')">🗑️ Xóa ảnh</button>
                                 <input type="file" id="idCardFrontFileInput" accept="image/*" ${sessionScope.account.online ? '' : 'disabled'} style="display:block;"/>
                                 <div class="upload-progress" id="idCardFrontProgress" style="display:none;height:6px;background:var(--bg-input);border-radius:4px;margin-top:8px;overflow:hidden;">
@@ -255,10 +255,10 @@
                         <div class="form-group">
                             <label class="form-label">Ảnh GPLX - Mặt trước</label>
                             <div class="doc-upload-box">
-                                <img id="licenseFrontPreview" src="${profile.licenseFrontUrl}"
-                                     style="${empty profile.licenseFrontUrl ? 'display:none;' : ''}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
+                                <img id="licenseFrontPreview" src="${fn:escapeXml(profile.licenseFrontUrl)}"
+                                     style="${fn:escapeXml(empty profile.licenseFrontUrl ? 'display:none;' : '')}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
                                 <button type="button" id="licenseFrontDeleteBtn" class="btn btn-danger-outline btn-sm"
-                                        style="${empty profile.licenseFrontUrl ? 'display:none;' : 'display:block;'}width:fit-content;margin-bottom:10px;"
+                                        style="${fn:escapeXml(empty profile.licenseFrontUrl ? 'display:none;' : 'display:block;')}width:fit-content;margin-bottom:10px;"
                                         onclick="deleteDocImage('/shipper/upload-license','front','licenseFrontPreview','licenseFrontDeleteBtn','licenseFrontMsg')">🗑️ Xóa ảnh</button>
                                 <input type="file" id="licenseFrontFileInput" accept="image/*" ${sessionScope.account.online ? '' : 'disabled'} style="display:block;"/>
                                 <div class="upload-progress" id="licenseFrontProgress" style="display:none;height:6px;background:var(--bg-input);border-radius:4px;margin-top:8px;overflow:hidden;">
@@ -270,10 +270,10 @@
                         <div class="form-group">
                             <label class="form-label">Ảnh CCCD / CMND - Mặt sau</label>
                             <div class="doc-upload-box">
-                                <img id="idCardBackPreview" src="${profile.idCardBackUrl}"
-                                     style="${empty profile.idCardBackUrl ? 'display:none;' : ''}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
+                                <img id="idCardBackPreview" src="${fn:escapeXml(profile.idCardBackUrl)}"
+                                     style="${fn:escapeXml(empty profile.idCardBackUrl ? 'display:none;' : '')}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
                                 <button type="button" id="idCardBackDeleteBtn" class="btn btn-danger-outline btn-sm"
-                                        style="${empty profile.idCardBackUrl ? 'display:none;' : 'display:block;'}width:fit-content;margin-bottom:10px;"
+                                        style="${fn:escapeXml(empty profile.idCardBackUrl ? 'display:none;' : 'display:block;')}width:fit-content;margin-bottom:10px;"
                                         onclick="deleteDocImage('/shipper/upload-id-card','back','idCardBackPreview','idCardBackDeleteBtn','idCardBackMsg')">🗑️ Xóa ảnh</button>
                                 <input type="file" id="idCardBackFileInput" accept="image/*" ${sessionScope.account.online ? '' : 'disabled'} style="display:block;"/>
                                 <div class="upload-progress" id="idCardBackProgress" style="display:none;height:6px;background:var(--bg-input);border-radius:4px;margin-top:8px;overflow:hidden;">
@@ -285,10 +285,10 @@
                         <div class="form-group">
                             <label class="form-label">Ảnh GPLX - Mặt sau</label>
                             <div class="doc-upload-box">
-                                <img id="licenseBackPreview" src="${profile.licenseBackUrl}"
-                                     style="${empty profile.licenseBackUrl ? 'display:none;' : ''}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
+                                <img id="licenseBackPreview" src="${fn:escapeXml(profile.licenseBackUrl)}"
+                                     style="${fn:escapeXml(empty profile.licenseBackUrl ? 'display:none;' : '')}width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);margin-bottom:8px;"/>
                                 <button type="button" id="licenseBackDeleteBtn" class="btn btn-danger-outline btn-sm"
-                                        style="${empty profile.licenseBackUrl ? 'display:none;' : 'display:block;'}width:fit-content;margin-bottom:10px;"
+                                        style="${fn:escapeXml(empty profile.licenseBackUrl ? 'display:none;' : 'display:block;')}width:fit-content;margin-bottom:10px;"
                                         onclick="deleteDocImage('/shipper/upload-license','back','licenseBackPreview','licenseBackDeleteBtn','licenseBackMsg')">🗑️ Xóa ảnh</button>
                                 <input type="file" id="licenseBackFileInput" accept="image/*" ${sessionScope.account.online ? '' : 'disabled'} style="display:block;"/>
                                 <div class="upload-progress" id="licenseBackProgress" style="display:none;height:6px;background:var(--bg-input);border-radius:4px;margin-top:8px;overflow:hidden;">
@@ -353,7 +353,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🛵 Shipper</span>
     </div>
     <div class="dropdown-body">

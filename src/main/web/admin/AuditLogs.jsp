@@ -101,9 +101,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -130,15 +130,15 @@
                     </div>
                     <div class="filter-field">
                         <label>Hành động (action)</label>
-                        <input type="text" name="action" value="${filterAction}" placeholder="VD: Duyệt shop">
+                        <input type="text" name="action" value="${fn:escapeXml(filterAction)}" placeholder="VD: Duyệt shop">
                     </div>
                     <div class="filter-field">
                         <label>Từ ngày</label>
-                        <input type="date" name="fromDate" value="${filterFromDate}">
+                        <input type="date" name="fromDate" value="${fn:escapeXml(filterFromDate)}">
                     </div>
                     <div class="filter-field">
                         <label>Đến ngày</label>
-                        <input type="date" name="toDate" value="${filterToDate}">
+                        <input type="date" name="toDate" value="${fn:escapeXml(filterToDate)}">
                     </div>
                     <div class="filter-field filter-actions">
                         <button type="submit" class="btn-filter">🔍 Tìm kiếm</button>
@@ -187,7 +187,7 @@
                                     <td class="cell-user">
                                         <c:choose>
                                             <c:when test="${not empty log.username}">
-                                                <div class="name">${log.username}</div>
+                                                <div class="name">${fn:escapeXml(log.username)}</div>
                                                 <div class="role">${not empty log.roleName ? log.roleName : ''} (#${log.accountId})</div>
                                             </c:when>
                                             <c:otherwise><span style="color:var(--text-dim);">Hệ thống</span></c:otherwise>
@@ -199,7 +199,7 @@
                                     <td class="cell-target">
                                         <c:if test="${not empty log.targetType}">${log.targetType}<c:if test="${not empty log.targetId}"> #${log.targetId}</c:if></c:if>
                                     </td>
-                                    <td class="cell-target">${log.ipAddress}</td>
+                                    <td class="cell-target">${fn:escapeXml(log.ipAddress)}</td>
                                 </tr>
                             </c:forEach>
                             </tbody>
@@ -217,7 +217,7 @@
                                 <c:param name="fromDate" value="${filterFromDate}"/>
                                 <c:param name="toDate" value="${filterToDate}"/>
                             </c:url>
-                            <a class="page-link ${currentPage <= 1 ? 'disabled' : ''}" href="${prevUrl}">‹</a>
+                            <a class="page-link ${currentPage <= 1 ? 'disabled' : ''}" href="${fn:escapeXml(prevUrl)}">‹</a>
 
                             <c:forEach begin="1" end="${totalPages}" var="p">
                                 <c:url var="pageUrl" value="/admin/audit-logs">
@@ -228,7 +228,7 @@
                                     <c:param name="fromDate" value="${filterFromDate}"/>
                                     <c:param name="toDate" value="${filterToDate}"/>
                                 </c:url>
-                                <a class="page-link ${p == currentPage ? 'active' : ''}" href="${pageUrl}">${p}</a>
+                                <a class="page-link ${p == currentPage ? 'active' : ''}" href="${fn:escapeXml(pageUrl)}">${p}</a>
                             </c:forEach>
 
                             <c:url var="nextUrl" value="/admin/audit-logs">
@@ -239,7 +239,7 @@
                                 <c:param name="fromDate" value="${filterFromDate}"/>
                                 <c:param name="toDate" value="${filterToDate}"/>
                             </c:url>
-                            <a class="page-link ${currentPage >= totalPages ? 'disabled' : ''}" href="${nextUrl}">›</a>
+                            <a class="page-link ${currentPage >= totalPages ? 'disabled' : ''}" href="${fn:escapeXml(nextUrl)}">›</a>
                         </div>
                     </div>
                 </c:otherwise>
@@ -250,8 +250,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

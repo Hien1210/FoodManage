@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông tin cửa hàng - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <title>Thông tin cửa hàng - ${fn:escapeXml(not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -97,9 +97,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -283,14 +283,14 @@
                                 <label class="form-label" for="bankCode">Ngân hàng nhận tiền (QR)</label>
                                 <select id="bankCode" name="bankCode" class="form-control">
                                     <option value="">-- Chọn ngân hàng --</option>
-                                    <option value="970436" ${formShop.bankCode == '970436' ? 'selected' : ''}>Vietcombank</option>
-                                    <option value="970422" ${formShop.bankCode == '970422' ? 'selected' : ''}>MB Bank</option>
-                                    <option value="970432" ${formShop.bankCode == '970432' ? 'selected' : ''}>VPBank</option>
-                                    <option value="970407" ${formShop.bankCode == '970407' ? 'selected' : ''}>Techcombank</option>
-                                    <option value="970416" ${formShop.bankCode == '970416' ? 'selected' : ''}>ACB</option>
-                                    <option value="970418" ${formShop.bankCode == '970418' ? 'selected' : ''}>BIDV</option>
-                                    <option value="970415" ${formShop.bankCode == '970415' ? 'selected' : ''}>VietinBank</option>
-                                    <option value="970405" ${formShop.bankCode == '970405' ? 'selected' : ''}>Agribank</option>
+                                    <option value="970436" ${fn:escapeXml(formShop.bankCode == '970436' ? 'selected' : '')}>Vietcombank</option>
+                                    <option value="970422" ${fn:escapeXml(formShop.bankCode == '970422' ? 'selected' : '')}>MB Bank</option>
+                                    <option value="970432" ${fn:escapeXml(formShop.bankCode == '970432' ? 'selected' : '')}>VPBank</option>
+                                    <option value="970407" ${fn:escapeXml(formShop.bankCode == '970407' ? 'selected' : '')}>Techcombank</option>
+                                    <option value="970416" ${fn:escapeXml(formShop.bankCode == '970416' ? 'selected' : '')}>ACB</option>
+                                    <option value="970418" ${fn:escapeXml(formShop.bankCode == '970418' ? 'selected' : '')}>BIDV</option>
+                                    <option value="970415" ${fn:escapeXml(formShop.bankCode == '970415' ? 'selected' : '')}>VietinBank</option>
+                                    <option value="970405" ${fn:escapeXml(formShop.bankCode == '970405' ? 'selected' : '')}>Agribank</option>
                                 </select>
                                 <div class="form-hint">Dùng để tạo mã QR chuyển khoản khi khách chọn thanh toán QR ở Bấm Bill, và cũng là tài khoản nhận tiền khi rút tiền ở Ví tiền Shop.</div>
                             </div>
@@ -360,8 +360,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

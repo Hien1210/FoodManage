@@ -9,14 +9,60 @@ import java.util.List;
 
 public class UserAddressDAOImpl implements UserAddressDAO {
 
-    private static final String SELECT_COLS =
-        "id, account_id, label, full_address, receiver_name, receiver_phone, is_default, created_at";
+    // Tên cột thật của bảng User_Addresses khác nhau giữa các DB: database.md dùng account_id/full_address,
+    // còn một số DB cũ dùng user_id/address. Dò 1 lần từ INFORMATION_SCHEMA rồi dùng lại (chỉ nhận các tên
+    // trong danh sách cố định nên an toàn khi nối vào câu SQL).
+    private static volatile String ownerCol;
+    private static volatile String addressCol;
+
+    private static void resolveColumns() {
+        if (ownerCol != null && addressCol != null) {
+            return;
+        }
+        String owner = "account_id";
+        String address = "full_address";
+        String sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'User_Addresses'";
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            boolean hasAccountId = false, hasUserId = false, hasFullAddress = false, hasAddress = false;
+            while (rs.next()) {
+                String c = rs.getString(1);
+                if ("account_id".equalsIgnoreCase(c)) hasAccountId = true;
+                else if ("user_id".equalsIgnoreCase(c)) hasUserId = true;
+                else if ("full_address".equalsIgnoreCase(c)) hasFullAddress = true;
+                else if ("address".equalsIgnoreCase(c)) hasAddress = true;
+            }
+            if (!hasAccountId && hasUserId) owner = "user_id";
+            if (!hasFullAddress && hasAddress) address = "address";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ownerCol = owner;
+        addressCol = address;
+    }
+
+    private static String owner() {
+        resolveColumns();
+        return ownerCol;
+    }
+
+    private static String address() {
+        resolveColumns();
+        return addressCol;
+    }
+
+    /** Danh sách cột SELECT, đặt alias về account_id / full_address để map() dùng một tên duy nhất. */
+    private static String selectCols() {
+        return "id, " + owner() + " AS account_id, label, " + address() + " AS full_address, "
+                + "receiver_name, receiver_phone, is_default, created_at, locationX, locationY";
+    }
 
     @Override
     public List<UserAddress> findByAccountId(long accountId) {
         List<UserAddress> list = new ArrayList<>();
-        String sql = "SELECT id, account_id, label, full_address, receiver_name, receiver_phone, is_default, created_at, locationX, locationY " +
-                     "FROM User_Addresses WHERE account_id = ? AND is_deleted = 0 ORDER BY is_default DESC, id ASC";
+        String sql = "SELECT " + selectCols() + " FROM User_Addresses WHERE " + owner()
+                + " = ? AND is_deleted = 0 ORDER BY is_default DESC, id ASC";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, accountId);
@@ -31,8 +77,7 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public UserAddress findById(long id) {
-        String sql = "SELECT id, account_id, label, full_address, receiver_name, receiver_phone, is_default, created_at, locationX, locationY " +
-                     "FROM User_Addresses WHERE id = ? AND is_deleted = 0";
+        String sql = "SELECT " + selectCols() + " FROM User_Addresses WHERE id = ? AND is_deleted = 0";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
@@ -47,8 +92,8 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public boolean create(UserAddress a) {
-        String sql = "INSERT INTO User_Addresses (account_id, label, full_address, receiver_name, receiver_phone, is_default, locationX, locationY) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO User_Addresses (" + owner() + ", label, " + address()
+                + ", receiver_name, receiver_phone, is_default, locationX, locationY) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, a.getAccountId());
@@ -76,8 +121,9 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public boolean update(UserAddress a) {
-        String sql = "UPDATE User_Addresses SET label = ?, full_address = ?, receiver_name = ?, receiver_phone = ?, locationX = ?, locationY = ? " +
-                     "WHERE id = ? AND account_id = ? AND is_deleted = 0";
+        String sql = "UPDATE User_Addresses SET label = ?, " + address()
+                + " = ?, receiver_name = ?, receiver_phone = ?, locationX = ?, locationY = ? "
+                + "WHERE id = ? AND " + owner() + " = ? AND is_deleted = 0";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setNString(1, a.getLabel());
@@ -119,8 +165,8 @@ public class UserAddressDAOImpl implements UserAddressDAO {
 
     @Override
     public boolean setDefault(long addressId, long accountId) {
-        String sql1 = "UPDATE User_Addresses SET is_default = 0 WHERE account_id = ?";
-        String sql2 = "UPDATE User_Addresses SET is_default = 1 WHERE id = ? AND account_id = ?";
+        String sql1 = "UPDATE User_Addresses SET is_default = 0 WHERE " + owner() + " = ?";
+        String sql2 = "UPDATE User_Addresses SET is_default = 1 WHERE id = ? AND " + owner() + " = ?";
         try (Connection conn = DBUtil.getConnection()) {
             conn.setAutoCommit(false);
             try (PreparedStatement ps1 = conn.prepareStatement(sql1)) {

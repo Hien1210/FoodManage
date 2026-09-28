@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <c:if test="${empty sessionScope.account || sessionScope.account.roleId != 3}">
@@ -84,15 +85,15 @@
                 <div class="info-box success">✅ Hoàn tiền thành công! Tiền đã được chuyển vào tài khoản của bạn.</div>
             </c:if>
             <c:if test="${existing.status eq 'REJECTED'}">
-                <div class="info-box warning">❌ Yêu cầu bị từ chối. Lý do: <strong>${existing.rejectReason}</strong></div>
+                <div class="info-box warning">❌ Yêu cầu bị từ chối. Lý do: <strong>${fn:escapeXml(existing.rejectReason)}</strong></div>
             </c:if>
 
             <div style="background:var(--bg-input);border-radius:12px;padding:14px 16px;margin-bottom:20px">
                 <div class="status-row"><span class="k">Trạng thái</span><span class="v"><span class="badge ${existing.status}">${existing.status eq 'PENDING' ? '⏳ Đang chờ' : existing.status eq 'COMPLETED' ? '✅ Đã hoàn' : '❌ Từ chối'}</span></span></div>
                 <div class="status-row"><span class="k">Số tiền hoàn</span><span class="v" style="color:#dc2626">₫<fmt:formatNumber value="${existing.amount}" pattern="#,##0"/></span></div>
-                <div class="status-row"><span class="k">Ngân hàng</span><span class="v">${existing.bankName}</span></div>
-                <div class="status-row"><span class="k">Số tài khoản</span><span class="v" style="font-family:monospace">${existing.bankAccountNumber}</span></div>
-                <div class="status-row"><span class="k">Chủ tài khoản</span><span class="v">${existing.bankAccountHolder}</span></div>
+                <div class="status-row"><span class="k">Ngân hàng</span><span class="v">${fn:escapeXml(existing.bankName)}</span></div>
+                <div class="status-row"><span class="k">Số tài khoản</span><span class="v" style="font-family:monospace">${fn:escapeXml(existing.bankAccountNumber)}</span></div>
+                <div class="status-row"><span class="k">Chủ tài khoản</span><span class="v">${fn:escapeXml(existing.bankAccountHolder)}</span></div>
                 <div class="status-row"><span class="k">Ngày gửi</span><span class="v"><fmt:formatDate value="${existing.requestedAt}" pattern="dd/MM/yyyy HH:mm" type="both"/></span></div>
             </div>
             <a href="${pageContext.request.contextPath}/user/donhang" class="btn-back">← Quay lại đơn hàng</a>
@@ -125,7 +126,7 @@
             </div>
 
             <c:if test="${not empty error}">
-                <div class="alert-danger">⚠️ ${error}</div>
+                <div class="alert-danger">⚠️ ${fn:escapeXml(error)}</div>
             </c:if>
 
             <form method="post" action="${pageContext.request.contextPath}/user/yeu-cau-hoan-tien">

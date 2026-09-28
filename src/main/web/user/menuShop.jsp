@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${shop.shopName} – FOOD MANAGE</title>
+    <title>${fn:escapeXml(shop.shopName)} – FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -606,26 +606,26 @@
             <c:set var="isValidHeroLogoUrl" value="${not empty shop.shopLogo && (fn:startsWith(shop.shopLogo, 'http://') || fn:startsWith(shop.shopLogo, 'https://') || fn:startsWith(shop.shopLogo, '/') || fn:startsWith(shop.shopLogo, 'assets/'))}"/>
             <c:choose>
                 <c:when test="${isValidHeroLogoUrl}">
-                    <img src="${shop.shopLogo}" alt="${shop.shopName}"
+                    <img src="${fn:escapeXml(shop.shopLogo)}" alt="${fn:escapeXml(shop.shopName)}"
                          onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'">
                 </c:when>
                 <c:otherwise>
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="${shop.shopName}">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="${fn:escapeXml(shop.shopName)}">
                 </c:otherwise>
             </c:choose>
         </div>
 
         <div class="shop-info">
-            <h1>${shop.shopName}</h1>
+            <h1>${fn:escapeXml(shop.shopName)}</h1>
             <c:if test="${not empty shop.shopDescription}">
-                <div class="desc">${shop.shopDescription}</div>
+                <div class="desc">${fn:escapeXml(shop.shopDescription)}</div>
             </c:if>
             <div class="shop-meta-row">
                 <c:if test="${not empty shop.shopAddress}">
-                    <span class="shop-meta-item">📍 ${shop.shopAddress}</span>
+                    <span class="shop-meta-item">📍 ${fn:escapeXml(shop.shopAddress)}</span>
                 </c:if>
                 <c:if test="${not empty shop.shopPhone}">
-                    <span class="shop-meta-item">📞 ${shop.shopPhone}</span>
+                    <span class="shop-meta-item">📞 ${fn:escapeXml(shop.shopPhone)}</span>
                 </c:if>
                 <c:choose>
                     <c:when test="${empty shop.openTime || empty shop.closeTime}">
@@ -710,7 +710,7 @@
                 </c:if>
                 <c:forEach var="cat" items="${categories}">
                     <button class="cat-pill" onclick="filterCategory('${cat.id}', this)">
-                        ${cat.categoryName}
+                        ${fn:escapeXml(cat.categoryName)}
                     </button>
                 </c:forEach>
             </div>
@@ -833,7 +833,7 @@
                         <div class="p-thumb">
                             <c:choose>
                                 <c:when test="${not empty p.imageUrl}">
-                                    <img src="${p.imageUrl}" alt="${p.productName}"
+                                    <img src="${fn:escapeXml(p.imageUrl)}" alt="${fn:escapeXml(p.productName)}"
                                          onerror="this.style.display='none';this.nextSibling.style.display='flex'">
                                     <div class="fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">🍜</div>
                                 </c:when>
@@ -878,9 +878,9 @@
 
                         <!-- Nội dung -->
                         <div class="p-body">
-                            <div class="p-name">${p.productName}</div>
+                            <div class="p-name">${fn:escapeXml(p.productName)}</div>
                             <c:if test="${not empty p.description}">
-                                <div class="p-desc">${p.description}</div>
+                                <div class="p-desc">${fn:escapeXml(p.description)}</div>
                             </c:if>
                             <div class="p-rating">
                                 <c:choose>
@@ -927,7 +927,7 @@
                             <button class="btn-add"
                                     <c:if test="${p.staTus eq 'OUT_OF_STOCK'}">disabled title="Hết hàng"</c:if>
                                     <c:if test="${not shopOpenNow}">disabled title="Cửa hàng đang đóng cửa"</c:if>
-                                    onclick="openModal(${p.id}, '${fn:escapeXml(p.productName)}', '${fn:escapeXml(p.description)}', ${shop.id}, ${p.categoryId},
+                                    onclick="openModal(${p.id}, '${fn:escapeXml(fn:replace(fn:replace(p.productName,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(p.description,'\\','\\\\'),"'","\\'"))}', ${shop.id}, ${p.categoryId},
                                         [<c:forEach var="s" items="${p.sizes}" varStatus="st">{id:${s.id},name:'${fn:escapeXml(s.sizeName)}',price:${s.price},originalPrice:${s.originalPrice},hasSale:${not empty s.salePrice and s.salePrice > 0},outOfStock:${s.outOfStock}}<c:if test="${!st.last}">,</c:if></c:forEach>])">
                                 +
                             </button>
@@ -988,7 +988,7 @@
                                                 <input type="checkbox" class="topping-check" id="topping_${t.id}"
                                                        name="toppingId" value="${t.id}" data-price="${t.price}"
                                                        onchange="toggleTopping(this, ${t.id})" ${toppingHetHang ? 'disabled' : ''}>
-                                                <span class="t-name">${t.toppingName}<c:if test="${toppingHetHang}"> (Hết hàng)</c:if></span>
+                                                <span class="t-name">${fn:escapeXml(t.toppingName)}<c:if test="${toppingHetHang}"> (Hết hàng)</c:if></span>
                                                 <span class="t-price">+<fmt:formatNumber value="${t.price}" type="number" groupingUsed="true"/>đ</span>
                                                 <span class="t-qty-row" id="toppingQtyRow_${t.id}" style="display:none;">
                                                     <button type="button" class="t-qty-btn" onclick="event.preventDefault();event.stopPropagation();changeToppingQty(${t.id},-1)">−</button>

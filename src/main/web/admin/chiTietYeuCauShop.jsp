@@ -67,9 +67,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -107,7 +107,7 @@
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                     <input type="hidden" name="action" value="accept">
                     <input type="hidden" name="id" value="${shop.id}">
-                    <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận DUYỆT cửa hàng [${shop.shopName}]?')">✓ Chấp nhận</button>
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận DUYỆT cửa hàng [${fn:escapeXml(fn:replace(fn:replace(shop.shopName,'\\','\\\\'),"'","\\'"))}]?')">✓ Chấp nhận</button>
                 </form>
                 <form action="${pageContext.request.contextPath}/super-admin/shop-requests" method="post" onsubmit="return askRejectReason(this)">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
@@ -130,8 +130,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

@@ -156,15 +156,15 @@
             <button class="avatar-btn" onclick="toggleDropdown()" aria-label="Tài khoản">
                 <c:choose>
                     <c:when test="${not empty account.avatarUrl}">
-                        <img src="${account.avatarUrl}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <img src="${fn:escapeXml(account.avatarUrl)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                     </c:when>
-                    <c:otherwise>${fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1)}</c:otherwise>
+                    <c:otherwise>${fn:escapeXml(fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1))}</c:otherwise>
                 </c:choose>
             </button>
             <div class="avatar-dropdown" id="accountDropdown">
                 <div class="dd-head">
-                    <div class="dd-name">${not empty account.fullName ? account.fullName : account.userName}</div>
-                    <c:if test="${not empty account.email}"><div class="dd-email">${account.email}</div></c:if>
+                    <div class="dd-name">${fn:escapeXml(not empty account.fullName ? account.fullName : account.userName)}</div>
+                    <c:if test="${not empty account.email}"><div class="dd-email">${fn:escapeXml(account.email)}</div></c:if>
                 </div>
                 <a href="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" class="dd-link">
                     <i class="fa-solid fa-user"></i> Thông tin cá nhân

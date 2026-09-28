@@ -119,7 +119,8 @@ CRUD_DA_LAM.md   -> log các CRUD đã hoàn thành (cart, order, cart-items, or
 2. Tạo Servlet trong `controllers/` với `@WebServlet("/duong-dan")`, gọi DAO.
 3. Tạo JSP danh sách (`xxxDanhSach.jsp`) + JSP thêm/sửa (`xxxThemSua.jsp`) trong `src/main/web/` (hoặc thư mục role tương ứng: `shop/` cho shop owner, `admin/` cho super admin, `user/`, `shipper/`).
 4. Validate input ở servlet, redirect kèm `success`/`error` qua query string.
-5. DAO nên tự dò tên bảng số ít/số nhiều và cột `is_deleted` (xoá mềm) nếu có, theo pattern đã dùng ở Cart/Order.
+5. In dữ liệu người dùng ra JSP bằng `<c:out>` hoặc `${fn:escapeXml(...)}`; trong thuộc tính `on*` (onclick/onsubmit) dùng dạng escape JS + HTML, xem [CRUD_DA_LAM.md](CRUD_DA_LAM.md) mục 105.
+6. DAO nên tự dò tên bảng số ít/số nhiều và cột `is_deleted` (xoá mềm) nếu có, theo pattern đã dùng ở Cart/Order.
 
 ## 8. Khi user yêu cầu sửa/thêm tính năng — tra nhanh
 

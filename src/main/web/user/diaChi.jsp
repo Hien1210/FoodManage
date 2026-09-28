@@ -276,15 +276,15 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                 <button class="avatar-btn" onclick="toggleDropdown()" aria-label="Tài khoản">
                     <c:choose>
                         <c:when test="${not empty account.avatarUrl}">
-                            <img src="${account.avatarUrl}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            <img src="${fn:escapeXml(account.avatarUrl)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         </c:when>
-                        <c:otherwise>${fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1)}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1))}</c:otherwise>
                     </c:choose>
                 </button>
                 <div class="avatar-dropdown" id="accountDropdown">
                     <div class="dd-head">
-                        <div class="dd-name">${not empty account.fullName ? account.fullName : account.userName}</div>
-                        <c:if test="${not empty account.email}"><div class="dd-email">${account.email}</div></c:if>
+                        <div class="dd-name">${fn:escapeXml(not empty account.fullName ? account.fullName : account.userName)}</div>
+                        <c:if test="${not empty account.email}"><div class="dd-email">${fn:escapeXml(account.email)}</div></c:if>
                     </div>
                     <a href="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" class="dd-link">
                         <i class="fa-solid fa-user"></i> Thông tin cá nhân
@@ -343,6 +343,9 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
     <c:if test="${param.success eq 'default'}">
         <div class="alert alert-info"><i class="fa-solid fa-star"></i> Đã đặt làm địa chỉ mặc định!</div>
     </c:if>
+    <c:if test="${param.error eq 'notfound'}">
+        <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Không tìm thấy địa chỉ hoặc bạn không có quyền thao tác.</div>
+    </c:if>
     <c:if test="${param.error eq 'missing'}">
         <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> Vui lòng điền đầy đủ thông tin bắt buộc.</div>
     </c:if>
@@ -382,12 +385,12 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                                 <c:when test="${addr.label eq 'Trường học'}"><i class="fa-solid fa-graduation-cap"></i></c:when>
                                 <c:otherwise><i class="fa-solid fa-location-dot"></i></c:otherwise>
                             </c:choose>
-                            ${addr.label}
+                            ${fn:escapeXml(addr.label)}
                         </div>
                         <div class="addr-meta">
-                            <div class="addr-meta-row"><i class="fa-solid fa-location-dot"></i> <span>${addr.fullAddress}</span></div>
-                            <div class="addr-meta-row"><i class="fa-solid fa-user"></i> <span>${addr.receiverName}</span></div>
-                            <div class="addr-meta-row"><i class="fa-solid fa-phone"></i> <span>${addr.receiverPhone}</span></div>
+                            <div class="addr-meta-row"><i class="fa-solid fa-location-dot"></i> <span>${fn:escapeXml(addr.fullAddress)}</span></div>
+                            <div class="addr-meta-row"><i class="fa-solid fa-user"></i> <span>${fn:escapeXml(addr.receiverName)}</span></div>
+                            <div class="addr-meta-row"><i class="fa-solid fa-phone"></i> <span>${fn:escapeXml(addr.receiverPhone)}</span></div>
                         </div>
                         <div class="addr-actions">
                             <c:if test="${!addr.isDefault}">
@@ -398,7 +401,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                                     <button type="submit" class="btn btn-default btn-sm"><i class="fa-regular fa-star"></i> Đặt mặc định</button>
                                 </form>
                             </c:if>
-                            <button onclick="openEdit(${addr.id}, '${addr.label}', '${fn:escapeXml(addr.fullAddress)}', '${fn:escapeXml(addr.receiverName)}', '${addr.receiverPhone}', '${addr.locationX}', '${addr.locationY}')"
+                            <button onclick="openEdit(${addr.id}, '${fn:escapeXml(fn:replace(fn:replace(addr.label,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(addr.fullAddress,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(addr.receiverName,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(addr.receiverPhone,'\\','\\\\'),"'","\\'"))}', '${addr.locationX}', '${addr.locationY}')"
                                     class="btn btn-muted btn-sm"><i class="fa-solid fa-pen"></i> Sửa</button>
                             <c:if test="${!addr.isDefault}">
                                 <form action="${pageContext.request.contextPath}/user/dia-chi" method="post" style="display:inline;"

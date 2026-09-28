@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Topping - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <title>Quản lý Topping - ${fn:escapeXml(not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -84,9 +84,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -162,12 +162,12 @@
                             </thead>
                             <tbody>
                                 <c:forEach var="top" items="${danhsach}" varStatus="vs">
-                                    <tr data-name="${fn:toLowerCase(top.toppingName)}"
+                                    <tr data-name="${fn:escapeXml(fn:toLowerCase(top.toppingName))}"
                                         data-cat="${top.toppingCategoryId}">
                                         <td>${vs.index + 1}</td>
                                         <td>
                                             <div class="topping-name"><c:out value="${top.toppingName}"/></div>
-                                            <div class="topping-cat">🏷️ ${not empty top.toppingCategoryName ? top.toppingCategoryName : 'Chưa phân loại'}</div>
+                                            <div class="topping-cat">🏷️ ${fn:escapeXml(not empty top.toppingCategoryName ? top.toppingCategoryName : 'Chưa phân loại')}</div>
                                         </td>
                                         <td>
                                             <span class="price-pill">
@@ -197,7 +197,7 @@
                                                 <form class="inline-form"
                                                       action="${pageContext.request.contextPath}/shop/toppings"
                                                       method="post"
-                                                      onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa Topping <strong>«${fn:escapeXml(top.toppingName)}»</strong> không?', 'Xóa Topping')">
+                                                      onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa Topping <strong>«${fn:escapeXml(fn:replace(fn:replace(top.toppingName,'\\','\\\\'),"'","\\'"))}»</strong> không?', 'Xóa Topping')">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="id" value="${top.id}">
@@ -305,8 +305,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

@@ -34,12 +34,15 @@ public class UserCartServlet extends HttpServlet {
 
         long productId = parseLong(req.getParameter("productId"));
         long sizeId    = parseLong(req.getParameter("sizeId"));
-        int  quantity  = parseInt(req.getParameter("quantity"), 1);
+        String rawQuantity = req.getParameter("quantity");
+        int  quantity  = parseInt(rawQuantity, 1);
+        // Có gửi số lượng nhưng <= 0 hoặc không phải số thì báo lỗi, không tự đổi thành 1 (tránh khách tưởng đã đặt đúng số lượng).
+        boolean invalidQuantity = rawQuantity != null && !rawQuantity.trim().isEmpty() && !isPositiveInt(rawQuantity);
         long shopId    = parseLong(req.getParameter("shopId"));
         String[] toppingIds  = req.getParameterValues("toppingId");
         String[] toppingQtys = req.getParameterValues("toppingQty");
 
-        if (productId <= 0 || sizeId <= 0) {
+        if (productId <= 0 || sizeId <= 0 || invalidQuantity) {
             resp.sendRedirect(req.getContextPath() + "/user/shop?id=" + shopId + "&error=invalid");
             return;
         }
@@ -132,6 +135,10 @@ public class UserCartServlet extends HttpServlet {
 
     private long parseLong(String s) {
         try { return Long.parseLong(s); } catch (Exception e) { return 0; }
+    }
+
+    private boolean isPositiveInt(String s) {
+        try { return Integer.parseInt(s) > 0; } catch (Exception e) { return false; }
     }
 
     private int parseInt(String s, int def) {

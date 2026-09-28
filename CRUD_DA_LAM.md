@@ -6875,3 +6875,30 @@ Tạo đơn hàng qua checkout, bill, luồng shop xử lý đơn và shipper gi
 - Đơn #1 đi hết vòng: shipper nhận (`/shipper/nhan-don`) → shop `confirm` → `prepared` → shipper `updateStatusToShipping` → `updateStatusToDone`. Nhảy bước (READY → DONE) bị bỏ qua đúng. Khách nhận đủ thông báo cho từng bước (`/user/thong-bao`); hoá đơn hiện "Đã giao thành công"; `/tong-quan` và báo cáo vận hành đếm 1 đơn.
 - Khiếu nại (`/khieu-nai`) và đánh giá (`/feedback`) gửi được; nội dung có thẻ HTML được escape ở trang khách, admin và shop; `rating=9` bị từ chối.
 - Dữ liệu test còn lại trong DB: đơn #1 (DONE), khiếu nại và đánh giá `QA_TEST`, hồ sơ tài xế của `Hien2008` (đã duyệt, `PENDING`→`APPROVED`), 2 món `QA_TEST` của `wishe`.
+
+## 105. Vá XSS lưu trữ trên toàn bộ JSP
+
+### Đã làm
+- Quét cả 98 JSP/JSPF bằng script (bỏ qua `<script>`, `<style>`, comment, scriptlet, thẻ JSTL) rồi bọc `${fn:escapeXml(...)}` cho **475 chỗ / 78 file** in trường do người dùng nhập ra HTML text hoặc thuộc tính (tên shop/món/topping/size/loại, `userName`, `fullName`, `email`, `phone`, địa chỉ, mô tả, lý do từ chối, đường dẫn ảnh/logo, giá trị lọc `q`/`tuNgay`/`denNgay`/…). Tự thêm `<%@ taglib prefix="fn" %>` cho 7 file còn thiếu (đúng kiểu URI `jakarta.tags.*` hoặc `http://java.sun.com/jsp/jstl/*` của từng file). 6 chỗ nằm trong `<c:out>` đã được trả về dạng gốc để không escape hai lần.
+- **Thuộc tính sự kiện** (`onclick`, `onsubmit`, `onerror`…): `fn:escapeXml` một mình KHÔNG đủ vì trình duyệt giải mã `&#039;` trở lại thành `'` trước khi chạy JS (ví dụ họ tên `x');alert(1);//`). 35 chỗ nay dùng dạng `'${fn:escapeXml(fn:replace(fn:replace(X,'\','\\'),"'","\'"))}'` (escape JS trước, HTML sau). Kiểm chứng: `onsubmit="…\&#039;);alert(2);//"` — dấu `'` luôn có `\` phía trước.
+- `shop/Banhang.jsp` (POS): thêm `escHtml()` cho tên món/size/topping trước khi ghép vào `innerHTML` (XSS kiểu DOM vì `data-*` đã được giải mã).
+- Kiểm chứng bằng payload `QA_TEST</b><img src=x onerror=alert(1)>');alert(2);//` gửi vào tên + mô tả sản phẩm: các trang `/shop/products`, `/shop/pos`, `/user/shop`, `/admin/kiem-duyet-noi-dung` không còn thẻ `<img>` thô. Đã xoá sản phẩm test đó.
+- Gọi trực tiếp cả 95 file JSP để buộc biên dịch: 93 × 200, 2 × 302, không lỗi biên dịch.
+
+### Lỗi có sẵn được phát hiện khi test (đã sửa)
+- `shop/taoProduct.jsp` (trang `/product`) tham chiếu thuộc tính không tồn tại `shopid`, `categoryid`, `soldQuantity` → 500 ngay khi DB có sản phẩm. Đổi sang `shopId`, `categoryId`, `stockQuantity`/`soldCount`.
+
+### Đã sửa tiếp (các lỗi phát sinh)
+- **`UserAddressDAOImpl` lệch schema**: DB thật có cột `user_id`/`address` (bản cũ), trong khi code và `database.md` dùng `account_id`/`full_address` → `/user/dia-chi` luôn "Chưa có địa chỉ nào" và tạo địa chỉ báo thành công nhưng không lưu. DAO nay dò tên cột 1 lần từ `INFORMATION_SCHEMA` (chỉ nhận 2 cặp tên cố định, an toàn khi nối SQL) và đặt alias về `account_id`/`full_address`; chạy được trên cả DB cũ lẫn DB theo `database.md`, không phải sửa schema. Kiểm chứng: địa chỉ có sẵn hiện ra, thêm/sửa/đặt mặc định/xoá chạy, checkout tự điền địa chỉ mặc định, chuỗi XSS thử ở địa chỉ được rào đúng (`\&#039;` trong `openEdit(...)`).
+- **`UserAddressServlet`**: xoá / đặt mặc định địa chỉ không thuộc mình trước đây vẫn báo `success` (dù DB không đổi) → nay trả `error=notfound` kèm thông báo trong `diaChi.jsp`.
+- **`UserCartServlet`**: `quantity` ≤ 0 hoặc không phải số trước đây bị đổi âm thầm thành 1 → nay trả `error=invalid`; không gửi `quantity` thì vẫn mặc định 1.
+- `UserAddComboServlet` đã rà: combo được kiểm tra thuộc đúng shop nên không cần thêm kiểm tra size.
+- Toàn bộ 95 JSP vẫn biên dịch (93 × 200, 2 × 302) và 16 trang chính trả đủ `</html>` sau khi sửa.
+
+### Còn tồn tại
+- **Thống nhất schema `User_Addresses`**: đã thêm `migration_user_addresses_rename_columns.sql` (idempotent: `user_id`→`account_id`, `address`→`full_address`, đổi tên index, thêm `IX_UserAddresses_Account_Deleted_Default`; cũng đã gộp vào `migration_all.sql`) và ghi chú lệch schema trong `database.md`. **Chưa chạy trên DB thật** (thay đổi schema); chạy xong phải khởi động lại Tomcat vì DAO cache tên cột. DAO vẫn chịu được cả hai dạng nên không chạy migration cũng không lỗi.
+- `AuthFilter` cho role 2 (shop) vào `/admin/*`; các servlet tự chặn bằng `roleId == 1` nên hiện an toàn, nhưng dễ sót khi thêm servlet mới.
+- Server vẫn nhận mọi ký tự ở form đăng ký (chỉ escape lúc hiển thị), chưa giới hạn độ dài.
+- JS trong `<script>` đang in dữ liệu bằng `fn:escapeXml` (an toàn), nhưng nếu đổi sang `textContent` thì chuỗi sẽ hiện entity thô.
+- Email OTP (Gmail 535) vẫn hỏng; `/cart`, `/cart-items` vẫn 404 nhưng còn vài JSP cũ link tới.
+- Quy ước mới: mọi `${...}` in dữ liệu người dùng phải dùng `<c:out>` hoặc `fn:escapeXml`; trong thuộc tính `on*` phải dùng dạng escape JS + HTML ở trên.

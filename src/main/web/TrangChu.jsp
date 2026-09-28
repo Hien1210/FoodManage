@@ -483,7 +483,7 @@
                                         <button type="button" class="dish-fav"><span class="material-symbols-outlined">favorite</span></button>
                                         <c:choose>
                                             <c:when test="${not empty fp.imageUrl}">
-                                                <img src="${fp.imageUrl}" alt="${fn:escapeXml(fp.productName)}">
+                                                <img src="${fn:escapeXml(fp.imageUrl)}" alt="${fn:escapeXml(fp.productName)}">
                                             </c:when>
                                             <c:otherwise>🍽️</c:otherwise>
                                         </c:choose>

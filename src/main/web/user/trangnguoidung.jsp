@@ -379,15 +379,15 @@ ul { list-style: none; }
                 <button class="avatar-btn" onclick="toggleDropdown()" aria-label="Tài khoản">
                     <c:choose>
                         <c:when test="${not empty account.avatarUrl}">
-                            <img src="${account.avatarUrl}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            <img src="${fn:escapeXml(account.avatarUrl)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         </c:when>
-                        <c:otherwise>${fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1)}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1))}</c:otherwise>
                     </c:choose>
                 </button>
                 <div class="avatar-dropdown" id="accountDropdown">
                     <div class="dd-head">
-                        <div class="dd-name">${not empty account.fullName ? account.fullName : account.userName}</div>
-                        <c:if test="${not empty account.email}"><div class="dd-email">${account.email}</div></c:if>
+                        <div class="dd-name">${fn:escapeXml(not empty account.fullName ? account.fullName : account.userName)}</div>
+                        <c:if test="${not empty account.email}"><div class="dd-email">${fn:escapeXml(account.email)}</div></c:if>
                     </div>
                     <a href="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" class="dd-link">
                         <i class="fa-solid fa-user"></i> Thông tin cá nhân
@@ -437,7 +437,7 @@ ul { list-style: none; }
     <div class="container hero-grid">
         <div class="hero-content">
             <div class="hero-badge"><i class="fa-solid fa-bolt"></i> ${fn:length(shops)} quán đối tác đang phục vụ gần bạn</div>
-            <h2 class="hero-title">Chào mừng trở lại,<br><span class="accent">${not empty account.fullName ? account.fullName : account.userName}!</span> 👋</h2>
+            <h2 class="hero-title">Chào mừng trở lại,<br><span class="accent">${fn:escapeXml(not empty account.fullName ? account.fullName : account.userName)}!</span> 👋</h2>
             <p class="hero-subtitle">Hôm nay bạn muốn thưởng thức món gì thơm lừng và nóng hổi?</p>
             <div class="hero-search-wrap">
                 <div class="hero-search">
@@ -505,7 +505,7 @@ ul { list-style: none; }
                                 <c:set var="isValidLogoUrl" value="${not empty shop.shopLogo && (fn:startsWith(shop.shopLogo, 'http://') || fn:startsWith(shop.shopLogo, 'https://') || fn:startsWith(shop.shopLogo, '/') || fn:startsWith(shop.shopLogo, 'assets/'))}"/>
                                 <c:choose>
                                     <c:when test="${isValidLogoUrl}">
-                                        <img src="${shop.shopLogo}" alt="${fn:escapeXml(shop.shopName)}"
+                                        <img src="${fn:escapeXml(shop.shopLogo)}" alt="${fn:escapeXml(shop.shopName)}"
                                              onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'">
                                     </c:when>
                                     <c:otherwise>

@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Loại Sản Phẩm - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <title>Quản lý Loại Sản Phẩm - ${fn:escapeXml(not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -73,9 +73,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -144,7 +144,7 @@
                             </thead>
                             <tbody>
                                 <c:forEach var="cat" items="${danhsach}" varStatus="vs">
-                                    <tr data-name="${fn:toLowerCase(cat.categoryName)}">
+                                    <tr data-name="${fn:escapeXml(fn:toLowerCase(cat.categoryName))}">
                                         <td>${vs.index + 1}</td>
                                         <td>
                                             <strong><c:out value="${cat.categoryName}"/></strong>
@@ -169,7 +169,7 @@
                                                 <form class="inline-form"
                                                       action="${pageContext.request.contextPath}/shop/product-types"
                                                       method="post"
-                                                      onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa loại sản phẩm <strong>«${fn:escapeXml(cat.categoryName)}»</strong> không?<br><span style=\'font-size:12px;color:var(--text-muted);\'>Các sản phẩm trong loại này sẽ không bị xóa.</span>', 'Xóa loại sản phẩm')">
+                                                      onsubmit="return pobConfirmDelete(event, this, 'Bạn có chắc chắn muốn xóa loại sản phẩm <strong>«${fn:escapeXml(fn:replace(fn:replace(cat.categoryName,'\\','\\\\'),"'","\\'"))}»</strong> không?<br><span style=\'font-size:12px;color:var(--text-muted);\'>Các sản phẩm trong loại này sẽ không bị xóa.</span>', 'Xóa loại sản phẩm')">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="id"     value="${cat.id}">
@@ -274,8 +274,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

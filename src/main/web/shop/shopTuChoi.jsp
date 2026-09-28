@@ -43,10 +43,10 @@
             <input id="shopAddress" type="text" name="shopAddress" value="${fn:escapeXml(shop.shopAddress)}" required>
 
             <label for="shopPhone">Số điện thoại shop</label>
-            <input id="shopPhone" type="text" name="shopPhone" value="${shop.shopPhone}" required>
+            <input id="shopPhone" type="text" name="shopPhone" value="${fn:escapeXml(shop.shopPhone)}" required>
 
             <label for="shopLogo">Logo URL</label>
-            <input id="shopLogo" type="text" name="shopLogo" value="${shop.shopLogo}">
+            <input id="shopLogo" type="text" name="shopLogo" value="${fn:escapeXml(shop.shopLogo)}">
 
             <button type="submit">Gửi lại yêu cầu</button>
         </form>

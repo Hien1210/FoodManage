@@ -100,9 +100,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -237,11 +237,11 @@
             </div>
             <c:if test="${totalPages > 1}">
                 <div class="pager">
-                    <c:if test="${currentPage > 1}"><a href="?status=${statusFilter}&page=${currentPage-1}">← Trước</a></c:if>
+                    <c:if test="${currentPage > 1}"><a href="?status=${fn:escapeXml(statusFilter)}&page=${currentPage-1}">← Trước</a></c:if>
                     <c:forEach begin="1" end="${totalPages}" var="p">
-                        <a href="?status=${statusFilter}&page=${p}" class="${p eq currentPage ? 'active' : ''}">${p}</a>
+                        <a href="?status=${fn:escapeXml(statusFilter)}&page=${p}" class="${p eq currentPage ? 'active' : ''}">${p}</a>
                     </c:forEach>
-                    <c:if test="${currentPage < totalPages}"><a href="?status=${statusFilter}&page=${currentPage+1}">Sau →</a></c:if>
+                    <c:if test="${currentPage < totalPages}"><a href="?status=${fn:escapeXml(statusFilter)}&page=${currentPage+1}">Sau →</a></c:if>
                 </div>
             </c:if>
         </div>
@@ -255,8 +255,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

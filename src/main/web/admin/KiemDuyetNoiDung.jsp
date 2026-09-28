@@ -124,9 +124,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -155,9 +155,9 @@
                         <div class="mod-card pending">
                             <div class="mod-header">
                                 <div class="mod-user">
-                                    <div class="avatar-sm">${fn:toUpperCase(fn:substring(p.shopName, 0, 1))}</div>
+                                    <div class="avatar-sm">${fn:escapeXml(fn:toUpperCase(fn:substring(p.shopName, 0, 1)))}</div>
                                     <div>
-                                        <div class="mod-name">${p.shopName}</div>
+                                        <div class="mod-name">${fn:escapeXml(p.shopName)}</div>
                                         <div class="mod-sub">Đăng món ăn mới</div>
                                     </div>
                                 </div>
@@ -169,14 +169,14 @@
                                 <div class="food-thumb">
                                     <c:choose>
                                         <c:when test="${not empty p.imageUrl}">
-                                            <img src="${p.imageUrl}" alt="${p.productName}"/>
+                                            <img src="${fn:escapeXml(p.imageUrl)}" alt="${fn:escapeXml(p.productName)}"/>
                                         </c:when>
                                         <c:otherwise>🍽️</c:otherwise>
                                     </c:choose>
                                 </div>
                                 <div class="food-info">
-                                    <div class="food-name">${p.productName}</div>
-                                    <div class="food-shop">${p.description}</div>
+                                    <div class="food-name">${fn:escapeXml(p.productName)}</div>
+                                    <div class="food-shop">${fn:escapeXml(p.description)}</div>
                                 </div>
                             </div>
 
@@ -213,7 +213,7 @@
                 <div class="word-list" id="list-bannedwords">
                     <c:forEach var="bw" items="${bannedWords}">
                         <div class="word-pill">
-                            <span class="word-text">${bw.word}</span>
+                            <span class="word-text">${fn:escapeXml(bw.word)}</span>
                             <form method="post" action="${pageContext.request.contextPath}/admin/kiem-duyet-noi-dung" style="display:inline;">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                 <input type="hidden" name="action" value="deleteWord"/>
@@ -235,8 +235,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

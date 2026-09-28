@@ -145,9 +145,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -241,8 +241,8 @@
                                         <td style="font-size:11px;color:var(--text-muted);">RUT-<fmt:formatNumber value="${w.id}" pattern="000000"/></td>
                                         <td class="amount-red"><fmt:formatNumber value="${w.amount}" type="number" maxFractionDigits="0"/>đ</td>
                                         <td>
-                                            <div style="font-weight:600;">${w.bankName}</div>
-                                            <div style="font-size:11px;color:var(--text-muted);">${w.bankAccountNumber}</div>
+                                            <div style="font-weight:600;">${fn:escapeXml(w.bankName)}</div>
+                                            <div style="font-size:11px;color:var(--text-muted);">${fn:escapeXml(w.bankAccountNumber)}</div>
                                         </td>
                                         <td style="font-size:12px;color:var(--text-muted);">${w.requestedAtDisplay}</td>
                                         <td>
@@ -252,7 +252,7 @@
                                                 <c:when test="${w.status eq 'REJECTED'}">
                                                     <span class="badge-rejected">❌ Từ chối</span>
                                                     <c:if test="${not empty w.rejectReason}">
-                                                        <div style="font-size:11px;color:var(--danger);margin-top:3px;">${w.rejectReason}</div>
+                                                        <div style="font-size:11px;color:var(--danger);margin-top:3px;">${fn:escapeXml(w.rejectReason)}</div>
                                                     </c:if>
                                                 </c:when>
                                             </c:choose>
@@ -273,8 +273,8 @@
 <!-- Avatar Dropdown -->
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🛵 Shipper</span>
     </div>
     <div class="dropdown-body">

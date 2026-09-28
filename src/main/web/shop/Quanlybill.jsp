@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hóa đơn - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <title>Hóa đơn - ${fn:escapeXml(not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -75,9 +75,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -109,7 +109,7 @@
 
         <form class="filter-bar" method="get" action="${pageContext.request.contextPath}/shop/bills">
             <input type="text" class="dash-input" name="q" placeholder="🔍 Tìm theo mã đơn / tên khách / SĐT..." value="${fn:escapeXml(q)}">
-            <input type="date" class="dash-input" name="date" value="${dateFilter}">
+            <input type="date" class="dash-input" name="date" value="${fn:escapeXml(dateFilter)}">
             <select class="dash-input" name="status">
                 <option value="" ${empty statusFilter ? 'selected' : ''}>Tất cả</option>
                 <option value="UNPAID" ${statusFilter == 'UNPAID' ? 'selected' : ''}>Chưa thanh toán</option>
@@ -125,7 +125,7 @@
             <button type="submit" class="btn btn-primary">Lọc</button>
             <a href="${pageContext.request.contextPath}/shop/bills" class="clear">✕ Xóa lọc</a>
             <a class="btn btn-outline"
-               href="${pageContext.request.contextPath}/shop/bills?action=exportExcel&q=${fn:escapeXml(q)}&date=${dateFilter}&status=${statusFilter}&method=${methodFilter}">
+               href="${pageContext.request.contextPath}/shop/bills?action=exportExcel&q=${fn:escapeXml(q)}&date=${fn:escapeXml(dateFilter)}&status=${fn:escapeXml(statusFilter)}&method=${fn:escapeXml(methodFilter)}">
                 📊 Xuất Excel (doanh thu)
             </a>
         </form>
@@ -329,8 +329,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

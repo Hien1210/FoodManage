@@ -214,15 +214,15 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                 <button class="avatar-btn" id="avatarBtn" onclick="toggleDropdown()" aria-label="Tài khoản">
                     <c:choose>
                         <c:when test="${not empty profile.avatarUrl}">
-                            <img src="${profile.avatarUrl}" alt="Avatar">
+                            <img src="${fn:escapeXml(profile.avatarUrl)}" alt="Avatar">
                         </c:when>
-                        <c:otherwise>${fn:substring(not empty profile.fullName ? profile.fullName : profile.userName, 0, 1)}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:substring(not empty profile.fullName ? profile.fullName : profile.userName, 0, 1))}</c:otherwise>
                     </c:choose>
                 </button>
                 <div class="avatar-dropdown" id="accountDropdown">
                     <div class="dd-head">
-                        <div class="dd-name">${not empty profile.fullName ? profile.fullName : profile.userName}</div>
-                        <c:if test="${not empty profile.email}"><div class="dd-email">${profile.email}</div></c:if>
+                        <div class="dd-name">${fn:escapeXml(not empty profile.fullName ? profile.fullName : profile.userName)}</div>
+                        <c:if test="${not empty profile.email}"><div class="dd-email">${fn:escapeXml(profile.email)}</div></c:if>
                     </div>
                     <a href="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" class="dd-link active">
                         <i class="fa-solid fa-user"></i> Thông tin cá nhân
@@ -294,9 +294,9 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
             <div class="profile-avatar">
                 <c:choose>
                     <c:when test="${not empty profile.avatarUrl}">
-                        <img src="${profile.avatarUrl}" alt="Avatar">
+                        <img src="${fn:escapeXml(profile.avatarUrl)}" alt="Avatar">
                     </c:when>
-                    <c:otherwise>${fn:substring(not empty profile.fullName ? profile.fullName : profile.userName, 0, 1)}</c:otherwise>
+                    <c:otherwise>${fn:escapeXml(fn:substring(not empty profile.fullName ? profile.fullName : profile.userName, 0, 1))}</c:otherwise>
                 </c:choose>
             </div>
             <div class="profile-avatar-actions">
@@ -310,24 +310,24 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 
         <form action="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" method="post">
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-            <input type="hidden" name="avatarUrl" id="avatarUrlInput" value="${profile.avatarUrl}">
+            <input type="hidden" name="avatarUrl" id="avatarUrlInput" value="${fn:escapeXml(profile.avatarUrl)}">
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Họ và tên</label>
-                    <input type="text" class="form-control" name="fullName" value="${profile.fullName}" placeholder="Họ và tên">
+                    <input type="text" class="form-control" name="fullName" value="${fn:escapeXml(profile.fullName)}" placeholder="Họ và tên">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Số điện thoại</label>
-                    <input type="tel" class="form-control" name="phone" value="${profile.phone}" placeholder="0xxxxxxxxx">
+                    <input type="tel" class="form-control" name="phone" value="${fn:escapeXml(profile.phone)}" placeholder="0xxxxxxxxx">
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-label">Tên đăng nhập</label>
-                <input type="text" class="form-control" value="${profile.userName}" readonly>
+                <input type="text" class="form-control" value="${fn:escapeXml(profile.userName)}" readonly>
             </div>
             <div class="form-group">
                 <label class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" value="${profile.email}" placeholder="email@example.com">
+                <input type="email" class="form-control" name="email" value="${fn:escapeXml(profile.email)}" placeholder="email@example.com">
                 <p class="hint" style="font-size:.78rem;color:var(--muted);margin-top:8px;">Nếu đổi email, hệ thống sẽ gửi mã OTP xác thực đến email mới trước khi lưu.</p>
             </div>
             <div class="modal-actions" style="display:flex;gap:12px;margin-top:8px;">

@@ -60,7 +60,7 @@
         <div class="logo-mark-dash">S</div>
         <div class="brand-text">
             <span class="brand-title">SUPER ADMIN</span>
-            <span class="brand-subtitle">👋 ${sessionScope.account.userName}</span>
+            <span class="brand-subtitle">👋 ${fn:escapeXml(sessionScope.account.userName)}</span>
         </div>
     <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -107,9 +107,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -166,14 +166,14 @@
                             <div class="form-group">
                                 <label class="form-label" for="shopid">Shop ID <span class="required">*</span></label>
                                 <input type="number" id="shopid" name="shopid" class="dash-input"
-                                       value="${formProduct.shopid}"
+                                       value="${formProduct.shopId}"
                                        placeholder="Nhập ID shop..." min="1" required>
                             </div>
 
                             <div class="form-group">
                                 <label class="form-label" for="categoryid">Category ID <span class="required">*</span></label>
                                 <input type="number" id="categoryid" name="categoryid" class="dash-input"
-                                       value="${formProduct.categoryid}"
+                                       value="${formProduct.categoryId}"
                                        placeholder="Nhập ID category..." min="1" required>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="soldQuantity">Số lượng tồn</label>
                                 <input type="number" id="stock_quantity" name="stock_quantity" class="dash-input"
-                                       value="${formProduct.soldQuantity}"
+                                       value="${formProduct.stockQuantity}"
                                        placeholder="0" min="0">
                             </div>
                         </div>
@@ -319,10 +319,10 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-                                        <td><c:out value="${product.shopid}"/></td>
-                                        <td><c:out value="${product.categoryid}"/></td>
+                                        <td><c:out value="${product.shopId}"/></td>
+                                        <td><c:out value="${product.categoryId}"/></td>
                                         <td><c:out value="${product.price}"/></td>
-                                        <td><c:out value="${product.soldQuantity}"/></td>
+                                        <td><c:out value="${product.stockQuantity}"/></td>
                                         <td><c:out value="${product.soldCount}"/></td>
                                         <td>
                                             <c:choose>
@@ -344,7 +344,7 @@
                                                 <form style="display:inline;"
                                                       action="${pageContext.request.contextPath}/product"
                                                       method="post"
-                                                      onsubmit="return confirm('Xóa sản phẩm «${fn:escapeXml(product.productName)}»?') && pobGuardSubmit(this)">
+                                                      onsubmit="return confirm('Xóa sản phẩm «${fn:escapeXml(fn:replace(fn:replace(product.productName,'\\','\\\\'),"'","\\'"))}»?') && pobGuardSubmit(this)">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="id" value="${product.id}">
@@ -366,8 +366,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

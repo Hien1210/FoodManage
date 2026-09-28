@@ -269,11 +269,11 @@
 
             <div class="form-group">
                 <label>Tên người nhận</label>
-                <input type="text" name="receiverName" value="${not empty param.receiverName ? param.receiverName : defaultAddress.receiverName}" required>
+                <input type="text" name="receiverName" value="${fn:escapeXml(not empty param.receiverName ? param.receiverName : defaultAddress.receiverName)}" required>
             </div>
             <div class="form-group">
                 <label>Số điện thoại</label>
-                <input type="text" name="receiverPhone" value="${not empty param.receiverPhone ? param.receiverPhone : defaultAddress.receiverPhone}" required>
+                <input type="text" name="receiverPhone" value="${fn:escapeXml(not empty param.receiverPhone ? param.receiverPhone : defaultAddress.receiverPhone)}" required>
             </div>
             <div class="form-group">
                 <label>Địa chỉ giao hàng</label>
@@ -322,7 +322,7 @@
                     <div class="best-voucher-banner">
                         🎁 Bạn có thể dùng mã <strong><c:out value="${bestVoucher.code}"/></strong> để giảm
                         <fmt:formatNumber value="${bestVoucherDiscount}" type="number" maxFractionDigits="0"/>đ
-                        <button type="button" class="btn-use-voucher" onclick="document.getElementById('voucherCodeInput').value='${fn:escapeXml(bestVoucher.code)}'">Dùng ngay</button>
+                        <button type="button" class="btn-use-voucher" onclick="document.getElementById('voucherCodeInput').value='${fn:escapeXml(fn:replace(fn:replace(bestVoucher.code,'\\','\\\\'),"'","\\'"))}'">Dùng ngay</button>
                     </div>
                 </c:if>
                 <input type="text" name="voucherCode" id="voucherCodeInput" style="text-transform:uppercase;font-weight:700;letter-spacing:.5px;"

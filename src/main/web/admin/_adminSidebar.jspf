@@ -20,7 +20,7 @@
         <div class="logo-mark-dash">
             <c:choose>
                 <c:when test="${not empty sessionScope.account.logoUrl}">
-                    <img src="${sessionScope.account.logoUrl}" alt="logo" class="logo-mark-img"/>
+                    <img src="${fn:escapeXml(sessionScope.account.logoUrl)}" alt="logo" class="logo-mark-img"/>
                 </c:when>
                 <c:otherwise><span class="material-symbols-outlined">restaurant</span></c:otherwise>
             </c:choose>
@@ -38,9 +38,9 @@
         <div class="sb-admin-avatar">
             <c:choose>
                 <c:when test="${not empty sessionScope.account.avatarUrl}">
-                    <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                    <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                 </c:when>
-                <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
             </c:choose>
             <span class="sb-admin-dot"></span>
         </div>

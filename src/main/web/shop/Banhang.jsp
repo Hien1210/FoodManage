@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bấm Bill - ${not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng'}</title>
+    <title>Bấm Bill - ${fn:escapeXml(not empty currentShop.shopName ? currentShop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -170,7 +170,7 @@
         </div>
         <div class="header-actions">
             <input type="text" class="search-bar" id="searchBox" placeholder="🔍 Tìm món..." oninput="filterProducts(this.value)">
-            <div class="avatar-btn" id="avatarBtn"><c:choose><c:when test="${not empty sessionScope.account.avatarUrl}"><img src="${sessionScope.account.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></c:when><c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName,0,2))}</c:otherwise></c:choose></div>
+            <div class="avatar-btn" id="avatarBtn"><c:choose><c:when test="${not empty sessionScope.account.avatarUrl}"><img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></c:when><c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName,0,2)))}</c:otherwise></c:choose></div>
         </div>
     </header>
 
@@ -323,6 +323,13 @@
     var payMethod = 'CASH';
     var toppingPickerLineIdx = null;
 
+    // Tên món/size/topping đọc từ data-* (đã được trình duyệt giải mã) nên phải escape lại trước khi ghép vào innerHTML.
+    function escHtml(v) {
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
     function fmtMoney(n) {
         return Math.round(n).toLocaleString('vi-VN') + 'đ';
     }
@@ -366,13 +373,13 @@
             var html = '';
             cart.forEach(function (line, idx) {
                 var toppingNames = Object.keys(line.toppings).map(function (id) {
-                    return '+ ' + line.toppings[id].name + ' x' + line.toppings[id].qty;
+                    return '+ ' + escHtml(line.toppings[id].name) + ' x' + line.toppings[id].qty;
                 }).join('<br>');
 
                 html += '<div class="cart-line">' +
                     '<div class="cart-line-top">' +
-                        '<div><div class="cart-line-name">' + line.productName + '</div>' +
-                        '<div class="cart-line-size">' + line.sizeName + '</div></div>' +
+                        '<div><div class="cart-line-name">' + escHtml(line.productName) + '</div>' +
+                        '<div class="cart-line-size">' + escHtml(line.sizeName) + '</div></div>' +
                         '<span class="cart-line-remove" onclick="removeLine(' + idx + ')">🗑</span>' +
                     '</div>' +
                     '<div class="qty-stepper">' +
@@ -545,7 +552,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

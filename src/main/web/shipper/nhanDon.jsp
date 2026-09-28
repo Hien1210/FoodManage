@@ -131,9 +131,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -229,16 +229,16 @@
                         <div class="route-timeline">
                             <div class="route-step">
                                 <div class="route-label">🏪 Lấy hàng tại</div>
-                                <div class="route-text">${order.shopName}</div>
-                                <div class="route-sub">📍 ${order.shopAddress}</div>
-                                <div class="route-sub">📞 ${order.shopPhone}</div>
+                                <div class="route-text">${fn:escapeXml(order.shopName)}</div>
+                                <div class="route-sub">📍 ${fn:escapeXml(order.shopAddress)}</div>
+                                <div class="route-sub">📞 ${fn:escapeXml(order.shopPhone)}</div>
                             </div>
                             <div style="border-left:2px dashed var(--border-color);margin-left:6px;height:14px;"></div>
                             <div class="route-step">
                                 <div class="route-label">🏠 Giao tới khách</div>
-                                <div class="route-text">${order.receiverName}</div>
-                                <div class="route-sub">📍 ${order.shippingAddress}</div>
-                                <div class="route-sub">📞 ${order.receiverPhone}</div>
+                                <div class="route-text">${fn:escapeXml(order.receiverName)}</div>
+                                <div class="route-sub">📍 ${fn:escapeXml(order.shippingAddress)}</div>
+                                <div class="route-sub">📞 ${fn:escapeXml(order.receiverPhone)}</div>
                             </div>
                         </div>
 
@@ -287,8 +287,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🛵 Shipper</span>
     </div>
     <div class="dropdown-body">

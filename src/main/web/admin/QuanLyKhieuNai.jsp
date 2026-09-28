@@ -103,9 +103,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -145,9 +145,9 @@
                     <div class="mod-card ${fn:toLowerCase(c.status)}">
                         <div class="mod-header">
                             <div class="mod-user">
-                                <div class="avatar-sm">${fn:toUpperCase(fn:substring(empty c.accountName ? '?' : c.accountName, 0, 1))}</div>
+                                <div class="avatar-sm">${fn:escapeXml(fn:toUpperCase(fn:substring(empty c.accountName ? '?' : c.accountName, 0, 1)))}</div>
                                 <div>
-                                    <div class="mod-name">${empty c.accountName ? 'Khách hàng' : c.accountName}</div>
+                                    <div class="mod-name">${fn:escapeXml(empty c.accountName ? 'Khách hàng' : c.accountName)}</div>
                                     <div class="mod-sub">Khiếu nại đơn <strong>#${c.orderId}</strong> — <c:out value="${c.subject}"/></div>
                                 </div>
                             </div>
@@ -197,8 +197,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

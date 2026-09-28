@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ví tiền - ${not empty shop.shopName ? shop.shopName : 'Cửa hàng'}</title>
+    <title>Ví tiền - ${fn:escapeXml(not empty shop.shopName ? shop.shopName : 'Cửa hàng')}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -168,9 +168,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -182,7 +182,7 @@
             <div class="alert alert-success">✅ Yêu cầu rút tiền đã được gửi! Admin sẽ xử lý trong 1-2 ngày làm việc.</div>
         </c:if>
         <c:if test="${not empty error}">
-            <div class="alert alert-danger">⚠️ ${error}</div>
+            <div class="alert alert-danger">⚠️ ${fn:escapeXml(error)}</div>
         </c:if>
 
         <c:set var="pendingTotal" value="0"/>
@@ -289,7 +289,7 @@
                                                 ${tx.amount >= 0 ? '+' : ''}₫<fmt:formatNumber value="${tx.amount}" pattern="#,##0"/>
                                             </span>
                                         </td>
-                                        <td style="max-width:280px;font-size:12.5px;color:var(--text-muted)">${tx.description}</td>
+                                        <td style="max-width:280px;font-size:12.5px;color:var(--text-muted)">${fn:escapeXml(tx.description)}</td>
                                         <td>
                                             <c:if test="${not empty tx.orderId}">
                                                 <a href="${pageContext.request.contextPath}/shop/bills?action=view&orderId=${tx.orderId}" style="color:var(--primary);font-weight:700">#${tx.orderId}</a>
@@ -392,9 +392,9 @@
                                             ${fn:substring(wdRequestedAt,8,10)}/${fn:substring(wdRequestedAt,5,7)}/${fn:substring(wdRequestedAt,0,4)} ${fn:substring(wdRequestedAt,11,16)}
                                         </td>
                                         <td style="font-weight:700;color:#dc2626">-₫<fmt:formatNumber value="${wd.amount}" pattern="#,##0"/></td>
-                                        <td>${wd.bankName}</td>
-                                        <td style="font-family:monospace">${wd.bankAccountNumber}</td>
-                                        <td>${wd.bankAccountHolder}</td>
+                                        <td>${fn:escapeXml(wd.bankName)}</td>
+                                        <td style="font-family:monospace">${fn:escapeXml(wd.bankAccountNumber)}</td>
+                                        <td>${fn:escapeXml(wd.bankAccountHolder)}</td>
                                         <td><span class="badge-status ${wd.status}">
                                             <c:choose>
                                                 <c:when test="${wd.status eq 'PENDING'}">⏳ Đang duyệt</c:when>
@@ -403,7 +403,7 @@
                                             </c:choose>
                                         </span></td>
                                         <td style="font-size:12px;color:var(--text-muted)">
-                                            <c:if test="${not empty wd.rejectReason}">${wd.rejectReason}</c:if>
+                                            <c:if test="${not empty wd.rejectReason}">${fn:escapeXml(wd.rejectReason)}</c:if>
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -420,8 +420,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

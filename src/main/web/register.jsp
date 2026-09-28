@@ -1,4 +1,5 @@
 ﻿<%@ page pageEncoding="utf-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -163,14 +164,14 @@
                 <div>
                     <label class="field-label">Họ và tên</label>
                     <div class="field-wrap">
-                        <input type="text" name="fullname" value="${not empty fullname ? fullname : param.fullname}" required placeholder="Nguyễn Văn A" class="input-field">
+                        <input type="text" name="fullname" value="${fn:escapeXml(not empty fullname ? fullname : param.fullname)}" required placeholder="Nguyễn Văn A" class="input-field">
                         <svg class="field-icon-left" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     </div>
                 </div>
                 <div>
                     <label class="field-label">Số điện thoại</label>
                     <div class="field-wrap">
-                        <input type="tel" name="phone" value="${not empty phone ? phone : param.phone}" required placeholder="0901234567" class="input-field">
+                        <input type="tel" name="phone" value="${fn:escapeXml(not empty phone ? phone : param.phone)}" required placeholder="0901234567" class="input-field">
                         <svg class="field-icon-left" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                     </div>
                 </div>
@@ -179,7 +180,7 @@
             <div class="form-group">
                 <label class="field-label">Tên đăng nhập</label>
                 <div class="field-wrap">
-                    <input type="text" name="username" id="username" value="${not empty username ? username : param.username}" required placeholder="vd: nguyen_van_a123" pattern="^[a-zA-Z0-9_]{3,30}$" title="Chỉ được dùng chữ không dấu, số và dấu _ , dài 3–30 ký tự" class="input-field" oninput="validateUsername(this)">
+                    <input type="text" name="username" id="username" value="${fn:escapeXml(not empty username ? username : param.username)}" required placeholder="vd: nguyen_van_a123" pattern="^[a-zA-Z0-9_]{3,30}$" title="Chỉ được dùng chữ không dấu, số và dấu _ , dài 3–30 ký tự" class="input-field" oninput="validateUsername(this)">
                     <span id="usernameError" class="error-inline"></span>
                     <svg class="field-icon-left" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
                 </div>
@@ -188,7 +189,7 @@
             <div class="form-group">
                 <label class="field-label">Email</label>
                 <div class="field-wrap">
-                    <input type="email" name="email" value="${not empty email ? email : param.email}" required placeholder="email@example.com" class="input-field">
+                    <input type="email" name="email" value="${fn:escapeXml(not empty email ? email : param.email)}" required placeholder="email@example.com" class="input-field">
                     <svg class="field-icon-left" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 </div>
             </div>

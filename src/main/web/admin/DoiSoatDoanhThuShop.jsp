@@ -132,9 +132,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -155,11 +155,11 @@
                 </div>
                 <div class="filter-field">
                     <label for="tuNgay">Từ ngày</label>
-                    <input type="date" id="tuNgay" name="tuNgay" value="${tuNgay}">
+                    <input type="date" id="tuNgay" name="tuNgay" value="${fn:escapeXml(tuNgay)}">
                 </div>
                 <div class="filter-field">
                     <label for="denNgay">Đến ngày</label>
-                    <input type="date" id="denNgay" name="denNgay" value="${denNgay}">
+                    <input type="date" id="denNgay" name="denNgay" value="${fn:escapeXml(denNgay)}">
                 </div>
                 <button type="submit" class="btn-filter">🔍 Lọc đối soát</button>
             </form>
@@ -205,7 +205,7 @@
                                 <tr data-shop-id="${item.shopId}">
                                     <td>
                                         <div class="shop-name-cell">
-                                            <div class="shop-avatar">${fn:toUpperCase(fn:substring(item.shopName, 0, 2))}</div>
+                                            <div class="shop-avatar">${fn:escapeXml(fn:toUpperCase(fn:substring(item.shopName, 0, 2)))}</div>
                                             <span class="shop-name">${fn:escapeXml(item.shopName)}</span>
                                         </div>
                                     </td>
@@ -251,7 +251,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

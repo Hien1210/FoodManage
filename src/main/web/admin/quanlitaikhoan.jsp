@@ -79,9 +79,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -92,7 +92,7 @@
 
         <%-- THÔNG BÁO --%>
         <c:if test="${not empty loi}">
-            <div class="alert alert-danger">⚠️ ${loi}</div>
+            <div class="alert alert-danger">⚠️ ${fn:escapeXml(loi)}</div>
         </c:if>
 
         <!-- BẢNG DANH SÁCH TÀI KHOẢN -->
@@ -109,7 +109,7 @@
                         <input type="hidden" name="action" value="search"/>
                         <input type="text" class="dash-input" name="searchKeyword"
                                placeholder="🔍 Tìm theo username hoặc email..."
-                               value="${searchKeyword}"/>
+                               value="${fn:escapeXml(searchKeyword)}"/>
                         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                     </form>
                     <a href="${pageContext.request.contextPath}/quanlitaikhoan" class="btn btn-outline">↺ Làm mới</a>
@@ -144,10 +144,10 @@
                                     <c:forEach var="acc" items="${danhsach}">
                                         <tr>
                                             <td style="color:var(--text-dim);">#${acc.id}</td>
-                                            <td style="font-weight:600;">${acc.userName}</td>
-                                            <td>${acc.fullName}</td>
-                                            <td style="color:var(--text-muted);">${acc.email}</td>
-                                            <td style="color:var(--text-muted);">${acc.phone}</td>
+                                            <td style="font-weight:600;">${fn:escapeXml(acc.userName)}</td>
+                                            <td>${fn:escapeXml(acc.fullName)}</td>
+                                            <td style="color:var(--text-muted);">${fn:escapeXml(acc.email)}</td>
+                                            <td style="color:var(--text-muted);">${fn:escapeXml(acc.phone)}</td>
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${acc.roleId == 1}"><span class="badge badge-info">SUPER ADMIN</span></c:when>
@@ -162,16 +162,16 @@
                                                     <button class="btn btn-sm btn-ghost" onclick="toggleDropdown(this)" title="Tùy chọn">⋮</button>
                                                     <div class="dropdown-menu">
                                                         <button class="dropdown-item view-detail" style="color:var(--primary);"
-                                                                onclick="openViewModal(${acc.id}, '${fn:escapeXml(acc.userName)}', '${fn:escapeXml(acc.fullName)}', '${fn:escapeXml(acc.email)}', '${fn:escapeXml(acc.phone)}', '${fn:escapeXml(acc.avatarUrl)}', ${acc.roleId}, ${acc.deleted})">
+                                                                onclick="openViewModal(${acc.id}, '${fn:escapeXml(fn:replace(fn:replace(acc.userName,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(acc.fullName,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(acc.email,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(acc.phone,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(acc.avatarUrl,'\\','\\\\'),"'","\\'"))}', ${acc.roleId}, ${acc.deleted})">
                                                             👁️ Xem thông tin (Chỉ xem)
                                                         </button>
                                                         <c:if test="${acc.id != sessionScope.account.id && acc.roleId != 1}">
                                                             <button class="dropdown-item soft-del"
-                                                                    onclick="openSoftModal(${acc.id}, '${fn:escapeXml(acc.userName)}')">
+                                                                    onclick="openSoftModal(${acc.id}, '${fn:escapeXml(fn:replace(fn:replace(acc.userName,'\\','\\\\'),"'","\\'"))}')">
                                                                 🗂️ Xóa tạm thời
                                                             </button>
                                                             <button class="dropdown-item hard-del"
-                                                                    onclick="openHardModal(${acc.id}, '${fn:escapeXml(acc.userName)}')">
+                                                                    onclick="openHardModal(${acc.id}, '${fn:escapeXml(fn:replace(fn:replace(acc.userName,'\\','\\\\'),"'","\\'"))}')">
                                                                 🗑️ Xóa vĩnh viễn
                                                             </button>
                                                         </c:if>
@@ -633,8 +633,8 @@ window.USER_PROFILES[${entry.key}] = {
 <!-- Avatar Dropdown (đặt ngoài topbar để tránh backdrop-filter stacking context) -->
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

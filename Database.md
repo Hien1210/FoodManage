@@ -150,6 +150,11 @@ GO
 
 CREATE INDEX IDX_UserAddress_Account ON User_Addresses(account_id);
 CREATE INDEX IX_UserAddresses_Account_Deleted_Default ON User_Addresses(account_id, is_deleted, is_default DESC, id);
+-- GHI CHU LECH SCHEMA (da doi chieu voi DB that ngay 2026-09-29): DB cu van dung ten cot user_id (thay account_id)
+-- va address (thay full_address), index IDX_UserAddress_User; ngoai ra label NVARCHAR(50), receiver_name NOT NULL,
+-- locationX/locationY DECIMAL, co trigger TR_UserAddresses_UpdatedAt va unique index UQ_UserAddress_Default.
+-- Chay migration_user_addresses_rename_columns.sql de dua ve ten chuan o tren (idempotent, da co trong migration_all.sql).
+-- UserAddressDAOImpl tu do ten cot nen chay duoc ca truoc va sau migration (khoi dong lai Tomcat sau khi chay).
 GO
 
 -- Gắn FK default_address_id sau khi User_Addresses đã tồn tại
