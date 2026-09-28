@@ -121,12 +121,18 @@ Nickname: Hien2008
 Password: 12345678
 
 Shop Accounts
-Nickname: Bao
+Nickname: Bao   (role shop, chưa có bản ghi shop)
 Password: 12345678
 
 User Accounts
 Nickname: HienMap
 Password: 12345678
+
+Shop Owner (chủ shop `wishe`, có sẵn món `QA_TEST`, đã đặt vị trí)
+Nickname: pob
+Password: 12345678
+
+Ghi chú test (DB thật): đơn #1, khiếu nại/đánh giá `QA_TEST`, hồ sơ tài xế `Hien2008` đã duyệt. Gửi OTP email đang lỗi (Gmail 535), nên tránh thao tác đổi email/ngân hàng/khoá PayOS trong lúc test.
 
 ### 5.3. Các Bộ Dữ Liệu Test Bắt Buộc Phải Bao Phủ
 AI luôn phải thiết kế đủ 3 nhóm kịch bản kiểm thử:

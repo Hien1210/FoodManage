@@ -6823,3 +6823,55 @@ không tự build/deploy/test được — đã đọc lại kỹ từng file Ja
 đổi avatar → xác nhận ảnh cập nhật ở cả navbar và khối profile; đổi email → xác nhận redirect sang
 `/xac-thuc-thay-doi?purpose=user_hoso` → nhập OTP → xác nhận quay lại đúng trang với thông tin mới; kiểm
 tra dropdown "Thông tin cá nhân" xuất hiện đúng ở cả 8 trang User.
+
+## 104. Kiểm tra hệ thống (QA) — phiên `/ai-native-sdlc`, xem `intent.md`
+
+### Đã kiểm tra
+- Build `mvn -o package` thành công; Tomcat 8090 khởi động không lỗi; 4 role (admin/shop/user/shipper) đăng nhập được bằng tài khoản ở `AI_REVIEW_AND_TEST_GUIDELINES.md` mục 5.2.
+- Ma trận truy cập ~75 URL × (admin, shop, user, shipper, chưa đăng nhập): phân quyền đúng — role khác bị 403/302, chưa đăng nhập bị chuyển `/dangnhap`.
+- Quét nội dung 52 trang (4 role + trang công khai) tìm stack trace / EL chưa resolve / trang bị cắt: sạch, trừ lỗi `DoiSoatDoanhThuShop` bên dưới.
+- Test bảo mật: SQLi ở form đăng nhập (không vào được), POST thiếu CSRF token (bị chặn), user POST vào `/admin/faq` (403), `/user/shop?id=` với giá trị lạ (chuyển về `/user/home`, không lỗi).
+- Rà code tĩnh: SQL dùng `PreparedStatement` (chỗ nối `ORDER BY` ở `AccountDAOImpl` đã whitelist), Shop CRUD kiểm tra `shop_id`, `BillServlet` kiểm tra chủ đơn, webhook PayOS verify chữ ký.
+- DB (chỉ SELECT): 24 tài khoản, 1 shop (`wishe`), **0 sản phẩm, 0 đơn hàng** → luồng đặt hàng chưa test được.
+
+### Đã sửa
+- **XSS phản chiếu** `shipper/hosotaixe.jsp` in `${param.success}` / `${param.error}` không escape → đổi sang `<c:out>`. Đã build lại và kiểm chứng (`<script>` thành `&lt;script&gt;`).
+- **Trang bị cắt cụt** `/admin/doi-soat-doanh-thu-shop` ném `JspException: parse locale can not be established` khi request không có header `Accept-Language` → thêm `<fmt:setLocale value="vi_VN"/>` vào `admin/DoiSoatDoanhThuShop.jsp`. Đã kiểm chứng trang trả đủ `</html>`.
+- **Lộ secret** `utils/DBUtil.java` hardcode host/user/mật khẩu SQL Server → đọc qua `ConfigUtil` (`db.url`/`db.user`/`db.password` trong `src/main/resources/config.properties`, file này nằm trong `.gitignore`, mẫu ở `config.properties.example`; hoặc biến môi trường `DB_URL`/`DB_USER`/`DB_PASSWORD`). Thiếu cấu hình sẽ báo lỗi rõ ràng. **Mật khẩu cũ vẫn nằm trong lịch sử git nên cần tự đổi mật khẩu `sa` trên SQL Server.**
+
+### Chưa sửa
+- **[CAO] XSS lưu trữ (stored XSS)**: nhiều JSP in dữ liệu do người dùng nhập mà không escape, ví dụ `admin/KiemDuyetNoiDung.jsp` (`p.shopName`, `p.productName`, `p.description`), `admin/quanlitaikhoan.jsp` (`acc.fullName`), `admin/KiemDuyetBinhLuan.jsp`, `shipper/nhanDon.jsp` (`order.shopName`, `shopAddress`, `shippingAddress`), `shipper/dashboard.jsp`, `shop/viTien.jsp`. `DangKyShopServlet` chỉ kiểm tra tên shop khác rỗng, `DangKyServlet` không kiểm `fullname`, và CSP đang cho `script-src 'unsafe-inline'`. Cần rà toàn bộ và đổi sang `<c:out>` / `${fn:escapeXml(...)}`; chưa chèn payload thật vào DB để xác nhận.
+- Tài khoản test `Bao` (role shop) chưa có bản ghi shop (shop `wishe` thuộc tài khoản id 16), nên `/shop/pos`, `/shop/profile`, `/shop/toppings`... chuyển về `/shop`.
+- `/cart`, `/cart-items` luôn trả 404 (cố ý vô hiệu hoá) nhưng `user/cartItemDanhSach.jsp`, `cartItemThemSua.jsp` vẫn link tới; `AuthFilter` cho role 2 vào `/admin/*` (các servlet tự chặn lại bằng `roleId == 1` nên hiện không lỗi).
+
+### Phiên 2: ghi dữ liệu test + luồng đặt hàng
+- Đã chèn dữ liệu test (được user cho phép) cho shop `wishe` (id 1): 1 loại sản phẩm `QA_TEST Đồ uống`, 2 món `QA_TEST Trà đào` (size M 25.000đ, L 30.000đ) và `QA_TEST Cơm gà` (size 45.000đ). Xoá khi không cần: `DELETE FROM Product_Sizes WHERE product_id IN (SELECT id FROM Products WHERE product_name LIKE 'QA_TEST%'); DELETE FROM Products WHERE product_name LIKE 'QA_TEST%'; DELETE FROM Categories WHERE name LIKE 'QA_TEST%';`
+- Luồng đã chạy được: menu shop hiển thị món test → thêm giỏ → xem giỏ → mở checkout → validate thiếu tên người nhận → chống gửi lặp bằng `checkoutToken`. Giỏ của `HienMap` đã dọn sạch.
+- **Chưa tạo được đơn**: shop `wishe` chưa có `locationX/locationY` nên checkout từ chối ("Shop chua cap nhat vi tri tren ban do"). Đây là hành vi đúng của app; cần chủ shop (tài khoản `pob`) đặt vị trí ở `/shop/profile` hoặc user cho phép UPDATE. Không đặt hộ vì đó là sửa dữ liệu có sẵn.
+
+### Đã sửa thêm (phiên 2)
+- **`UserCartServlet`**: không kiểm tra `sizeId` thuộc đúng `productId` và `shopId` → thêm món A với size của món B (hoặc shop khác) vẫn vào giỏ và tính theo giá size đó (kiểm chứng: `productId=1&sizeId=3` từng được nhận). Nay trả `error=invalid_size`. Chưa xét `UserAddComboServlet`.
+- **`CheckoutServlet`** dòng 96 và 99: lỗi giỏ rỗng / không tìm thấy chuyển hướng tới `/cart?...` vốn luôn 404 → đổi sang `/user/cart?...`.
+
+### Ghi nhận thêm
+- `quantity` âm hoặc 0 khi thêm giỏ bị đổi âm thầm thành 1 (không báo lỗi).
+- `user/menuShop.jsp` nhúng tên/mô tả món vào chuỗi JS inline (`'Món test QA'`): tên món chứa dấu `'` sẽ làm vỡ script, cần escape JS.
+
+### Chưa kiểm tra được
+Tạo đơn hàng qua checkout, bill, luồng shop xử lý đơn và shipper giao hàng (cần vị trí shop + tài khoản chủ shop `pob`), và chạy thử bằng trình duyệt thật.
+
+### Phiên 3: sự cố lưu hồ sơ shop
+- **Trình duyệt tự điền** tên đăng nhập/mật khẩu đã lưu vào `bankAccountName` và `clientKey` ở `shop/Shopprofile.jsp` (Chrome bỏ qua `autocomplete="off"` trên ô password). Server thấy ngân hàng/khoá PayOS thay đổi → bắt OTP email (`shop_bank`) → email lỗi nên không lưu được. Đã đổi `autocomplete="new-password"` cho `clientKey`/`apiKey`/`checkSumKey` và `autocomplete="off"` cho 2 ô ngân hàng; cần redeploy mới có hiệu lực.
+- **Dữ liệu `wishe` (id 1) đang lỗi do lượt test này:** `shop_description` chứa đoạn HTML `<textarea ...>j` (giá trị gốc `j`); `shop_address` bị đổi nhẹ sau khi gửi lại form (cột/kết nối có vẻ mất dấu tiếng Việt, ở lần đọc đầu địa chỉ đã hiện `?`). Vị trí `locationX/Y` đã đặt = `10.4963, 107.1685` (gốc NULL).
+
+### Phiên 4: luồng đặt đơn COD (đã test)
+- Shop `wishe` đã có vị trí (do chủ shop lưu qua `/shop/profile`). Khách `HienMap` đặt 2 món (`QA_TEST Trà đào` M ×2 + `QA_TEST Cơm gà` ×1 = 95.000đ) → **đơn #1** (COD, PENDING) tạo thành công, chuyển tới `/bill?orderIds=1`, hoá đơn đúng món/giá, `/user/donhang` hiển thị đơn.
+- Kiểm tra biên: điểm giao cách shop >20km bị từ chối; thiếu tên người nhận bị chặn; gửi lặp cùng `checkoutToken` bị chặn; admin không mở được `/bill` của khách; user không vào được `/shop/bills`.
+- Phía shop (`pob`): xem hoá đơn, xuất PDF (`%PDF`) và Excel (`PK`) chạy; `confirm` khi chưa có shipper → `error=no_shipper`, `prepared` khi chưa CONFIRMED → `error=invalid_action`, `orderId` không tồn tại → `error=not_found`. Đơn PENDING chưa có shipper cố ý **không hiện** trong danh sách `/shop/bills` (`ShopBillServlet.filterOrders`).
+- Phía shipper (`Hien2008`): nhận đơn khi Offline → `error=offline`; khi Online → `error=notverified` vì chưa có dòng `Shipper_Profiles` đã duyệt. **Chưa test được**: shipper nhận đơn → shop xác nhận → chuẩn bị → giao → hoàn thành, tích điểm, bản đồ theo dõi. Đơn #1 còn ở PENDING (dữ liệu test).
+
+### Phiên 5: hoàn tất luồng đơn hàng end-to-end (đã test)
+- Shipper `Hien2008` nộp hồ sơ tài xế qua `/shipper/profile` (`action=updateVehicle`, không đổi ngân hàng nên không cần OTP) → Super Admin duyệt ở `/super-admin/shipper-requests` (`action=accept`) → nhận đơn được.
+- Đơn #1 đi hết vòng: shipper nhận (`/shipper/nhan-don`) → shop `confirm` → `prepared` → shipper `updateStatusToShipping` → `updateStatusToDone`. Nhảy bước (READY → DONE) bị bỏ qua đúng. Khách nhận đủ thông báo cho từng bước (`/user/thong-bao`); hoá đơn hiện "Đã giao thành công"; `/tong-quan` và báo cáo vận hành đếm 1 đơn.
+- Khiếu nại (`/khieu-nai`) và đánh giá (`/feedback`) gửi được; nội dung có thẻ HTML được escape ở trang khách, admin và shop; `rating=9` bị từ chối.
+- Dữ liệu test còn lại trong DB: đơn #1 (DONE), khiếu nại và đánh giá `QA_TEST`, hồ sơ tài xế của `Hien2008` (đã duyệt, `PENDING`→`APPROVED`), 2 món `QA_TEST` của `wishe`.

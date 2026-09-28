@@ -59,6 +59,11 @@ public class UserCartServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/user/shop?id=" + shopId + "&error=invalid_size");
             return;
         }
+        // Size phải thuộc đúng sản phẩm và đúng shop đang đặt; nếu không, client có thể ghép món này với giá size của món/shop khác.
+        if (size.getProductId() != productId || size.getShopId() != shopId) {
+            resp.sendRedirect(req.getContextPath() + "/user/shop?id=" + shopId + "&error=invalid_size");
+            return;
+        }
         if (size.isOutOfStock()) {
             resp.sendRedirect(req.getContextPath() + "/user/shop?id=" + shopId + "&error=out_of_stock");
             return;

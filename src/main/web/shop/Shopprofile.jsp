@@ -296,13 +296,13 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="bankAccountNumber">Số tài khoản</label>
-                                <input type="text" id="bankAccountNumber" name="bankAccountNumber" class="form-control"
+                                <input type="text" id="bankAccountNumber" name="bankAccountNumber" autocomplete="off" class="form-control"
                                        value="${fn:escapeXml(formShop.bankAccountNumber)}"
                                        placeholder="Số tài khoản ngân hàng...">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="bankAccountName">Tên chủ tài khoản</label>
-                                <input type="text" id="bankAccountName" name="bankAccountName" class="form-control"
+                                <input type="text" id="bankAccountName" name="bankAccountName" autocomplete="off" class="form-control"
                                        value="${fn:escapeXml(formShop.bankAccountName)}"
                                        placeholder="VD: NGUYEN VAN A (không dấu, in hoa)...">
                             </div>
@@ -318,7 +318,7 @@
                                 <div class="secret-field">
                                     <input type="password" id="clientKey" name="clientKey" class="form-control"
                                            value="${fn:escapeXml(formShop.clientKey)}"
-                                           placeholder="Client ID dùng cho cổng thanh toán..." autocomplete="off">
+                                           placeholder="Client ID dùng cho cổng thanh toán..." autocomplete="new-password">
                                     <button type="button" class="btn-toggle-secret" onclick="toggleSecret('clientKey', this)">👁</button>
                                 </div>
                             </div>
@@ -327,7 +327,7 @@
                                 <div class="secret-field">
                                     <input type="password" id="apiKey" name="apiKey" class="form-control"
                                            value="${fn:escapeXml(formShop.apiKey)}"
-                                           placeholder="API Key..." autocomplete="off">
+                                           placeholder="API Key..." autocomplete="new-password">
                                     <button type="button" class="btn-toggle-secret" onclick="toggleSecret('apiKey', this)">👁</button>
                                 </div>
                             </div>
@@ -336,7 +336,7 @@
                                 <div class="secret-field">
                                     <input type="password" id="checkSumKey" name="checkSumKey" class="form-control"
                                            value="${fn:escapeXml(formShop.checkSumKey)}"
-                                           placeholder="Checksum Key..." autocomplete="off">
+                                           placeholder="Checksum Key..." autocomplete="new-password">
                                     <button type="button" class="btn-toggle-secret" onclick="toggleSecret('checkSumKey', this)">👁</button>
                                 </div>
                             </div>

@@ -140,10 +140,10 @@
     <div class="content">
 
         <c:if test="${not empty param.success}">
-            <div class="alert alert-success">✅ ${param.success}</div>
+            <div class="alert alert-success">✅ <c:out value="${param.success}"/></div>
         </c:if>
         <c:if test="${not empty param.error}">
-            <div class="alert alert-danger">⚠️ ${param.error}</div>
+            <div class="alert alert-danger">⚠️ <c:out value="${param.error}"/></div>
         </c:if>
 
         <div class="profile-hero">

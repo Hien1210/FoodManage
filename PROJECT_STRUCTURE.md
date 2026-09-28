@@ -8,7 +8,7 @@
 - Đồ án tốt nghiệp: ứng dụng web đặt đồ ăn (food ordering) — quản lý shop, sản phẩm, giỏ hàng, đơn hàng, shipper, tài khoản, super admin duyệt shop.
 - Stack: **Java Servlet/JSP** thuần (không dùng Spring), build bằng **Maven**, chạy trên **Apache Tomcat**.
 - Kiến trúc: Servlet (Controller) → DAO (truy cập DB qua JDBC) → Model (POJO) → JSP (View).
-- DB: SQL Server (`mssql-jdbc`), kết nối qua [DBUtil.java](src/main/java/org/example/utils/DBUtil.java).
+- DB: SQL Server (`mssql-jdbc`), kết nối qua [DBUtil.java](src/main/java/org/example/utils/DBUtil.java); thông tin kết nối đọc từ `src/main/resources/config.properties` (không commit, mẫu `config.properties.example`) hoặc biến môi trường `DB_URL`/`DB_USER`/`DB_PASSWORD` qua [ConfigUtil.java](src/main/java/org/example/utils/ConfigUtil.java).
 - Mật khẩu hash bằng `jbcrypt`. Gửi email OTP bằng `javax.mail` qua [EmailUtil.java](src/main/java/org/example/utils/EmailUtil.java).
 
 ## 2. Cấu trúc thư mục chính
