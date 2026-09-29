@@ -111,13 +111,15 @@
     </header>
 
     <div class="content">
+        <c:if test="${not empty loi}"><div class="alert alert-danger">⚠️ <c:out value="${loi}"/></div></c:if>
+
         <div class="panel">
             <div class="panel-title">Bộ lọc tìm kiếm</div>
             <form method="get" action="${pageContext.request.contextPath}/admin/audit-logs">
                 <div class="filter-grid">
                     <div class="filter-field">
                         <label>Account ID</label>
-                        <input type="number" name="accountId" value="${filterAccountId}" placeholder="VD: 15">
+                        <input type="number" name="accountId" value="${fn:escapeXml(filterAccountId)}" placeholder="VD: 15">
                     </div>
                     <div class="filter-field">
                         <label>Module</label>

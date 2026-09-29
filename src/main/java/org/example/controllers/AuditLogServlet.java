@@ -39,12 +39,22 @@ public class AuditLogServlet extends HttpServlet {
         LocalDate toDate = parseDate(req.getParameter("toDate"));
         int page = parsePage(req.getParameter("page"));
 
-        int totalCount = auditLogDAO.count(accountId, module, action, fromDate, toDate);
-        int totalPages = Math.max(1, (int) Math.ceil(totalCount / (double) PAGE_SIZE));
-        if (page > totalPages) page = totalPages;
+        List<AuditLog> logs = List.of();
+        List<String> modules = List.of();
+        int totalCount = 0;
+        int totalPages = 1;
 
-        List<AuditLog> logs = auditLogDAO.search(accountId, module, action, fromDate, toDate, page, PAGE_SIZE);
-        List<String> modules = auditLogDAO.findDistinctModules();
+        try {
+            totalCount = auditLogDAO.count(accountId, module, action, fromDate, toDate);
+            totalPages = Math.max(1, (int) Math.ceil(totalCount / (double) PAGE_SIZE));
+            if (page > totalPages) page = totalPages;
+
+            logs = auditLogDAO.search(accountId, module, action, fromDate, toDate, page, PAGE_SIZE);
+            modules = auditLogDAO.findDistinctModules();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            req.setAttribute("loi", "Khong the tai du lieu audit log, vui long thu lai sau.");
+        }
 
         req.setAttribute("logs", logs);
         req.setAttribute("modules", modules);

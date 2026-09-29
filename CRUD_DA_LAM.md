@@ -6941,3 +6941,14 @@ Tạo đơn hàng qua checkout, bill, luồng shop xử lý đơn và shipper gi
 | Admin tạo/sửa tài khoản (`QuanLiTaiKhoanServlet`) | username/email/họ tên ≤ 100, SĐT | `loi` + forward |
 
 Đã test bằng dữ liệu có `<` hoặc quá dài trên 13 form; 95 JSP vẫn biên dịch.
+
+### Bug: `AuditLogServlet`/`AuditLogDAOImpl` nuốt lỗi DB âm thầm + XSS phản chiếu qua `accountId`
+- **Phát hiện qua**: review tự động (skill `code-review-and-quality` + agent `code-reviewer`) khi thử nghiệm bộ Agent Skills mới cài.
+- **Bug 1 (Exception Handling)**: `AuditLogDAOImpl.search()/count()/findDistinctModules()` bắt `Exception` rồi trả về list rỗng/`0` — khi DB lỗi thật, admin chỉ thấy "Không tìm thấy nhật ký nào phù hợp" như thể không có dữ liệu, không biết là hệ thống đang lỗi.
+  - **Fix**: 3 hàm trên vẫn `e.printStackTrace()` để log, nhưng sau đó `throw new RuntimeException(...)` để lỗi không bị nuốt âm thầm. `AuditLogServlet.doGet()` bọc các lời gọi DAO trong `try/catch (RuntimeException e)`, khi lỗi thì set `req.setAttribute("loi", "Khong the tai du lieu audit log, vui long thu lai sau.")` và vẫn forward tới JSP với dữ liệu rỗng an toàn (không crash trang, không giả vờ là "không có kết quả").
+  - Hàm `log()` (ghi audit log) giữ nguyên hành vi nuốt lỗi — đây là chủ đích đã ghi rõ trong Javadoc của interface (ghi log lỗi không được làm fail nghiệp vụ chính).
+- **Bug 2 (XSS phản chiếu)**: `AuditLogs.jsp` dòng filter `accountId` in giá trị `${filterAccountId}` ra thuộc tính `value` của `<input>` mà không escape, khác với các filter khác (`action`, `fromDate`, `toDate`) đã dùng `fn:escapeXml`.
+  - **Fix**: đổi thành `value="${fn:escapeXml(filterAccountId)}"` cho đồng bộ với các trường filter khác trên cùng form.
+  - Thêm banner lỗi `<c:if test="${not empty loi}"><div class="alert alert-danger">⚠️ <c:out value="${loi}"/></div></c:if>` ngay đầu `<div class="content">`, theo đúng convention `loi` + `alert-danger` đã dùng ở các JSP khác (`QuanLyVoucher.jsp`, `yeuCauShop.jsp`,...).
+- **File đã sửa**: `src/main/java/org/example/daos/AuditLogDAOImpl.java`, `src/main/java/org/example/controllers/AuditLogServlet.java`, `src/main/web/admin/AuditLogs.jsp`.
+- **Kiểm chứng**: đọc lại code sau khi sửa (đúng cú pháp Java/JSTL); không chạy được `mvn compile` vì máy không có Maven trên PATH — cần build/test thủ công lại trước khi merge.
