@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
@@ -52,7 +52,7 @@
 </head>
 <body class="dash-body admin-theme">
 
-<c:set var="adminActive" value="" scope="request"/>
+<c:set var="adminActive" value="/admin/doi-mat-khau" scope="request"/>
 <%@ include file="_adminSidebar.jspf" %>
 
 <main class="main">

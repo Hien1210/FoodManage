@@ -565,6 +565,26 @@
         @media (max-width: 400px) {
             .product-grid { grid-template-columns: 1fr; }
         }
+        .menu-toggle-shop {
+            display: none; background: #FFF4EC; border: 1.5px solid #F1E4D6; border-radius: 10px;
+            width: 40px; height: 40px; color: #635752; font-size: 1.05rem; cursor: pointer;
+            align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .nav-links-shop { display: flex; gap: 20px; align-items: center; }
+        @media (max-width: 900px) {
+            .nav-links-shop {
+                display: none; position: absolute; top: 100%; left: 0; right: 0;
+                flex-direction: column; align-items: stretch; gap: 2px;
+                background: #FFFFFF; padding: 10px 20px 16px;
+                box-shadow: 0 16px 30px rgba(0,0,0,.12); border-bottom: 1px solid #F1E4D6;
+            }
+            .nav-links-shop.open { display: flex; }
+            .nav-links-shop a { padding: 12px 14px !important; border-radius: 10px; }
+            .nav-links-shop a:hover { background: #FFF4EC; }
+            .menu-toggle-shop { display: flex; }
+            .navbar-logo-shop h1 { font-size: 1.15rem !important; }
+            .navbar-logo-shop .logo-emoji-shop { width: 24px !important; height: 24px !important; }
+        }
     </style>
 </head>
 <body>
@@ -573,12 +593,12 @@
 <!-- ═══════════════════ NAVBAR ═══════════════════ -->
 <header class="navbar" style="position:sticky;top:0;left:0;width:100%;background:rgba(255,251,248,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:1000;border-bottom:1px solid var(--border-color,#F1E4D6);">
     <div style="max-width:1180px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:76px;gap:16px;">
-        <a href="${pageContext.request.contextPath}/user/home" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
-            <img style="width:30px;height:30px;filter:drop-shadow(0 4px 8px rgba(255,59,31,.4));" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Steaming%20bowl/3D/steaming_bowl_3d.png" alt="FOOD MANAGE">
+        <a href="${pageContext.request.contextPath}/user/home" class="navbar-logo-shop" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+            <img class="logo-emoji-shop" style="width:30px;height:30px;filter:drop-shadow(0 4px 8px rgba(255,59,31,.4));" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Steaming%20bowl/3D/steaming_bowl_3d.png" alt="FOOD MANAGE">
             <h1 style="font-size:1.55rem;letter-spacing:-.5px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;">FOOD MANAGE<span style="color:#FF3B1F;">.</span></h1>
         </a>
 
-        <nav style="display:flex;gap:20px;align-items:center;">
+        <nav class="nav-links-shop" id="navLinksShop">
             <a href="${pageContext.request.contextPath}/user/home" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Trang chủ</a>
             <a href="${pageContext.request.contextPath}/user/home#restaurants" style="font-size:.86rem;font-weight:700;color:#FF3B1F;text-decoration:none;">Nhà hàng</a>
             <a href="${pageContext.request.contextPath}/user/donhang" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Đơn hàng</a>
@@ -586,13 +606,17 @@
             <a href="${pageContext.request.contextPath}/user/diem-thuong" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Điểm thưởng</a>
         </nav>
 
-        <div style="display:flex;align-items:center;gap:14px;">
-            <a href="${pageContext.request.contextPath}/user/thong-bao" aria-label="Thông báo" style="position:relative;width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button type="button" class="menu-toggle-shop" onclick="toggleNavLinksShop()" aria-label="Menu" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <a href="${pageContext.request.contextPath}/user/thong-bao" aria-label="Thông báo" style="position:relative;width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;flex-shrink:0;">
                 <i class="fa-solid fa-bell"></i>
                 <span data-notif-badge style="display:${unreadNotifCount > 0 ? 'inline-block' : 'none'};position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px;font-weight:700;">${unreadNotifCount}</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/user/cart" aria-label="Giỏ hàng" style="width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;">
+            <a href="${pageContext.request.contextPath}/user/cart" aria-label="Giỏ hàng" style="width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;flex-shrink:0;">
                 <i class="fa-solid fa-bag-shopping"></i>
             </a>
         </div>
@@ -607,10 +631,10 @@
             <c:choose>
                 <c:when test="${isValidHeroLogoUrl}">
                     <img src="${fn:escapeXml(shop.shopLogo)}" alt="${fn:escapeXml(shop.shopName)}"
-                         onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'">
+                         onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/shop-placeholder.svg'">
                 </c:when>
                 <c:otherwise>
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="${fn:escapeXml(shop.shopName)}">
+                    <img src="${pageContext.request.contextPath}/assets/img/shop-placeholder.svg" alt="${fn:escapeXml(shop.shopName)}">
                 </c:otherwise>
             </c:choose>
         </div>
@@ -1533,6 +1557,21 @@
     } else {
         initFlashSaleCountdowns();
     }
+
+    function toggleNavLinksShop() {
+        var nav = document.getElementById('navLinksShop');
+        var btn = document.querySelector('.menu-toggle-shop');
+        var open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    document.addEventListener('click', function(e) {
+        var nav = document.getElementById('navLinksShop');
+        var btn = document.querySelector('.menu-toggle-shop');
+        if (nav && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+            nav.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
 </script>
 <script>window.POB_CONTEXT_PATH = '${pageContext.request.contextPath}';</script>
 <script src="${pageContext.request.contextPath}/assets/js/toast.js"></script>

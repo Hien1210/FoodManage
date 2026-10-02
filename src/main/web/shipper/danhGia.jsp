@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
@@ -55,6 +55,9 @@
 </head>
 <body class="dash-body">
 
+<c:set var="shipperActive" value="/shipper/danh-gia" scope="request"/>
+<%@ include file="_shipperSidebar.jspf" %>
+<%--
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
@@ -119,6 +122,7 @@
         </form>
     </div>
 </aside>
+--%>
 
 <main class="main">
     <header class="topbar">

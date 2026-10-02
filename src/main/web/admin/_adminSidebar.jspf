@@ -34,7 +34,7 @@
         </button>
     </div>
 
-    <div class="sb-admin">
+    <a href="${_abCtx}/admin/profile" class="sb-admin" title="Hồ sơ Super Admin">
         <div class="sb-admin-avatar">
             <c:choose>
                 <c:when test="${not empty sessionScope.account.avatarUrl}">
@@ -48,7 +48,7 @@
             <div class="sb-admin-name"><c:out value="${sessionScope.account.userName}"/></div>
             <div class="sb-admin-role">Toàn quyền hệ thống</div>
         </div>
-    </div>
+    </a>
 
     <div class="menu">
         <div class="menu-group">
@@ -110,9 +110,15 @@
         </div>
 
         <div class="menu-group">
-            <div class="menu-title">Cấu hình &amp; hệ thống</div>
+            <div class="menu-title">Cấu hình &amp; tài khoản</div>
             <a href="${_abCtx}/quanlitaikhoan" class="menu-item${adminActive eq '/quanlitaikhoan' ? ' active' : ''}">
                 <span class="mi-left"><span class="mi-icon material-symbols-outlined">manage_accounts</span><span class="mi-label">Người dùng</span></span>
+            </a>
+            <a href="${_abCtx}/admin/profile" class="menu-item${adminActive eq '/admin/profile' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">account_circle</span><span class="mi-label">Hồ sơ Admin</span></span>
+            </a>
+            <a href="${_abCtx}/admin/doi-mat-khau" class="menu-item${adminActive eq '/admin/doi-mat-khau' ? ' active' : ''}">
+                <span class="mi-left"><span class="mi-icon material-symbols-outlined">lock_reset</span><span class="mi-label">Đổi mật khẩu</span></span>
             </a>
             <a href="${_abCtx}/admin/tham-so-van-hanh" class="menu-item${adminActive eq '/admin/tham-so-van-hanh' ? ' active' : ''}">
                 <span class="mi-left"><span class="mi-icon material-symbols-outlined">tune</span><span class="mi-label">Tham số vận hành</span></span>

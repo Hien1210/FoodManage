@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 
@@ -63,45 +63,8 @@
 </head>
 <body class="dash-body">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🛵</div>
-        <div class="brand-text">
-            <span class="brand-title">POB SHIPPER</span>
-            <span class="brand-subtitle">👋 ${fn:escapeXml(sessionScope.account.userName)}</span>
-        </div>
-        <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Công việc</div>
-        <a href="${pageContext.request.contextPath}/shipper/donhang" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Đơn hàng nhận</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/nhan-don" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📥</span><span class="mi-label"> Nhận đơn mới</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/dashboard" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Dashboard</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/thongbao" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🔔</span><span class="mi-label"> Thông báo</span></span>
-        </a>
-
-        <div class="menu-title">Tài khoản</div>
-        <a href="${pageContext.request.contextPath}/shipper/profile" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🚙</span><span class="mi-label"> Hồ sơ tài xế</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Đánh giá &amp; Báo cáo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shipperActive" value="/shipper/ho-so" scope="request"/>
+<%@ include file="_shipperSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">

@@ -80,6 +80,13 @@ ul { list-style: none; }
 
 .nav-actions { display: flex; align-items: center; gap: 16px; }
 
+.menu-toggle {
+    display: none; background: rgba(255,255,255,.16); border: none; border-radius: 10px;
+    width: 40px; height: 40px; color: #fff; font-size: 1.05rem; cursor: pointer;
+    align-items: center; justify-content: center; flex-shrink: 0;
+}
+.menu-toggle:hover { background: rgba(255,255,255,.28); }
+
 /* Search in nav */
 .nav-search { position: relative; }
 .nav-search input {
@@ -344,7 +351,21 @@ ul { list-style: none; }
 }
 @media (max-width: 768px) {
     .hero-title { font-size: 2.6rem; }
-    .nav-links, .nav-search { display: none; }
+    .nav-search { display: none; }
+    .logo h1 { font-size: 1.15rem; }
+    .logo span { display: none; }
+    .logo-emoji { width: 24px; height: 24px; }
+    .nav-actions { gap: 6px; }
+    .avatar-btn, .cart-btn { width: 38px; height: 38px; }
+    .menu-toggle { display: flex; }
+    .nav-links {
+        display: none; position: absolute; top: 100%; left: 0; right: 0;
+        flex-direction: column; align-items: stretch; gap: 2px;
+        background: var(--brand-700); padding: 10px 20px 16px;
+        box-shadow: 0 16px 30px rgba(0,0,0,.25);
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 12px 14px; border-radius: 10px; }
     .footer-content { flex-direction: column; text-align: center; }
     .footer-links { justify-content: center; }
     .restaurant-grid { grid-template-columns: 1fr; }
@@ -361,7 +382,7 @@ ul { list-style: none; }
             <h1>FOOD MANAGE<span>.</span></h1>
         </a>
 
-        <nav class="nav-links">
+        <nav class="nav-links" id="navLinks">
             <a href="#home" class="active">Trang chủ</a>
             <a href="#restaurants">Nhà hàng</a>
             <a href="${pageContext.request.contextPath}/user/donhang">Đơn hàng</a>
@@ -370,6 +391,10 @@ ul { list-style: none; }
         </nav>
 
         <div class="nav-actions">
+            <button type="button" class="menu-toggle" onclick="toggleNavLinks()" aria-label="Menu" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
             <div class="nav-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
 <input id="navSearch" type="text" placeholder="Tìm quán, món ăn..." oninput="filterShops(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();doSearch(this.value);}">
@@ -506,10 +531,10 @@ ul { list-style: none; }
                                 <c:choose>
                                     <c:when test="${isValidLogoUrl}">
                                         <img src="${fn:escapeXml(shop.shopLogo)}" alt="${fn:escapeXml(shop.shopName)}"
-                                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'">
+                                             onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/shop-placeholder.svg';this.classList.add('fallback-icon')">
                                     </c:when>
                                     <c:otherwise>
-                                        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="${fn:escapeXml(shop.shopName)}">
+                                        <img class="fallback-icon" src="${pageContext.request.contextPath}/assets/img/shop-placeholder.svg" alt="${fn:escapeXml(shop.shopName)}">
                                     </c:otherwise>
                                 </c:choose>
                             </div>
@@ -678,6 +703,26 @@ function toggleDropdown() {
 document.addEventListener('click', function(e) {
     var w = document.getElementById('avatarWrap');
     if (w && !w.contains(e.target)) document.getElementById('accountDropdown').classList.remove('open');
+});
+
+function toggleNavLinks() {
+    var nav = document.getElementById('navLinks');
+    var btn = document.querySelector('.menu-toggle');
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('click', function(e) {
+    var nav = document.getElementById('navLinks');
+    var btn = document.querySelector('.menu-toggle');
+    if (nav && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+        nav.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+    }
+});
+document.querySelectorAll('#navLinks a').forEach(function(a) {
+    a.addEventListener('click', function() {
+        document.getElementById('navLinks').classList.remove('open');
+    });
 });
 
 </script>

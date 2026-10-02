@@ -85,9 +85,15 @@
             <span class="mi-left"><span class="mi-icon material-symbols-outlined">bolt</span><span class="mi-label">Flash Sale</span></span>
         </a>
 
-        <div class="menu-title">Tài chính</div>
+        <div class="menu-title">Tài chính &amp; Tài khoản</div>
         <a href="${_sbCtx}/shop/vi-tien" class="menu-item${shopActive eq '/shop/vi-tien' ? ' active' : ''}">
             <span class="mi-left"><span class="mi-icon material-symbols-outlined">account_balance_wallet</span><span class="mi-label">Ví tiền Shop</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/ho-so" class="menu-item${shopActive eq '/shop/ho-so' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">person</span><span class="mi-label">Hồ sơ cá nhân</span></span>
+        </a>
+        <a href="${_sbCtx}/shop/doi-mat-khau" class="menu-item${shopActive eq '/shop/doi-mat-khau' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon material-symbols-outlined">lock</span><span class="mi-label">Đổi mật khẩu</span></span>
         </a>
     </div>
 </aside>

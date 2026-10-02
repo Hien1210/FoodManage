@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 
@@ -62,7 +62,7 @@
 </head>
 <body class="dash-body shop-theme">
 
-<c:set var="shopActive" value="" scope="request"/>
+<c:set var="shopActive" value="/shop/ho-so" scope="request"/>
 <%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">

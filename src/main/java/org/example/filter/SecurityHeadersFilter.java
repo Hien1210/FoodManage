@@ -15,7 +15,7 @@ public class SecurityHeadersFilter implements Filter {
             "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com; " +
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdnjs.cloudflare.com; " +
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
-            "img-src 'self' data: https://res.cloudinary.com https://cdn.jsdelivr.net https://*.tile.openstreetmap.org; " +
+            "img-src 'self' data: https://res.cloudinary.com https://cdn.jsdelivr.net https://unpkg.com https://*.tile.openstreetmap.org; " +
             "connect-src 'self' https://api.cloudinary.com https://nominatim.openstreetmap.org https://router.project-osrm.org; " +
             "frame-ancestors 'none'";
 
