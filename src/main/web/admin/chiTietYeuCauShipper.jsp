@@ -54,9 +54,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -110,8 +110,8 @@
                             <div class="info-label" style="margin-bottom:8px;">Ảnh CCCD / CMND - Mặt trước</div>
                             <c:choose>
                                 <c:when test="${not empty profile.idCardFrontUrl}">
-                                    <a href="${profile.idCardFrontUrl}" target="_blank">
-                                        <img src="${profile.idCardFrontUrl}" alt="CCCD mặt trước" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
+                                    <a href="${fn:escapeXml(profile.idCardFrontUrl)}" target="_blank">
+                                        <img src="${fn:escapeXml(profile.idCardFrontUrl)}" alt="CCCD mặt trước" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
                                     </a>
                                 </c:when>
                                 <c:otherwise>
@@ -123,8 +123,8 @@
                             <div class="info-label" style="margin-bottom:8px;">Ảnh CCCD / CMND - Mặt sau</div>
                             <c:choose>
                                 <c:when test="${not empty profile.idCardBackUrl}">
-                                    <a href="${profile.idCardBackUrl}" target="_blank">
-                                        <img src="${profile.idCardBackUrl}" alt="CCCD mặt sau" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
+                                    <a href="${fn:escapeXml(profile.idCardBackUrl)}" target="_blank">
+                                        <img src="${fn:escapeXml(profile.idCardBackUrl)}" alt="CCCD mặt sau" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
                                     </a>
                                 </c:when>
                                 <c:otherwise>
@@ -136,8 +136,8 @@
                             <div class="info-label" style="margin-bottom:8px;">Ảnh GPLX - Mặt trước</div>
                             <c:choose>
                                 <c:when test="${not empty profile.licenseFrontUrl}">
-                                    <a href="${profile.licenseFrontUrl}" target="_blank">
-                                        <img src="${profile.licenseFrontUrl}" alt="GPLX mặt trước" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
+                                    <a href="${fn:escapeXml(profile.licenseFrontUrl)}" target="_blank">
+                                        <img src="${fn:escapeXml(profile.licenseFrontUrl)}" alt="GPLX mặt trước" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
                                     </a>
                                 </c:when>
                                 <c:otherwise>
@@ -149,8 +149,8 @@
                             <div class="info-label" style="margin-bottom:8px;">Ảnh GPLX - Mặt sau</div>
                             <c:choose>
                                 <c:when test="${not empty profile.licenseBackUrl}">
-                                    <a href="${profile.licenseBackUrl}" target="_blank">
-                                        <img src="${profile.licenseBackUrl}" alt="GPLX mặt sau" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
+                                    <a href="${fn:escapeXml(profile.licenseBackUrl)}" target="_blank">
+                                        <img src="${fn:escapeXml(profile.licenseBackUrl)}" alt="GPLX mặt sau" style="width:100%;max-width:260px;border-radius:8px;border:1px solid var(--border-color);"/>
                                     </a>
                                 </c:when>
                                 <c:otherwise>
@@ -167,7 +167,7 @@
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                     <input type="hidden" name="action" value="accept">
                     <input type="hidden" name="id" value="${shipper.id}">
-                    <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận DUYỆT shipper [${shipper.userName}]?')">✓ Chấp nhận</button>
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Xác nhận DUYỆT shipper [${fn:escapeXml(fn:replace(fn:replace(shipper.userName,'\\','\\\\'),"'","\\'"))}]?')">✓ Chấp nhận</button>
                 </form>
                 <form action="${pageContext.request.contextPath}/super-admin/shipper-requests" method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">
 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
@@ -190,8 +190,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

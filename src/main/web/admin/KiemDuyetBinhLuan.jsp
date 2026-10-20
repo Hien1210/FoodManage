@@ -114,9 +114,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -229,8 +229,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

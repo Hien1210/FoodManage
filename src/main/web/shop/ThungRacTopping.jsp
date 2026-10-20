@@ -53,9 +53,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                                         <tr>
                                             <td>${vs.index + 1}</td>
                                             <td><strong><c:out value="${t.toppingName}"/></strong></td>
-                                            <td>${not empty t.toppingCategoryName ? t.toppingCategoryName : 'Chưa phân loại'}</td>
+                                            <td>${fn:escapeXml(not empty t.toppingCategoryName ? t.toppingCategoryName : 'Chưa phân loại')}</td>
                                             <td><fmt:formatNumber value="${t.price}" pattern="#,##0"/>đ</td>
                                             <td><span class="badge badge-danger">🗑️ Đã xóa</span></td>
                                             <td style="text-align:center;">
@@ -130,8 +130,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

@@ -61,12 +61,12 @@
 
             <div class="form-group">
                 <label>Số Điện Thoại:</label>
-                <input type="text" name="shopPhone" value="${shop.shopPhone}" required />
+                <input type="text" name="shopPhone" value="${fn:escapeXml(shop.shopPhone)}" required />
             </div>
 
             <div class="form-group">
                 <label>Đường Dẫn Logo:</label>
-                <input type="text" name="shopLogo" value="${shop.shopLogo}" />
+                <input type="text" name="shopLogo" value="${fn:escapeXml(shop.shopLogo)}" />
             </div>
 
             <div class="form-group">

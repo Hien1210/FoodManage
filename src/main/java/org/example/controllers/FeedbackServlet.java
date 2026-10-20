@@ -83,6 +83,10 @@ public class FeedbackServlet extends HttpServlet {
         String targetType = req.getParameter("targetType");
         String comment    = req.getParameter("comment");
         boolean anonymous = "true".equals(req.getParameter("is_anonymous"));
+        if (comment != null && org.example.utils.InputValidationUtil.checkMultiline("Nhận xét", comment, 1000) != null) {
+            resp.sendRedirect(req.getContextPath() + "/user/donhang?error=1");
+            return;
+        }
 
         long targetId = getTargetId(orderId, targetType);
 

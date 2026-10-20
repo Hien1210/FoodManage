@@ -67,7 +67,7 @@ public class UserHomeServlet extends HttpServlet {
                 }
             }
             if (shop.getShopLogo() == null) {
-                shop.setShopLogo(getDefaultShopLogo(shop.getShopName()));
+                shop.setShopLogo(getDefaultShopLogo());
             }
 
             JSONArray names = new JSONArray();
@@ -94,18 +94,7 @@ public class UserHomeServlet extends HttpServlet {
         return u.startsWith("http://") || u.startsWith("https://") || u.startsWith("/") || u.startsWith("assets/");
     }
 
-    private String getDefaultShopLogo(String shopName) {
-        if (shopName == null) return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
-        String lower = shopName.toLowerCase();
-        if (lower.contains("trà sữa") || lower.contains("boba") || lower.contains("wishe")) {
-            return "https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=600&q=80";
-        }
-        if (lower.contains("caffe") || lower.contains("ca phê") || lower.contains("coffee")) {
-            return "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80";
-        }
-        if (lower.contains("dê") || lower.contains("thịt")) {
-            return "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80";
-        }
-        return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80";
+    private String getDefaultShopLogo() {
+        return "/assets/img/shop-placeholder.svg";
     }
 }

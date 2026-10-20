@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 
@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" content="${sessionScope.csrfToken}">
-    <title>Hồ sơ cá nhân - ${sessionScope.account.userName}</title>
+    <title>Hồ sơ cá nhân - ${fn:escapeXml(sessionScope.account.userName)}</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/theme.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/dashboard.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/shop-theme.css">
@@ -62,7 +62,7 @@
 </head>
 <body class="dash-body shop-theme">
 
-<c:set var="shopActive" value="" scope="request"/>
+<c:set var="shopActive" value="/shop/ho-so" scope="request"/>
 <%@ include file="_shopSidebar.jspf" %>
 
 <main class="main">
@@ -76,9 +76,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -89,6 +89,9 @@
 
         <c:if test="${param.success == '1'}">
             <div class="alert alert-success">✅ Cập nhật hồ sơ thành công!</div>
+        </c:if>
+        <c:if test="${param.error == 'invalid_input'}">
+            <div class="alert alert-danger">❌ Họ tên hoặc số điện thoại không hợp lệ (quá dài hoặc chứa ký tự không cho phép).</div>
         </c:if>
         <c:if test="${param.error == '1'}">
             <div class="alert alert-danger">❌ Có lỗi xảy ra, vui lòng thử lại.</div>
@@ -102,10 +105,10 @@
                     <div class="profile-avatar" id="profileAvatarCircle">
                         <c:choose>
                             <c:when test="${not empty profile.avatarUrl}">
-                                <img src="${profile.avatarUrl}" alt="Avatar" id="avatarPreviewImg"/>
+                                <img src="${fn:escapeXml(profile.avatarUrl)}" alt="Avatar" id="avatarPreviewImg"/>
                             </c:when>
                             <c:otherwise>
-                                <span id="avatarInitials">${fn:toUpperCase(fn:substring(profile.userName, 0, 2))}</span>
+                                <span id="avatarInitials">${fn:escapeXml(fn:toUpperCase(fn:substring(profile.userName, 0, 2)))}</span>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -116,8 +119,8 @@
                     <span class="badge badge-primary">🏪 Shop Owner</span>
                 </div>
                 <div style="margin-top:18px;">
-                    <div class="info-row"><div class="info-label">📧 Email</div><div class="info-value">${not empty profile.email ? profile.email : 'Chưa cập nhật'}</div></div>
-                    <div class="info-row"><div class="info-label">📱 SĐT</div><div class="info-value">${not empty profile.phone ? profile.phone : 'Chưa cập nhật'}</div></div>
+                    <div class="info-row"><div class="info-label">📧 Email</div><div class="info-value">${fn:escapeXml(not empty profile.email ? profile.email : 'Chưa cập nhật')}</div></div>
+                    <div class="info-row"><div class="info-label">📱 SĐT</div><div class="info-value">${fn:escapeXml(not empty profile.phone ? profile.phone : 'Chưa cập nhật')}</div></div>
                     <div class="info-row"><div class="info-label">🪪 Họ tên</div><div class="info-value">${not empty profile.fullName ? fn:escapeXml(profile.fullName) : 'Chưa cập nhật'}</div></div>
                 </div>
             </div>
@@ -139,11 +142,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" value="${profile.email}" placeholder="Nhập email..."/>
+                            <input type="email" class="form-control" name="email" value="${fn:escapeXml(profile.email)}" placeholder="Nhập email..."/>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control" name="phone" value="${profile.phone}" placeholder="Nhập số điện thoại..."/>
+                            <input type="tel" class="form-control" name="phone" value="${fn:escapeXml(profile.phone)}" placeholder="Nhập số điện thoại..."/>
                         </div>
                         <div class="form-actions" style="display:flex;gap:12px;margin-top:8px;">
                             <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
@@ -159,7 +162,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🏪 Shop Owner</span>
     </div>
     <div class="dropdown-body">

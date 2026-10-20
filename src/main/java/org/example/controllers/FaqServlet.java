@@ -105,8 +105,13 @@ public class FaqServlet extends HttpServlet {
         String category = normalize(req.getParameter("category"));
         int displayOrder = parseDisplayOrder(req);
 
-        if (question.isEmpty() || answer.isEmpty()) {
-            req.setAttribute("loi", "Câu hỏi và câu trả lời không được để trống");
+        String faqError = (question.isEmpty() || answer.isEmpty()) ? "Câu hỏi và câu trả lời không được để trống"
+                : org.example.utils.InputValidationUtil.firstError(
+                        org.example.utils.InputValidationUtil.checkMultiline("Câu hỏi", question, 500),
+                        org.example.utils.InputValidationUtil.checkMultiline("Câu trả lời", answer, 5000),
+                        org.example.utils.InputValidationUtil.checkLine("Danh mục", category, 100));
+        if (faqError != null) {
+            req.setAttribute("loi", faqError);
             req.getRequestDispatcher(VIEW_FORM).forward(req, resp);
             return;
         }
@@ -150,8 +155,13 @@ public class FaqServlet extends HttpServlet {
         String category = normalize(req.getParameter("category"));
         int displayOrder = parseDisplayOrder(req);
 
-        if (question.isEmpty() || answer.isEmpty()) {
-            req.setAttribute("loi", "Câu hỏi và câu trả lời không được để trống");
+        String faqError = (question.isEmpty() || answer.isEmpty()) ? "Câu hỏi và câu trả lời không được để trống"
+                : org.example.utils.InputValidationUtil.firstError(
+                        org.example.utils.InputValidationUtil.checkMultiline("Câu hỏi", question, 500),
+                        org.example.utils.InputValidationUtil.checkMultiline("Câu trả lời", answer, 5000),
+                        org.example.utils.InputValidationUtil.checkLine("Danh mục", category, 100));
+        if (faqError != null) {
+            req.setAttribute("loi", faqError);
             req.setAttribute("faq", existing);
             req.getRequestDispatcher(VIEW_FORM).forward(req, resp);
             return;

@@ -253,6 +253,10 @@ public class ShopProductTypeServlet extends HttpServlet {
 
     /** Validate dữ liệu cơ bản */
     private String validate(Category cat) {
+        String charError = org.example.utils.InputValidationUtil.checkLine("Tên loại sản phẩm", cat.getCategoryName(), 100);
+        if (charError != null) {
+            return charError;
+        }
         if (cat.getCategoryName().isBlank()) {
             return "Tên loại sản phẩm không được để trống!";
         }

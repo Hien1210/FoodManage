@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
@@ -66,7 +66,7 @@
 </head>
 <body class="dash-body admin-theme">
 
-<c:set var="adminActive" value="" scope="request"/>
+<c:set var="adminActive" value="/admin/profile" scope="request"/>
 <%@ include file="_adminSidebar.jspf" %>
 
 <main class="main">
@@ -81,9 +81,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -93,6 +93,9 @@
     <div class="content">
         <c:if test="${param.success == '1'}">
             <div class="alert alert-success">✅ Cập nhật hồ sơ thành công!</div>
+        </c:if>
+        <c:if test="${param.error == 'invalid_input'}">
+            <div class="alert alert-danger">❌ Họ tên hoặc số điện thoại không hợp lệ (quá dài hoặc chứa ký tự không cho phép).</div>
         </c:if>
         <c:if test="${param.error == '1'}">
             <div class="alert alert-danger">❌ Có lỗi xảy ra, vui lòng thử lại.</div>
@@ -106,10 +109,10 @@
                     <div class="profile-avatar" id="profileAvatarCircle">
                         <c:choose>
                             <c:when test="${not empty profile.avatarUrl}">
-                                <img src="${profile.avatarUrl}" alt="Avatar" id="avatarPreviewImg"/>
+                                <img src="${fn:escapeXml(profile.avatarUrl)}" alt="Avatar" id="avatarPreviewImg"/>
                             </c:when>
                             <c:otherwise>
-                                <span id="avatarInitials">${fn:toUpperCase(fn:substring(profile.userName, 0, 2))}</span>
+                                <span id="avatarInitials">${fn:escapeXml(fn:toUpperCase(fn:substring(profile.userName, 0, 2)))}</span>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -124,8 +127,8 @@
                     </c:if>
                 </div>
                 <div style="margin-top:18px;">
-                    <div class="info-row"><div class="info-label">📧 Email</div><div class="info-value">${not empty profile.email ? profile.email : 'Chưa cập nhật'}</div></div>
-                    <div class="info-row"><div class="info-label">📱 SĐT</div><div class="info-value">${not empty profile.phone ? profile.phone : 'Chưa cập nhật'}</div></div>
+                    <div class="info-row"><div class="info-label">📧 Email</div><div class="info-value">${fn:escapeXml(not empty profile.email ? profile.email : 'Chưa cập nhật')}</div></div>
+                    <div class="info-row"><div class="info-label">📱 SĐT</div><div class="info-value">${fn:escapeXml(not empty profile.phone ? profile.phone : 'Chưa cập nhật')}</div></div>
                     <div class="info-row"><div class="info-label">🪪 Họ tên</div><div class="info-value">${not empty profile.fullName ? fn:escapeXml(profile.fullName) : 'Chưa cập nhật'}</div></div>
                 </div>
 
@@ -134,7 +137,7 @@
                     <div class="profile-avatar" id="profileLogoCircle" style="width:64px; height:64px; margin:0 auto 10px; border-radius:14px;">
                         <c:choose>
                             <c:when test="${not empty profile.logoUrl}">
-                                <img src="${profile.logoUrl}" alt="Logo" id="logoPreviewImg" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>
+                                <img src="${fn:escapeXml(profile.logoUrl)}" alt="Logo" id="logoPreviewImg" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;"/>
                             </c:when>
                             <c:otherwise>
                                 <span id="logoPlaceholder" style="font-size:22px;font-weight:800;">S</span>
@@ -166,11 +169,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" value="${profile.email}" placeholder="Nhập email..."/>
+                            <input type="email" class="form-control" name="email" value="${fn:escapeXml(profile.email)}" placeholder="Nhập email..."/>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control" name="phone" value="${profile.phone}" placeholder="Nhập số điện thoại..."/>
+                            <input type="tel" class="form-control" name="phone" value="${fn:escapeXml(profile.phone)}" placeholder="Nhập số điện thoại..."/>
                         </div>
                         <div class="form-actions" style="display:flex;gap:12px;margin-top:8px;">
                             <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
@@ -188,7 +191,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

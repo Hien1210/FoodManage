@@ -81,6 +81,15 @@ public class DangKyServlet extends HttpServlet {
             return;
         }
 
+        String inputError = org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Họ tên", fullname == null ? "" : fullname.trim(), org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", phone == null ? "" : phone.trim()));
+        if (inputError != null) {
+            req.setAttribute("loi", inputError);
+            req.getRequestDispatcher("/register.jsp").forward(req, resp);
+            return;
+        }
+
         // 1b. Validate username: chỉ cho phép a-z, A-Z, 0-9, dấu gạch dưới, 3–30 ký tự
         if (username == null || !username.matches("^[a-zA-Z0-9_]{3,30}$")) {
             req.setAttribute("loi", "Tên đăng nhập chỉ được chứa chữ không dấu, số và dấu gạch dưới (_), dài 3–30 ký tự, không có khoảng trắng!");
@@ -132,7 +141,7 @@ public class DangKyServlet extends HttpServlet {
             EmailUtil.sendEmail(email, "🔐 Xác nhận đăng ký tài khoản POB", htmlContent);
         } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("loi", "Không thể gửi email, vui lòng thử lại! (" + e.getMessage() + ")");
+            req.setAttribute("loi", "Không thể gửi email, vui lòng thử lại sau ít phút.");
             req.getRequestDispatcher("/register.jsp").forward(req, resp);
             return;
         }

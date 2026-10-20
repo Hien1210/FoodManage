@@ -264,9 +264,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -302,7 +302,7 @@
                             <div class="route-info-label">Giao tới khách hàng</div>
                             <div class="route-info-name">${fn:escapeXml(order.receiverName)}</div>
                             <div class="route-info-sub">📍 ${fn:escapeXml(order.shippingAddress)}</div>
-                            <div class="route-info-sub">📞 ${order.receiverPhone}</div>
+                            <div class="route-info-sub">📞 ${fn:escapeXml(order.receiverPhone)}</div>
                         </div>
                     </div>
                 </div>
@@ -338,7 +338,7 @@
                                 <div class="custom-check" id="check-${vs.index}"></div>
                                 <div style="flex:1;">
                                     <div class="item-name" id="name-${vs.index}">${fn:escapeXml(line.productName)}</div>
-                                    <div class="item-size">Size: ${line.sizeName}</div>
+                                    <div class="item-size">Size: ${fn:escapeXml(line.sizeName)}</div>
                                     <c:if test="${not empty line.toppings}">
                                         <div class="item-topping-list">
                                             <c:forEach var="tp" items="${line.toppings}">
@@ -545,7 +545,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🛵 Shipper</span>
     </div>
     <div class="dropdown-body">

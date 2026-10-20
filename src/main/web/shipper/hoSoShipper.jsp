@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 
@@ -63,45 +63,8 @@
 </head>
 <body class="dash-body">
 
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="logo-mark-dash">🛵</div>
-        <div class="brand-text">
-            <span class="brand-title">POB SHIPPER</span>
-            <span class="brand-subtitle">👋 ${fn:escapeXml(sessionScope.account.userName)}</span>
-        </div>
-        <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-    </div>
-    <div class="menu">
-        <div class="menu-title">Công việc</div>
-        <a href="${pageContext.request.contextPath}/shipper/donhang" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Đơn hàng nhận</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/nhan-don" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📥</span><span class="mi-label"> Nhận đơn mới</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/dashboard" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Dashboard</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/thongbao" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🔔</span><span class="mi-label"> Thông báo</span></span>
-        </a>
-
-        <div class="menu-title">Tài khoản</div>
-        <a href="${pageContext.request.contextPath}/shipper/profile" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">🚙</span><span class="mi-label"> Hồ sơ tài xế</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/danh-gia" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Đánh giá &amp; Báo cáo</span></span>
-        </a>
-        <a href="${pageContext.request.contextPath}/shipper/vi-tien" class="menu-item">
-            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền</span></span>
-        </a>
-    </div>
-</aside>
+<c:set var="shipperActive" value="/shipper/ho-so" scope="request"/>
+<%@ include file="_shipperSidebar.jspf" %>
 
 <main class="main">
     <header class="topbar">
@@ -115,9 +78,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -127,6 +90,9 @@
     <div class="content">
         <c:if test="${param.success == '1'}">
             <div class="alert alert-success">✅ Cập nhật hồ sơ thành công!</div>
+        </c:if>
+        <c:if test="${param.error == 'invalid_input'}">
+            <div class="alert alert-danger">❌ Họ tên hoặc số điện thoại không hợp lệ (quá dài hoặc chứa ký tự không cho phép).</div>
         </c:if>
         <c:if test="${param.error == '1'}">
             <div class="alert alert-danger">❌ Có lỗi xảy ra, vui lòng thử lại.</div>
@@ -138,9 +104,9 @@
                     <div class="profile-avatar">
                         <c:choose>
                             <c:when test="${not empty profile.avatarUrl}">
-                                <img src="${profile.avatarUrl}" alt="Avatar"/>
+                                <img src="${fn:escapeXml(profile.avatarUrl)}" alt="Avatar"/>
                             </c:when>
-                            <c:otherwise>${fn:toUpperCase(fn:substring(profile.userName,0,2))}</c:otherwise>
+                            <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(profile.userName,0,2)))}</c:otherwise>
                         </c:choose>
                     </div>
                     <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/webp" style="display:none;"/>
@@ -151,8 +117,8 @@
                     <span class="profile-role-badge">🛵 Shipper</span>
                 </div>
                 <div style="margin-top:18px;">
-                    <div class="info-row"><div class="info-label">📧 Email</div><div class="info-value">${not empty profile.email ? profile.email : 'Chưa cập nhật'}</div></div>
-                    <div class="info-row"><div class="info-label">📱 SĐT</div><div class="info-value">${not empty profile.phone ? profile.phone : 'Chưa cập nhật'}</div></div>
+                    <div class="info-row"><div class="info-label">📧 Email</div><div class="info-value">${fn:escapeXml(not empty profile.email ? profile.email : 'Chưa cập nhật')}</div></div>
+                    <div class="info-row"><div class="info-label">📱 SĐT</div><div class="info-value">${fn:escapeXml(not empty profile.phone ? profile.phone : 'Chưa cập nhật')}</div></div>
                     <div class="info-row"><div class="info-label">🪪 Họ tên</div><div class="info-value">${not empty profile.fullName ? fn:escapeXml(profile.fullName) : 'Chưa cập nhật'}</div></div>
                 </div>
             </div>
@@ -173,11 +139,11 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" value="${profile.email}" placeholder="Nhập email..."/>
+                            <input type="email" class="form-control" name="email" value="${fn:escapeXml(profile.email)}" placeholder="Nhập email..."/>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Số điện thoại</label>
-                            <input type="tel" class="form-control" name="phone" value="${profile.phone}" placeholder="Nhập số điện thoại..."/>
+                            <input type="tel" class="form-control" name="phone" value="${fn:escapeXml(profile.phone)}" placeholder="Nhập số điện thoại..."/>
                         </div>
                         <div class="form-actions" style="display:flex;gap:12px;margin-top:8px;">
                             <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
@@ -194,7 +160,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">🛵 Shipper</span>
     </div>
     <div class="dropdown-body">

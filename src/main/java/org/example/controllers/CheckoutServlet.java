@@ -93,10 +93,10 @@ public class CheckoutServlet extends HttpServlet {
 
 		Long cartId = parseId(req.getParameter("cartId"));
 		Cart cart = cartId == null ? null : cartDAO.findById(cartId);
-		if (cart == null || cart.getUserId() != account.getId()) { resp.sendRedirect(req.getContextPath() + "/cart?error=not_found"); return; }
+		if (cart == null || cart.getUserId() != account.getId()) { resp.sendRedirect(req.getContextPath() + "/user/cart?error=not_found"); return; }
 
 		List<CheckoutLine> lines = buildLines(cart);
-		if (lines.isEmpty()) { resp.sendRedirect(req.getContextPath() + "/cart?error=empty_cart"); return; }
+		if (lines.isEmpty()) { resp.sendRedirect(req.getContextPath() + "/user/cart?error=empty_cart"); return; }
 
 		// Idempotency token: moi lan hien form checkout (showReview) sinh 1 token dung 1 lan, luu
 		// theo session + cartId. CSRF token (csrfToken) dung chung cho ca session nen KHONG chan duoc

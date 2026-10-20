@@ -123,7 +123,7 @@
                     <c:choose>
                         <c:when test="${not empty qrImageUrl}">
                             <div class="qr-box">
-                                <img src="${qrImageUrl}" alt="QR chuyển khoản" style="max-width:340px;width:100%;border-radius:10px;">
+                                <img src="${fn:escapeXml(qrImageUrl)}" alt="QR chuyển khoản" style="max-width:340px;width:100%;border-radius:10px;">
                                 <div style="margin-top:10px;font-size:16px;font-weight:800;color:var(--text-main);">
                                     Số tiền: <fmt:formatNumber value="${bill.order.totalPrice}" type="number"/>đ
                                 </div>

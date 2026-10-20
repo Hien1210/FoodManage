@@ -75,7 +75,9 @@ public class ShopComboServlet extends HttpServlet {
         String[] productSizeIds = req.getParameterValues("productSizeId[]");
         String[] quantities = req.getParameterValues("quantity[]");
 
-        if (name.isEmpty() || price <= 0) {
+        if (name.isEmpty() || price <= 0 || org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Tên combo", name, 200),
+                org.example.utils.InputValidationUtil.checkMultiline("Mô tả combo", description, 500)) != null) {
             resp.sendRedirect(req.getContextPath() + "/shop/combo?error=invalid");
             return;
         }

@@ -117,9 +117,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -167,14 +167,14 @@
                                 <div class="appeal-card pending">
                                     <div class="appeal-header">
                                         <div class="appeal-user">
-                                            <div class="avatar-sm">${fn:toUpperCase(fn:substring(ap.username, 0, 1))}</div>
+                                            <div class="avatar-sm">${fn:escapeXml(fn:toUpperCase(fn:substring(ap.username, 0, 1)))}</div>
                                             <div>
-                                                <div class="appeal-name">${ap.username}
+                                                <div class="appeal-name">${fn:escapeXml(ap.username)}
                                                     <c:if test="${not empty ap.fullName}">
-                                                        <span style="font-weight:400;font-size:12px;color:var(--text-muted);">(${ap.fullName})</span>
+                                                        <span style="font-weight:400;font-size:12px;color:var(--text-muted);">(${fn:escapeXml(ap.fullName)})</span>
                                                     </c:if>
                                                 </div>
-                                                <div class="appeal-email">${ap.email}</div>
+                                                <div class="appeal-email">${fn:escapeXml(ap.email)}</div>
                                             </div>
                                         </div>
                                         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
@@ -239,10 +239,10 @@
                                 <div class="appeal-card ${fn:toLowerCase(ap.status)}">
                                     <div class="appeal-header">
                                         <div class="appeal-user">
-                                            <div class="avatar-sm">${fn:toUpperCase(fn:substring(ap.username, 0, 1))}</div>
+                                            <div class="avatar-sm">${fn:escapeXml(fn:toUpperCase(fn:substring(ap.username, 0, 1)))}</div>
                                             <div>
-                                                <div class="appeal-name">${ap.username}</div>
-                                                <div class="appeal-email">${ap.email}</div>
+                                                <div class="appeal-name">${fn:escapeXml(ap.username)}</div>
+                                                <div class="appeal-email">${fn:escapeXml(ap.email)}</div>
                                             </div>
                                         </div>
                                         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
@@ -275,8 +275,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">
@@ -319,8 +319,8 @@
     <!-- Avatar Dropdown (đặt ngoài topbar để tránh backdrop-filter stacking context) -->
     <div class="avatar-dropdown" id="avatarDropdown">
         <div class="dropdown-header">
-            <div class="d-name">${sessionScope.account.userName}</div>
-            <div class="d-email">${sessionScope.account.email}</div>
+            <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+            <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
             <span class="d-role">Super Admin</span>
         </div>
         <div class="dropdown-body">

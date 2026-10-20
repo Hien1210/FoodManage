@@ -53,6 +53,14 @@ public class Dangkyshipperservlet extends HttpServlet {
             String idCardBackUrl = normalize(req.getParameter("idCardBackUrl"));
             String licenseFrontUrl = normalize(req.getParameter("licenseFrontUrl"));
 
+            String inputError = org.example.utils.InputValidationUtil.firstError(
+                    org.example.utils.InputValidationUtil.checkLine("Họ tên", fullname, org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                    org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", phone));
+            if (inputError != null) {
+                fail(req, resp, inputError, username, fullname, cccd, phone, email);
+                return;
+            }
+
             if (password.isEmpty()) {
                 fail(req, resp, "Mật khẩu không được để trống!", username, fullname, cccd, phone, email);
                 return;

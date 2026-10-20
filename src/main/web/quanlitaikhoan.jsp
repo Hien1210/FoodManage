@@ -139,9 +139,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                                         <div class="avatar-circle">
                                             <c:choose>
                                                 <c:when test="${not empty acc.avatarUrl}">
-                                                    <img src="${acc.avatarUrl}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">
+                                                    <img src="${fn:escapeXml(acc.avatarUrl)}" alt="Avatar" style="width:100%; height:100%; object-fit:cover;">
                                                 </c:when>
                                                 <c:otherwise>👤</c:otherwise>
                                             </c:choose>
@@ -248,11 +248,11 @@
                                                     <button class="btn btn-sm btn-ghost" onclick="toggleDropdown(this)" title="Tùy chọn">⋮</button>
                                                     <div class="dropdown-menu">
                                                         <button class="dropdown-item soft-del"
-                                                                onclick="openSoftModal(${acc.id}, '${fn:escapeXml(acc.userName)}')">
+                                                                onclick="openSoftModal(${acc.id}, '${fn:escapeXml(fn:replace(fn:replace(acc.userName,'\\','\\\\'),"'","\\'"))}')">
                                                             🗂️ Xóa tạm thời
                                                         </button>
                                                         <button class="dropdown-item hard-del"
-                                                                onclick="openHardModal(${acc.id}, '${fn:escapeXml(acc.userName)}')">
+                                                                onclick="openHardModal(${acc.id}, '${fn:escapeXml(fn:replace(fn:replace(acc.userName,'\\','\\\\'),"'","\\'"))}')">
                                                             🗑️ Xóa vĩnh viễn
                                                         </button>
                                                     </div>
@@ -531,7 +531,7 @@
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
         <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

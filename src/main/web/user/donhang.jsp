@@ -357,15 +357,15 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                 <button class="avatar-btn" onclick="toggleDropdown()" aria-label="Tài khoản">
                     <c:choose>
                         <c:when test="${not empty account.avatarUrl}">
-                            <img src="${account.avatarUrl}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            <img src="${fn:escapeXml(account.avatarUrl)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         </c:when>
-                        <c:otherwise>${fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1)}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1))}</c:otherwise>
                     </c:choose>
                 </button>
                 <div class="avatar-dropdown" id="accountDropdown">
                     <div class="dd-head">
-                        <div class="dd-name">${not empty account.fullName ? account.fullName : account.userName}</div>
-                        <c:if test="${not empty account.email}"><div class="dd-email">${account.email}</div></c:if>
+                        <div class="dd-name">${fn:escapeXml(not empty account.fullName ? account.fullName : account.userName)}</div>
+                        <c:if test="${not empty account.email}"><div class="dd-email">${fn:escapeXml(account.email)}</div></c:if>
                     </div>
                     <a href="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" class="dd-link">
                         <i class="fa-solid fa-user"></i> Thông tin cá nhân
@@ -587,13 +587,13 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                             <div class="contact-card shop-card">
                                 <div class="contact-header">
                                     <span class="contact-badge shop"><i class="fa-solid fa-store"></i> Nhà hàng</span>
-                                    <span class="contact-name">${not empty shopObj.shopName ? shopObj.shopName : shopNames[order.shopId]}</span>
+                                    <span class="contact-name">${fn:escapeXml(not empty shopObj.shopName ? shopObj.shopName : shopNames[order.shopId])}</span>
                                 </div>
                                 <c:if test="${not empty shopObj.shopAddress}">
-                                    <div class="contact-sub"><i class="fa-solid fa-location-dot"></i> ${shopObj.shopAddress}</div>
+                                    <div class="contact-sub"><i class="fa-solid fa-location-dot"></i> ${fn:escapeXml(shopObj.shopAddress)}</div>
                                 </c:if>
                                 <c:if test="${not empty shopObj.shopPhone}">
-                                    <a href="tel:${shopObj.shopPhone}" class="btn-contact-call"><i class="fa-solid fa-phone"></i> Gọi quán</a>
+                                    <a href="tel:${fn:escapeXml(shopObj.shopPhone)}" class="btn-contact-call"><i class="fa-solid fa-phone"></i> Gọi quán</a>
                                 </c:if>
                             </div>
 
@@ -603,11 +603,11 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                                     <div class="contact-card shipper-card">
                                         <div class="contact-header">
                                             <span class="contact-badge shipper"><i class="fa-solid fa-motorcycle"></i> Tài xế</span>
-                                            <span class="contact-name">${not empty shipperAcc.fullName ? shipperAcc.fullName : (not empty shipperAcc.userName ? shipperAcc.userName : 'Tài xế POB')}</span>
+                                            <span class="contact-name">${fn:escapeXml(not empty shipperAcc.fullName ? shipperAcc.fullName : (not empty shipperAcc.userName ? shipperAcc.userName : 'Tài xế POB'))}</span>
                                         </div>
                                         <c:if test="${not empty shipperAcc.phone}">
-                                            <div class="contact-sub"><i class="fa-solid fa-phone"></i> ${shipperAcc.phone}</div>
-                                            <a href="tel:${shipperAcc.phone}" class="btn-contact-call shipper"><i class="fa-solid fa-phone"></i> Gọi tài xế</a>
+                                            <div class="contact-sub"><i class="fa-solid fa-phone"></i> ${fn:escapeXml(shipperAcc.phone)}</div>
+                                            <a href="tel:${fn:escapeXml(shipperAcc.phone)}" class="btn-contact-call shipper"><i class="fa-solid fa-phone"></i> Gọi tài xế</a>
                                         </c:if>
                                     </div>
                                 </c:when>
@@ -625,7 +625,7 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                         <div class="order-meta">
                             <div class="order-meta-row">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <span>Giao tới: ${order.shippingAddress}</span>
+                                <span>Giao tới: ${fn:escapeXml(order.shippingAddress)}</span>
                             </div>
                             <div class="order-meta-row">
                                 <i class="fa-solid fa-credit-card"></i>
@@ -719,12 +719,12 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
                                                 <c:forEach var="line" items="${billView.lines}">
                                                     <div class="bill-item-row">
                                                         <div class="bir-name">
-                                                            <strong>${line.productName}</strong>
-                                                            <c:if test="${not empty line.sizeName}"> <span class="bir-size">(${line.sizeName})</span></c:if>
+                                                            <strong>${fn:escapeXml(line.productName)}</strong>
+                                                            <c:if test="${not empty line.sizeName}"> <span class="bir-size">(${fn:escapeXml(line.sizeName)})</span></c:if>
                                                             <c:if test="${not empty line.toppings}">
                                                                 <div class="bir-toppings">
                                                                     <c:forEach var="top" items="${line.toppings}">
-                                                                        + ${top.toppingName} (x${top.quantity})<br>
+                                                                        + ${fn:escapeXml(top.toppingName)} (x${top.quantity})<br>
                                                                     </c:forEach>
                                                                 </div>
                                                             </c:if>
@@ -754,9 +754,9 @@ a { text-decoration: none; color: inherit; transition: var(--tr); }
 
                                 <div class="odm-section">
                                     <h4><i class="fa-solid fa-location-dot"></i> Thông tin giao hàng</h4>
-                                    <div class="odm-summary-row"><span>Người nhận:</span> <strong>${order.receiverName}</strong></div>
-                                    <div class="odm-summary-row"><span>Số điện thoại:</span> <strong>${order.receiverPhone}</strong></div>
-                                    <div class="odm-summary-row"><span>Địa chỉ:</span> <strong>${order.shippingAddress}</strong></div>
+                                    <div class="odm-summary-row"><span>Người nhận:</span> <strong>${fn:escapeXml(order.receiverName)}</strong></div>
+                                    <div class="odm-summary-row"><span>Số điện thoại:</span> <strong>${fn:escapeXml(order.receiverPhone)}</strong></div>
+                                    <div class="odm-summary-row"><span>Địa chỉ:</span> <strong>${fn:escapeXml(order.shippingAddress)}</strong></div>
                                 </div>
                             </div>
                         </div>

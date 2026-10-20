@@ -1,5 +1,6 @@
 ﻿<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -43,7 +44,7 @@
     <div class="logo-badge">FM</div>
     <h1>Xác thực thay đổi thông tin</h1>
     <p class="sub">Vì đây là thao tác nhạy cảm (email/thông tin ngân hàng), vui lòng nhập mã OTP 6 số đã gửi tới
-        <strong>${maskedEmail}</strong> để hoàn tất.</p>
+        <strong>${fn:escapeXml(maskedEmail)}</strong> để hoàn tất.</p>
 
     <c:if test="${param.resent == '1'}">
         <div class="alert alert-info">🔄 Mã OTP mới đã được gửi lại.</div>
@@ -60,7 +61,7 @@
 
     <form action="${pageContext.request.contextPath}/xac-thuc-thay-doi" method="post" id="otpForm">
         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-        <input type="hidden" name="purpose" value="${purpose}">
+        <input type="hidden" name="purpose" value="${fn:escapeXml(purpose)}">
         <div class="otp-row">
             <input type="number" name="otp1" min="0" max="9" required class="otp-input">
             <input type="number" name="otp2" min="0" max="9" required class="otp-input">
@@ -75,7 +76,7 @@
     <div class="resend-wrap">
         <form action="${pageContext.request.contextPath}/xac-thuc-thay-doi" method="post" style="display:inline;">
             <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-            <input type="hidden" name="purpose" value="${purpose}">
+            <input type="hidden" name="purpose" value="${fn:escapeXml(purpose)}">
             <input type="hidden" name="action" value="resend">
             <button type="submit" class="resend-btn">🔄 Gửi lại OTP</button>
         </form>

@@ -34,12 +34,19 @@ public class AdminRefundServlet extends HttpServlet {
         List<RefundRequest> list = refundDAO.findAll(statusFilter, pageSize, (page - 1) * pageSize);
         int total = refundDAO.countAll(statusFilter.isEmpty() ? null : statusFilter);
         int pendingCount = refundDAO.countAll("PENDING");
+        // Đếm theo từng trạng thái để hiển thị tab lọc kèm số lượng (đồng bộ với /admin/duyet-rut-tien-shop)
+        int totalAll = statusFilter.isEmpty() ? total : refundDAO.countAll(null);
+        int completedCount = refundDAO.countAll("COMPLETED");
+        int rejectedCount = refundDAO.countAll("REJECTED");
 
         req.setAttribute("refunds", list);
         req.setAttribute("currentPage", page);
         req.setAttribute("totalPages", (int) Math.ceil((double) total / pageSize));
         req.setAttribute("statusFilter", statusFilter);
         req.setAttribute("pendingCount", pendingCount);
+        req.setAttribute("totalAll", totalAll);
+        req.setAttribute("completedCount", completedCount);
+        req.setAttribute("rejectedCount", rejectedCount);
         req.getRequestDispatcher("/admin/QuanLyHoanTien.jsp").forward(req, resp);
     }
 

@@ -63,6 +63,15 @@ public class UserAddressServlet extends HttpServlet {
             return;
         }
 
+        if (org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Nhãn", label, org.example.utils.InputValidationUtil.MAX_LABEL),
+                org.example.utils.InputValidationUtil.checkLine("Địa chỉ", fullAddress, org.example.utils.InputValidationUtil.MAX_ADDRESS),
+                org.example.utils.InputValidationUtil.checkLine("Tên người nhận", receiverName, org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", receiverPhone)) != null) {
+            redirectTo(req, resp, "error=invalid");
+            return;
+        }
+
         UserAddress a = new UserAddress();
         a.setAccountId(account.getId());
         a.setLabel(label.isEmpty() ? "Khác" : label);
@@ -99,6 +108,15 @@ public class UserAddressServlet extends HttpServlet {
             return;
         }
 
+        if (org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Nhãn", label, org.example.utils.InputValidationUtil.MAX_LABEL),
+                org.example.utils.InputValidationUtil.checkLine("Địa chỉ", fullAddress, org.example.utils.InputValidationUtil.MAX_ADDRESS),
+                org.example.utils.InputValidationUtil.checkLine("Tên người nhận", receiverName, org.example.utils.InputValidationUtil.MAX_PERSON_NAME),
+                org.example.utils.InputValidationUtil.checkPhone("Số điện thoại", receiverPhone)) != null) {
+            redirectTo(req, resp, "error=invalid");
+            return;
+        }
+
         UserAddress existing = userAddressDAO.findById(id);
         if (existing == null || existing.getAccountId() != account.getId()) {
             redirectTo(req, resp, "error=missing");
@@ -118,22 +136,20 @@ public class UserAddressServlet extends HttpServlet {
 
     private void deleteAddress(HttpServletRequest req, HttpServletResponse resp, Account account) throws IOException {
         Long id = parseId(req.getParameter("id"));
-        if (id != null) {
-            UserAddress existing = userAddressDAO.findById(id);
-            if (existing != null && existing.getAccountId() == account.getId()) {
-                userAddressDAO.delete(id);
-            }
+        UserAddress existing = id == null ? null : userAddressDAO.findById(id);
+        if (existing == null || existing.getAccountId() != account.getId() || !userAddressDAO.delete(id)) {
+            resp.sendRedirect(req.getContextPath() + "/user/dia-chi?error=notfound");
+            return;
         }
         resp.sendRedirect(req.getContextPath() + "/user/dia-chi?success=deleted");
     }
 
     private void setDefaultAddress(HttpServletRequest req, HttpServletResponse resp, Account account) throws IOException {
         Long id = parseId(req.getParameter("id"));
-        if (id != null) {
-            UserAddress existing = userAddressDAO.findById(id);
-            if (existing != null && existing.getAccountId() == account.getId()) {
-                userAddressDAO.setDefault(id, account.getId());
-            }
+        UserAddress existing = id == null ? null : userAddressDAO.findById(id);
+        if (existing == null || existing.getAccountId() != account.getId() || !userAddressDAO.setDefault(id, account.getId())) {
+            resp.sendRedirect(req.getContextPath() + "/user/dia-chi?error=notfound");
+            return;
         }
         resp.sendRedirect(req.getContextPath() + "/user/dia-chi?success=default");
     }

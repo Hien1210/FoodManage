@@ -1,5 +1,170 @@
 # CRUD da lam
 
+## 156. Chạy Tomcat rà lại toàn bộ giao diện Shop + Admin, vá 2 lỗi thật tìm thấy
+
+**Yêu cầu:** User bảo "chạy tomcat rồi xem lại giao diện xem có chỗ nào lỗi hay xấu thì sửa lại rồi kiểm tra lại
+xem đã hết lỗi chưa" — rà soát toàn diện, không giới hạn 1 trang cụ thể.
+
+**Cách làm:** Build WAR, chạy Tomcat cổng 8090 với DB thật, duyệt qua **toàn bộ 25 trang Shop + 23 trang Admin**
+(cả qua route servlet thật lẫn JSP harness tạm có dữ liệu giả để xem đủ trạng thái), ở cả 2 theme sáng/tối
+(Admin), cả desktop lẫn mobile 375px. Phát hiện và vá 2 lỗi thật lan rộng nhiều trang (không phải do đợt đổi
+theme trước đó gây ra — là bug có sẵn trong code cũ, đợt rà soát này mới phát hiện ra):
+
+**Lỗi 1 — Modal "Thêm mới" tự bật che mất thông báo lỗi thật (4 trang Shop):** `Quanlysanpham.jsp`,
+`Quanlyloaisanpham.jsp`, `Quanlytopping.jsp`, `Quanlyloaitopping.jsp` đều có logic JS
+`if (isEditMode || hasError) openProductModal();` — hễ trang có BẤT KỲ lỗi nào (kể cả lỗi hoàn toàn không liên
+quan như "Bạn chưa có cửa hàng! Vui lòng đăng ký shop.") thì tự động bật modal "Thêm sản phẩm mới" TRỐNG, che kín
+màn hình và giấu mất thông báo lỗi thật phía sau. Người dùng chỉ thấy 1 form trống, không hiểu vì sao. Sửa: chỉ
+tự mở modal khi lỗi thực sự đến từ chính form (server luôn set `currentShop` trước khi set lỗi validate form, chỉ
+riêng lỗi "chưa có cửa hàng" là set lỗi mà KHÔNG có `currentShop") — đổi điều kiện thành
+`(not empty loi and not empty currentShop)`.
+
+**Lỗi 2 — `QuanLyHoanTien.jsp` (Hoàn tiền khách hàng) là bản sao y hệt `DuyetRutTienShop.jsp` TRƯỚC KHI dựng lại ở
+mục 155, mang đúng các lỗi đã vá ở đó nhưng chưa ai để ý trang này:**
+- Thiếu hẳn topbar-right (không có nút đổi theme sáng/tối, không có menu avatar/đăng xuất) — trang duy nhất
+  trong 23 trang admin thiếu cụm này.
+- Script nạp `assets/js/dashboard.js` — file không tồn tại (404 âm thầm).
+- Tự định nghĩa `.stat-card`/`.panel`/`.pager`/`.empty-state`/table riêng đè lên style dùng chung, khiến trang
+  hiện thẻ số liệu kiểu viền-trên-phẳng thay vì kiểu thẻ-icon như mọi trang khác — lệch tông toàn bộ.
+- Nút "Đã chuyển khoản" nhét thẳng `${r.accountName}` (tên khách hàng) vào chuỗi JS trong `onclick="..."` không
+  escape đúng ngữ cảnh JS — cùng lỗ hổng JS injection như `DuyetRutTienShop.jsp` trước khi vá.
+- Chỉ có 1 chỉ số (`pendingCount`), thiếu số liệu Đã hoàn/Từ chối/Tổng yêu cầu.
+
+Áp đúng bộ sửa đã dùng cho `DuyetRutTienShop.jsp`: thêm topbar-right + avatar-dropdown, dùng lại
+`.stats-grid`/`.stat-card`/`.dash-table`/`.pob-modal-overlay` chung, tab lọc trạng thái kèm số lượng thật (thêm
+`totalAll`/`completedCount`/`rejectedCount` vào `AdminRefundServlet.java`, tái dùng `refundDAO.countAll()` sẵn
+có), đổi nút hành động sang `data-*` + `addEventListener` thay vì nhét tên khách vào chuỗi JS, sửa lại đúng
+`dashboard-theme.js`.
+
+**Đã rà nhưng KHÔNG sửa (cân nhắc rồi quyết định để nguyên):**
+- `DuyetRutTienShipper.jsp`, `BaoCaoVanHanh.jsp`, `DoiSoatDoanhThuShop.jsp` cũng tự định nghĩa `.stat-card` kiểu
+  viền-trên-phẳng riêng (khác kiểu icon-card chung) — NHƯNG cả 3 trang đều CÓ đủ topbar-right/avatar/theme-toggle,
+  không lỗi injection, không script hỏng, dark mode vẫn đọc rõ (đã kiểm tra riêng `BaoCaoVanHanh` — số liệu
+  tưởng như bị mất chữ trong ảnh chụp màn hình hóa ra chỉ là ảnh chụp bị lỗi thời điểm, kiểm tra lại bằng DOM
+  computed style thì màu chữ/nền tương phản đúng). Đây là khác biệt phong cách (thẻ KPI viền màu vs thẻ icon),
+  không phải lỗi — để nguyên, có thể đồng bộ sau nếu user muốn dựng lại bố cục sâu cho các trang đó.
+- Một số servlet Shop chuyển hướng không đồng nhất khi shop chưa tồn tại (`/dangnhap` ở vài servlet,
+  `/shop` ở vài servlet khác, forward kèm lỗi ở 2 servlet) — chỉ ảnh hưởng tài khoản test `Bao` (chưa từng đăng ký
+  shop thật); với shop thật đã duyệt thì nhánh này gần như không bao giờ chạy tới. Đây là logic điều hướng/access
+  control sâu trong nhiều file Java không liên quan tới giao diện, ngoài phạm vi "xem giao diện" — không tự sửa.
+
+### Files sửa:
+- `src/main/web/shop/Quanlysanpham.jsp`, `Quanlyloaisanpham.jsp`, `Quanlytopping.jsp`, `Quanlyloaitopping.jsp`
+- `src/main/web/admin/QuanLyHoanTien.jsp`
+- `src/main/java/org/example/controllers/AdminRefundServlet.java`
+
+### Ghi chú:
+Không đổi DB nên không cập nhật `database.md`. Kiểm chứng: build lại WAR 2 lần (trước và sau khi vá), chạy
+Tomcat cổng 8090 với DB thật, quét lại toàn bộ 25 trang Shop (đăng nhập `Bao`) + 23 trang Admin (đăng nhập
+`Hien123`) qua route servlet thật — cả 48 trang đều 200 + đủ `</html>`, không còn lỗi biên dịch. Đã xác nhận
+trực quan bằng ảnh chụp: modal không còn tự bật che lỗi; `QuanLyHoanTien.jsp` giờ có đủ avatar/theme-toggle, tab
+lọc đúng số liệu thật, chế độ tối đọc rõ. Đã kiểm tra không tràn ngang ở 375px trên các trang vừa sửa. **Chưa
+kiểm chứng:** submit form thật (thêm sản phẩm khi có lỗi validate thật để xác nhận modal vẫn tự mở lại đúng lúc
+cần — chỉ xác nhận qua đọc code logic; bấm nút "Đã chuyển khoản"/"Từ chối" thật trên `QuanLyHoanTien.jsp` với dữ
+liệu thật).
+
+## 155. Dựng lại bố cục trang Duyệt rút tiền Shop theo mock Stitch
+
+**Yêu cầu:** Sau mục 154 (Tổng quan hệ thống), user bảo "làm tiếp trang duyệt rút tiền shop" — dựng lại bố cục
+`DuyetRutTienShop.jsp` theo mock "Thẩm Định Lệnh Rút Tiền Bất Thường" (chỉ lấy phần khung sườn: thẻ số liệu, tab
+lọc, bảng danh sách — mock có điểm rủi ro AI/eKYC/đối soát ngân hàng không có trong hệ thống thật, bỏ qua).
+
+**Phát hiện quan trọng khi đọc lại trang cũ:** trang này KHÔNG dùng chung style/markup với các trang admin khác
+như tưởng — nó tự định nghĩa nguyên bộ `.stats-grid`/`.stat-card`/`.panel`/`.pager`/`table.wd-table` riêng (đè lên
+class cùng tên của `dashboard.css`/`admin-theme.css` vì `<style>` trang nằm sau trong thứ tự nạp), và **thiếu hẳn
+cụm avatar-dropdown + nút đổi theme sáng/tối** mà mọi trang admin khác đều có — đây là 2 lỗi có thật, không phải
+do đợt áp theme trước đó (đợt trước chỉ đổi màu biến CSS, không đụng cấu trúc). Đồng thời script nạp
+`assets/js/dashboard.js` — **file này không tồn tại** (404 âm thầm từ trước), khiến `pobToggleSidebar()` chỉ chạy
+được nhờ trùng tên hàm ở nơi khác; đã sửa đúng thành `dashboard-theme.js`.
+
+**Đã làm:**
+- Bỏ toàn bộ CSS tự định nghĩa trùng tên, chuyển sang dùng lại `.stats-grid`/`.stat-card`/`.panel`/`.dash-table`/
+  `.empty-state` dùng chung — trang này giờ trông đồng bộ với các trang admin khác thay vì lệch tông.
+  Thêm cụm avatar-dropdown + nút đổi theme (copy đúng markup/JS từ trang khác) — trang này lần đầu tiên có đủ 2
+  thứ đó.
+- 4 thẻ thống kê thật: Đang chờ duyệt (nổi viền đỏ khi >0, tái dùng `.stat-alert` mới đưa vào `admin-theme.css`
+  ở mục 154), Đã duyệt, Từ chối, Tổng yêu cầu — 3 số cuối trước đây KHÔNG hề có, phải sửa
+  `DuyetRutTienShopServlet.java` thêm 3 câu `COUNT(*)` qua `walletDAO.countWithdrawals(...)` sẵn có (không đổi DB).
+- Tab lọc trạng thái kèm số lượng thật (Tất cả/Đang chờ/Đã duyệt/Từ chối) thay `<select>` — vẫn là link server-side
+  thật (trang có phân trang thật nên không lọc phía client như đã làm cho Shop).
+- Bảng: gộp lại dùng `.dash-table`, ngày giờ đổi sang `app:formatDateTime` (trước in `LocalDateTime` dạng
+  `fn:substring` thủ công — vẫn đúng nhưng không đồng bộ với trang khác).
+- **Vá lỗ hổng JS injection thật:** nút "Duyệt" cũ nhét thẳng `${w.shopName}` vào chuỗi JS trong `onclick="..."`
+  không hề escape cho ngữ cảnh JS (chỉ cần tên shop có dấu nháy đơn là vỡ cú pháp, và về lý thuyết có thể chèn JS
+  tùy ý nếu shop tự đặt tên ác ý) — đổi sang `data-id`/`data-shop`/`data-amount` + gắn sự kiện qua
+  `addEventListener`, đọc lại bằng `dataset` (trình duyệt tự giải mã HTML entity đúng cách, an toàn).
+- Modal từ chối đổi sang dùng khung `.pob-modal-overlay`/`.pob-modal-box` dùng chung (giống `quanlitaikhoan.jsp`)
+  thay vì tự vẽ modal riêng.
+
+**Không làm (mock có, hệ thống không có):** điểm rủi ro gian lận AI (Sentinel-Fraud Core), đối chiếu danh tính
+ngân hàng qua eKYC, biểu đồ đột biến doanh thu 7 ngày, đơn hàng bị gắn cờ nghi vấn, thao tác "khóa vĩnh viễn tài
+khoản/tạm giữ 14 ngày" — không có nghiệp vụ/bảng dữ liệu tương ứng.
+
+### Files sửa:
+- `src/main/web/admin/DuyetRutTienShop.jsp`
+- `src/main/java/org/example/controllers/DuyetRutTienShopServlet.java` (thêm `totalAll`/`approvedCount`/
+  `rejectedCount`)
+- `src/main/web/assets/css/admin-theme.css` (đưa `.stat-card.danger.stat-alert` từ chỗ trùng lặp ở 2 trang thành
+  1 rule dùng chung, cùng `.tb-icon-sm`/`.chart-box` đã thêm ở mục 154)
+
+### Ghi chú:
+Không đổi DB nên không cập nhật `database.md` — chỉ thêm truy vấn COUNT(*) tái dùng DAO sẵn có. Kiểm chứng: build
+lại WAR, chạy Tomcat cổng 8090, trang thật `/admin/duyet-rut-tien-shop` (dữ liệu thật rỗng) trả 200 render đủ;
+dùng JSP harness tạm (chỉ trong webapp test, không nằm trong repo) dựng 4 yêu cầu rút tiền đủ 3 trạng thái để xem
+bảng/status-pill/nút hành động/modal từ chối. Đã test: cả theme sáng/tối đều đúng (lần đầu trang này có dark mode
+hoạt động), modal mở/đóng đúng, không tràn ngang ở 375px (bảng tự cuộn ngang trong khung riêng — hành vi chuẩn).
+Đã quét lại cả 23 trang admin để chắc chắn việc gộp `.stat-card.danger.stat-alert`/`.tb-icon-sm` vào
+`admin-theme.css` không làm vỡ trang nào khác. **Chưa kiểm chứng:** bấm nút "Duyệt"/"Từ chối" thật với dữ liệu
+thật (test account chưa có yêu cầu rút tiền nào), chỉ xác nhận request CSRF-hợp lệ gửi đúng field.
+
+## 154. Dựng lại bố cục trang Tổng quan hệ thống (Super Admin) theo mock Stitch
+
+**Yêu cầu:** Sau mục 153 (chỉ đổi phong cách chung cho Admin), user bảo "làm tiếp Tổng quan hệ thống trước" —
+dựng lại bố cục `TongQuanHeThong.jsp` theo mock "Trung Tâm Quản Trị Hệ Thống & Vận Hành Toàn Sàn", chỉ dùng dữ
+liệu thật do `TongQuanServlet` cung cấp (không bịa Live Stream/GPS/AI như mock).
+
+**Dữ liệu thật có sẵn** (`TongQuanServlet`): `tongTaiKhoan`, `shopChoDuyet`, `shipperHoatDong`, `canhBaoViPham`,
+`tongDoanhThuSan`, `top5Shop` (5 tài khoản shop mới đăng ký chờ duyệt), `top5ShopDoanhThu` (5 shop doanh thu cao
+nhất — chỉ có tên/doanh thu/số đơn, KHÔNG có rating/tỷ lệ hủy/thời gian làm món như mock), `thongKeTheoNgay` (7
+ngày gần đây).
+
+**Đã làm:**
+- Thẻ "Cảnh báo vi phạm" nổi viền đỏ khi `canhBaoViPham > 0`, thêm dòng phụ giải thích cách tính (shop khóa +
+  tài khoản đình chỉ + đánh giá ≤2 sao) — số liệu này trước đó hiển thị trơ trụi, không ai biết nó gồm những gì.
+- Bố cục 2 cột: biểu đồ đơn hàng & doanh thu 7 ngày (trái, giữ nguyên Chart.js, thêm `maintainAspectRatio:false` +
+  khung `.chart-box` cao cố định) cạnh danh sách "Shop mới chờ duyệt" (phải, từ `top5Shop`, mỗi dòng có avatar chữ
+  cái đầu, tên/email/ngày đăng ký định dạng qua `app:formatDateTime` — trước đó in thẳng `LocalDateTime.toString()`
+  dạng `2026-09-...T...`), có link "Xem tất cả →" sang `/super-admin/shop-requests`.
+- "Top 5 shop doanh thu cao nhất": đổi từ biểu đồ cột ngang (canvas riêng, chỉ đọc được khi hover) sang danh sách
+  xếp hạng có huy hiệu #1/#2/#3 (giống trang chủ Shop), đọc rõ hơn với đúng 5 dòng dữ liệu.
+- Escape XSS: tên shop chờ duyệt trước đó in bằng `fn:escapeXml` (giữ nguyên), nhưng email/ngày tạo dùng
+  `${account.email}`/`${account.createdAt}` thô — đổi sang `<c:out>` và `app:formatDateTime`.
+
+**Bug tự vá trong lúc dựng (CSS Grid "blowout" — không phải lỗi cũ, do chính mục này gây ra rồi tự phát hiện qua
+test mobile):** cột 2-cột dùng `grid-template-columns: minmax(0,1.6fr) minmax(0,1fr)`, mobile fallback về
+`1fr` trần — thiếu `minmax(0, ...)` nên track co theo min-content của canvas Chart.js (biểu đồ đòi rộng hơn màn
+hình), khiến `.content` tràn ngang ~450px trên viewport 375px dù `document.documentElement.scrollWidth` vẫn báo
+đúng 375 (chỉ `.content` tự cuộn ngang, dễ bỏ sót nếu không đo `scrollWidth` của từng phần tử). Sửa bằng
+`.ov-grid > .panel { min-width: 0; }` + mobile fallback `minmax(0, 1fr)` thay vì `1fr` trần.
+
+**Không làm (mock có, hệ thống không có):** Live Stream cập nhật realtime, cảnh báo vận hành dạng banner, GPS
+Dispatcher/heatmap khu vực (trang Heatmap riêng đã có, không lặp lại ở đây), đối soát & rút tiền tự động, khiếu
+nại chậm giao, phương thức thanh toán toàn nền tảng (%FoodPay/Napas/COD), bảng điều khiển take-rate/thưởng nóng
+tài xế, rating/tỷ lệ hủy/thời gian làm món trong bảng xếp hạng shop (dữ liệu không tồn tại).
+
+### Files sửa:
+- `src/main/web/admin/TongQuanHeThong.jsp`
+- `src/main/web/assets/css/admin-theme.css` (thêm `.tb-icon-sm`, `.chart-box` dùng chung — sẽ tái dùng cho các
+  trang admin khác khi rebuild tiếp)
+
+### Ghi chú:
+Không đổi DB/servlet nên không cập nhật `database.md`. Kiểm chứng: build lại WAR, chạy Tomcat cổng 8090, dùng
+JSP harness tạm (chỉ trong webapp test, không nằm trong repo) dựng 5 shop chờ duyệt + 5 shop doanh thu + 7 ngày
+thống kê giả để xem đủ trạng thái có dữ liệu (tài khoản Super Admin test thật không có shop chờ duyệt nào). Đã
+test: trang thật `/tong-quan` (dữ liệu thật, phần lớn rỗng) và bản harness (đầy dữ liệu) đều render đúng ở cả
+theme sáng/tối, không tràn ngang ở 375px sau khi vá bug Grid. **Chưa kiểm chứng:** link "Xem tất cả →" có thật sự
+dẫn đúng tới danh sách duyệt shop khi bấm (chỉ xác nhận đúng URL, chưa click qua để duyệt thử).
+
 ## 153. Áp bộ thiết kế Stitch (zip 2) cho role SUPER ADMIN: theme riêng + sidebar dùng chung
 
 **Yêu cầu:** User gửi zip Stitch thứ 2 (`stitch_remix_of_foodmanage_ui_design (1).zip`: 12 trang mẫu Admin + 1 file
@@ -6658,3 +6823,177 @@ không tự build/deploy/test được — đã đọc lại kỹ từng file Ja
 đổi avatar → xác nhận ảnh cập nhật ở cả navbar và khối profile; đổi email → xác nhận redirect sang
 `/xac-thuc-thay-doi?purpose=user_hoso` → nhập OTP → xác nhận quay lại đúng trang với thông tin mới; kiểm
 tra dropdown "Thông tin cá nhân" xuất hiện đúng ở cả 8 trang User.
+
+## 104. Kiểm tra hệ thống (QA) — phiên `/ai-native-sdlc`, xem `intent.md`
+
+### Đã kiểm tra
+- Build `mvn -o package` thành công; Tomcat 8090 khởi động không lỗi; 4 role (admin/shop/user/shipper) đăng nhập được bằng tài khoản ở `AI_REVIEW_AND_TEST_GUIDELINES.md` mục 5.2.
+- Ma trận truy cập ~75 URL × (admin, shop, user, shipper, chưa đăng nhập): phân quyền đúng — role khác bị 403/302, chưa đăng nhập bị chuyển `/dangnhap`.
+- Quét nội dung 52 trang (4 role + trang công khai) tìm stack trace / EL chưa resolve / trang bị cắt: sạch, trừ lỗi `DoiSoatDoanhThuShop` bên dưới.
+- Test bảo mật: SQLi ở form đăng nhập (không vào được), POST thiếu CSRF token (bị chặn), user POST vào `/admin/faq` (403), `/user/shop?id=` với giá trị lạ (chuyển về `/user/home`, không lỗi).
+- Rà code tĩnh: SQL dùng `PreparedStatement` (chỗ nối `ORDER BY` ở `AccountDAOImpl` đã whitelist), Shop CRUD kiểm tra `shop_id`, `BillServlet` kiểm tra chủ đơn, webhook PayOS verify chữ ký.
+- DB (chỉ SELECT): 24 tài khoản, 1 shop (`wishe`), **0 sản phẩm, 0 đơn hàng** → luồng đặt hàng chưa test được.
+
+### Đã sửa
+- **XSS phản chiếu** `shipper/hosotaixe.jsp` in `${param.success}` / `${param.error}` không escape → đổi sang `<c:out>`. Đã build lại và kiểm chứng (`<script>` thành `&lt;script&gt;`).
+- **Trang bị cắt cụt** `/admin/doi-soat-doanh-thu-shop` ném `JspException: parse locale can not be established` khi request không có header `Accept-Language` → thêm `<fmt:setLocale value="vi_VN"/>` vào `admin/DoiSoatDoanhThuShop.jsp`. Đã kiểm chứng trang trả đủ `</html>`.
+- **Lộ secret** `utils/DBUtil.java` hardcode host/user/mật khẩu SQL Server → đọc qua `ConfigUtil` (`db.url`/`db.user`/`db.password` trong `src/main/resources/config.properties`, file này nằm trong `.gitignore`, mẫu ở `config.properties.example`; hoặc biến môi trường `DB_URL`/`DB_USER`/`DB_PASSWORD`). Thiếu cấu hình sẽ báo lỗi rõ ràng. **Mật khẩu cũ vẫn nằm trong lịch sử git nên cần tự đổi mật khẩu `sa` trên SQL Server.**
+
+### Chưa sửa
+- **[CAO] XSS lưu trữ (stored XSS)**: nhiều JSP in dữ liệu do người dùng nhập mà không escape, ví dụ `admin/KiemDuyetNoiDung.jsp` (`p.shopName`, `p.productName`, `p.description`), `admin/quanlitaikhoan.jsp` (`acc.fullName`), `admin/KiemDuyetBinhLuan.jsp`, `shipper/nhanDon.jsp` (`order.shopName`, `shopAddress`, `shippingAddress`), `shipper/dashboard.jsp`, `shop/viTien.jsp`. `DangKyShopServlet` chỉ kiểm tra tên shop khác rỗng, `DangKyServlet` không kiểm `fullname`, và CSP đang cho `script-src 'unsafe-inline'`. Cần rà toàn bộ và đổi sang `<c:out>` / `${fn:escapeXml(...)}`; chưa chèn payload thật vào DB để xác nhận.
+- Tài khoản test `Bao` (role shop) chưa có bản ghi shop (shop `wishe` thuộc tài khoản id 16), nên `/shop/pos`, `/shop/profile`, `/shop/toppings`... chuyển về `/shop`.
+- `/cart`, `/cart-items` luôn trả 404 (cố ý vô hiệu hoá) nhưng `user/cartItemDanhSach.jsp`, `cartItemThemSua.jsp` vẫn link tới; `AuthFilter` cho role 2 vào `/admin/*` (các servlet tự chặn lại bằng `roleId == 1` nên hiện không lỗi).
+
+### Phiên 2: ghi dữ liệu test + luồng đặt hàng
+- Đã chèn dữ liệu test (được user cho phép) cho shop `wishe` (id 1): 1 loại sản phẩm `QA_TEST Đồ uống`, 2 món `QA_TEST Trà đào` (size M 25.000đ, L 30.000đ) và `QA_TEST Cơm gà` (size 45.000đ). Xoá khi không cần: `DELETE FROM Product_Sizes WHERE product_id IN (SELECT id FROM Products WHERE product_name LIKE 'QA_TEST%'); DELETE FROM Products WHERE product_name LIKE 'QA_TEST%'; DELETE FROM Categories WHERE name LIKE 'QA_TEST%';`
+- Luồng đã chạy được: menu shop hiển thị món test → thêm giỏ → xem giỏ → mở checkout → validate thiếu tên người nhận → chống gửi lặp bằng `checkoutToken`. Giỏ của `HienMap` đã dọn sạch.
+- **Chưa tạo được đơn**: shop `wishe` chưa có `locationX/locationY` nên checkout từ chối ("Shop chua cap nhat vi tri tren ban do"). Đây là hành vi đúng của app; cần chủ shop (tài khoản `pob`) đặt vị trí ở `/shop/profile` hoặc user cho phép UPDATE. Không đặt hộ vì đó là sửa dữ liệu có sẵn.
+
+### Đã sửa thêm (phiên 2)
+- **`UserCartServlet`**: không kiểm tra `sizeId` thuộc đúng `productId` và `shopId` → thêm món A với size của món B (hoặc shop khác) vẫn vào giỏ và tính theo giá size đó (kiểm chứng: `productId=1&sizeId=3` từng được nhận). Nay trả `error=invalid_size`. Chưa xét `UserAddComboServlet`.
+- **`CheckoutServlet`** dòng 96 và 99: lỗi giỏ rỗng / không tìm thấy chuyển hướng tới `/cart?...` vốn luôn 404 → đổi sang `/user/cart?...`.
+
+### Ghi nhận thêm
+- `quantity` âm hoặc 0 khi thêm giỏ bị đổi âm thầm thành 1 (không báo lỗi).
+- `user/menuShop.jsp` nhúng tên/mô tả món vào chuỗi JS inline (`'Món test QA'`): tên món chứa dấu `'` sẽ làm vỡ script, cần escape JS.
+
+### Chưa kiểm tra được
+Tạo đơn hàng qua checkout, bill, luồng shop xử lý đơn và shipper giao hàng (cần vị trí shop + tài khoản chủ shop `pob`), và chạy thử bằng trình duyệt thật.
+
+### Phiên 3: sự cố lưu hồ sơ shop
+- **Trình duyệt tự điền** tên đăng nhập/mật khẩu đã lưu vào `bankAccountName` và `clientKey` ở `shop/Shopprofile.jsp` (Chrome bỏ qua `autocomplete="off"` trên ô password). Server thấy ngân hàng/khoá PayOS thay đổi → bắt OTP email (`shop_bank`) → email lỗi nên không lưu được. Đã đổi `autocomplete="new-password"` cho `clientKey`/`apiKey`/`checkSumKey` và `autocomplete="off"` cho 2 ô ngân hàng; cần redeploy mới có hiệu lực.
+- **Dữ liệu `wishe` (id 1) đang lỗi do lượt test này:** `shop_description` chứa đoạn HTML `<textarea ...>j` (giá trị gốc `j`); `shop_address` bị đổi nhẹ sau khi gửi lại form (cột/kết nối có vẻ mất dấu tiếng Việt, ở lần đọc đầu địa chỉ đã hiện `?`). Vị trí `locationX/Y` đã đặt = `10.4963, 107.1685` (gốc NULL).
+
+### Phiên 4: luồng đặt đơn COD (đã test)
+- Shop `wishe` đã có vị trí (do chủ shop lưu qua `/shop/profile`). Khách `HienMap` đặt 2 món (`QA_TEST Trà đào` M ×2 + `QA_TEST Cơm gà` ×1 = 95.000đ) → **đơn #1** (COD, PENDING) tạo thành công, chuyển tới `/bill?orderIds=1`, hoá đơn đúng món/giá, `/user/donhang` hiển thị đơn.
+- Kiểm tra biên: điểm giao cách shop >20km bị từ chối; thiếu tên người nhận bị chặn; gửi lặp cùng `checkoutToken` bị chặn; admin không mở được `/bill` của khách; user không vào được `/shop/bills`.
+- Phía shop (`pob`): xem hoá đơn, xuất PDF (`%PDF`) và Excel (`PK`) chạy; `confirm` khi chưa có shipper → `error=no_shipper`, `prepared` khi chưa CONFIRMED → `error=invalid_action`, `orderId` không tồn tại → `error=not_found`. Đơn PENDING chưa có shipper cố ý **không hiện** trong danh sách `/shop/bills` (`ShopBillServlet.filterOrders`).
+- Phía shipper (`Hien2008`): nhận đơn khi Offline → `error=offline`; khi Online → `error=notverified` vì chưa có dòng `Shipper_Profiles` đã duyệt. **Chưa test được**: shipper nhận đơn → shop xác nhận → chuẩn bị → giao → hoàn thành, tích điểm, bản đồ theo dõi. Đơn #1 còn ở PENDING (dữ liệu test).
+
+### Phiên 5: hoàn tất luồng đơn hàng end-to-end (đã test)
+- Shipper `Hien2008` nộp hồ sơ tài xế qua `/shipper/profile` (`action=updateVehicle`, không đổi ngân hàng nên không cần OTP) → Super Admin duyệt ở `/super-admin/shipper-requests` (`action=accept`) → nhận đơn được.
+- Đơn #1 đi hết vòng: shipper nhận (`/shipper/nhan-don`) → shop `confirm` → `prepared` → shipper `updateStatusToShipping` → `updateStatusToDone`. Nhảy bước (READY → DONE) bị bỏ qua đúng. Khách nhận đủ thông báo cho từng bước (`/user/thong-bao`); hoá đơn hiện "Đã giao thành công"; `/tong-quan` và báo cáo vận hành đếm 1 đơn.
+- Khiếu nại (`/khieu-nai`) và đánh giá (`/feedback`) gửi được; nội dung có thẻ HTML được escape ở trang khách, admin và shop; `rating=9` bị từ chối.
+- Dữ liệu test còn lại trong DB: đơn #1 (DONE), khiếu nại và đánh giá `QA_TEST`, hồ sơ tài xế của `Hien2008` (đã duyệt, `PENDING`→`APPROVED`), 2 món `QA_TEST` của `wishe`.
+
+## 105. Vá XSS lưu trữ trên toàn bộ JSP
+
+### Đã làm
+- Quét cả 98 JSP/JSPF bằng script (bỏ qua `<script>`, `<style>`, comment, scriptlet, thẻ JSTL) rồi bọc `${fn:escapeXml(...)}` cho **475 chỗ / 78 file** in trường do người dùng nhập ra HTML text hoặc thuộc tính (tên shop/món/topping/size/loại, `userName`, `fullName`, `email`, `phone`, địa chỉ, mô tả, lý do từ chối, đường dẫn ảnh/logo, giá trị lọc `q`/`tuNgay`/`denNgay`/…). Tự thêm `<%@ taglib prefix="fn" %>` cho 7 file còn thiếu (đúng kiểu URI `jakarta.tags.*` hoặc `http://java.sun.com/jsp/jstl/*` của từng file). 6 chỗ nằm trong `<c:out>` đã được trả về dạng gốc để không escape hai lần.
+- **Thuộc tính sự kiện** (`onclick`, `onsubmit`, `onerror`…): `fn:escapeXml` một mình KHÔNG đủ vì trình duyệt giải mã `&#039;` trở lại thành `'` trước khi chạy JS (ví dụ họ tên `x');alert(1);//`). 35 chỗ nay dùng dạng `'${fn:escapeXml(fn:replace(fn:replace(X,'\','\\'),"'","\'"))}'` (escape JS trước, HTML sau). Kiểm chứng: `onsubmit="…\&#039;);alert(2);//"` — dấu `'` luôn có `\` phía trước.
+- `shop/Banhang.jsp` (POS): thêm `escHtml()` cho tên món/size/topping trước khi ghép vào `innerHTML` (XSS kiểu DOM vì `data-*` đã được giải mã).
+- Kiểm chứng bằng payload `QA_TEST</b><img src=x onerror=alert(1)>');alert(2);//` gửi vào tên + mô tả sản phẩm: các trang `/shop/products`, `/shop/pos`, `/user/shop`, `/admin/kiem-duyet-noi-dung` không còn thẻ `<img>` thô. Đã xoá sản phẩm test đó.
+- Gọi trực tiếp cả 95 file JSP để buộc biên dịch: 93 × 200, 2 × 302, không lỗi biên dịch.
+
+### Lỗi có sẵn được phát hiện khi test (đã sửa)
+- `shop/taoProduct.jsp` (trang `/product`) tham chiếu thuộc tính không tồn tại `shopid`, `categoryid`, `soldQuantity` → 500 ngay khi DB có sản phẩm. Đổi sang `shopId`, `categoryId`, `stockQuantity`/`soldCount`.
+
+### Đã sửa tiếp (các lỗi phát sinh)
+- **`UserAddressDAOImpl` lệch schema**: DB thật có cột `user_id`/`address` (bản cũ), trong khi code và `database.md` dùng `account_id`/`full_address` → `/user/dia-chi` luôn "Chưa có địa chỉ nào" và tạo địa chỉ báo thành công nhưng không lưu. DAO nay dò tên cột 1 lần từ `INFORMATION_SCHEMA` (chỉ nhận 2 cặp tên cố định, an toàn khi nối SQL) và đặt alias về `account_id`/`full_address`; chạy được trên cả DB cũ lẫn DB theo `database.md`, không phải sửa schema. Kiểm chứng: địa chỉ có sẵn hiện ra, thêm/sửa/đặt mặc định/xoá chạy, checkout tự điền địa chỉ mặc định, chuỗi XSS thử ở địa chỉ được rào đúng (`\&#039;` trong `openEdit(...)`).
+- **`UserAddressServlet`**: xoá / đặt mặc định địa chỉ không thuộc mình trước đây vẫn báo `success` (dù DB không đổi) → nay trả `error=notfound` kèm thông báo trong `diaChi.jsp`.
+- **`UserCartServlet`**: `quantity` ≤ 0 hoặc không phải số trước đây bị đổi âm thầm thành 1 → nay trả `error=invalid`; không gửi `quantity` thì vẫn mặc định 1.
+- `UserAddComboServlet` đã rà: combo được kiểm tra thuộc đúng shop nên không cần thêm kiểm tra size.
+- Toàn bộ 95 JSP vẫn biên dịch (93 × 200, 2 × 302) và 16 trang chính trả đủ `</html>` sau khi sửa.
+
+### Còn tồn tại
+- **Thống nhất schema `User_Addresses`**: đã thêm `migration_user_addresses_rename_columns.sql` (idempotent: `user_id`→`account_id`, `address`→`full_address`, đổi tên index, thêm `IX_UserAddresses_Account_Deleted_Default`; cũng đã gộp vào `migration_all.sql`) và ghi chú lệch schema trong `database.md`. **Chưa chạy trên DB thật** (thay đổi schema); chạy xong phải khởi động lại Tomcat vì DAO cache tên cột. DAO vẫn chịu được cả hai dạng nên không chạy migration cũng không lỗi.
+- `AuthFilter` cho role 2 (shop) vào `/admin/*`; các servlet tự chặn bằng `roleId == 1` nên hiện an toàn, nhưng dễ sót khi thêm servlet mới.
+- Server vẫn nhận mọi ký tự ở form đăng ký (chỉ escape lúc hiển thị), chưa giới hạn độ dài.
+- JS trong `<script>` đang in dữ liệu bằng `fn:escapeXml` (an toàn), nhưng nếu đổi sang `textContent` thì chuỗi sẽ hiện entity thô.
+- Email OTP (Gmail 535) vẫn hỏng; `/cart`, `/cart-items` vẫn 404 nhưng còn vài JSP cũ link tới.
+- Quy ước mới: mọi `${...}` in dữ liệu người dùng phải dùng `<c:out>` hoặc `fn:escapeXml`; trong thuộc tính `on*` phải dùng dạng escape JS + HTML ở trên.
+
+## 106. Đối chiếu checklist "An ninh mạng web trong 5 phút" (FTES) và vá thêm
+
+| Mục checklist | Hiện trạng | Việc đã làm / còn lại |
+|---|---|---|
+| SQL: truy vấn tham số (prepared statement) | Đạt: toàn bộ DAO dùng `PreparedStatement`, chỗ nối `ORDER BY` có whitelist | — |
+| SQL: kiểm tra kiểu dữ liệu | Phần lớn đạt (`parseLong`/`parseInt` có xử lý lỗi); `quantity` ≤ 0 nay báo lỗi | — |
+| SQL: giới hạn quyền tài khoản DB | **Chưa đạt**: ứng dụng kết nối bằng `sa` | Cần tạo user DB riêng chỉ có quyền trên schema `POB` rồi đổi `db.user`/`db.password` trong `config.properties` |
+| SQL: không hiện lỗi SQL chi tiết | Đạt một phần | Đã thêm trang lỗi chung (`error.html`, khai báo trong `web.xml` cho 400/403/404/405/500 và `Throwable`) và bỏ `e.getMessage()` khỏi `DangKyServlet`, `DangKyShopServlet`, `ShopProductServlet` |
+| XSS: encode đầu ra theo ngữ cảnh | Đạt sau mục 105 (HTML text/attribute, thuộc tính `on*`, `innerHTML` ở POS) | — |
+| XSS: CSP | Có, nhưng `script-src 'unsafe-inline'` nên chỉ giảm nhẹ | Muốn chặt hơn phải chuyển JS inline/`onclick` ra file và dùng nonce — thay đổi lớn, chưa làm |
+| XSS: cookie HttpOnly | Đạt; nay thêm `SameSite=Lax` cho cookie phiên (`web.xml`) | `Secure` chỉ bật khi chạy HTTPS |
+| Broken Access Control: kiểm tra quyền phía máy chủ + theo tài nguyên | Đạt: kiểm tra `roleId` ở servlet và chủ sở hữu (`BillServlet`, địa chỉ, sản phẩm theo `shop_id`); test 4 role + truy cập chéo | `AuthFilter` vẫn cho role shop vào `/admin/*`, dựa vào từng servlet tự chặn |
+| Mặc định từ chối + ghi log hành vi bị từ chối | **Đã làm**: `AppFilter`, `AuthFilter`, `AuditLogAuthFilter` ghi Audit Log (module Security, action "Truy cập bị từ chối") qua `filter/AccessDeniedLogger`; tối đa 1 dòng/phút cho mỗi (tài khoản, method, URL) để tránh làm đầy bảng | Chưa ghi các lần servlet tự chặn bằng redirect/403 riêng (vd `TongQuanServlet`) |
+| Kiểm tra định dạng đầu vào | **Đã làm** bằng `utils/InputValidationUtil` (giới hạn độ dài theo cột DB, từ chối ký tự điều khiển và `<` `>`, SĐT chỉ gồm số và + ( ) - .) cho form chính (đăng ký, hồ sơ, địa chỉ, khiếu nại) và form phụ (xem mục "Form phụ" bên dưới) | Chưa áp cho `CategoryServlet`/`ProductServlet` (trang legacy `/Category`, `/product` của admin), `VoucherServlet` (đã có regex riêng cho mã), `ThamSoVanHanhServlet` (chỉ nhận số) |
+
+### Chi tiết kiểm tra đầu vào và log truy cập bị từ chối (mục 106)
+- **Giới hạn**: họ tên/tên người nhận ≤ 100, tên shop ≤ 255, địa chỉ ≤ 500, nhãn địa chỉ ≤ 50, mô tả/nội dung ≤ 2000, tiêu đề khiếu nại ≤ 200, SĐT ≤ 20 ký tự. Lỗi trả về theo cách sẵn có của từng form: `loi` + forward (đăng ký khách, hồ sơ shop, đăng ký shipper), JSON `jsonFail` (đăng ký shop), `error=invalid` (địa chỉ, khiếu nại), `error=invalid_input` (hồ sơ khách); đã thêm thông báo tương ứng vào `diaChi.jsp`, `khieuNai.jsp`, `thongTinCaNhan.jsp`.
+- **Kiểm chứng**: tên có `<`, tên/SĐT sai, mô tả 2100 ký tự đều bị từ chối; dữ liệu tiếng Việt hợp lệ ("Nguyễn Văn Á", SĐT `+84 900-000-000`) vẫn lưu được.
+- **Log truy cập bị từ chối**: kiểm chứng trên `/admin/audit-logs` — 5 URL bị chặn ở 4 role đều có dòng, 5 lần gọi lặp cùng URL chỉ tạo 1 dòng.
+
+### Form phụ áp `InputValidationUtil` (đợt 2)
+| Form | Trường và giới hạn | Cách báo lỗi |
+|---|---|---|
+| Sản phẩm shop (`ShopProductServlet`, tạo + sửa) | tên ≤ 255, mô tả ≤ 2000 | `loi` + forward |
+| Topping (`ShopToppingServlet`) | tên ≤ 100 | `loi` + forward |
+| Loại sản phẩm (`ShopProductTypeServlet`) | tên ≤ 100 | `loi` + forward |
+| Loại topping (`QuanLyLoaiToppingServlet`) | tên ≤ 100, mô tả ≤ 2000 | `loi` + forward |
+| Combo (`ShopComboServlet`) | tên ≤ 200, mô tả ≤ 500 | `?error=invalid` |
+| FAQ (`FaqServlet`, thêm + sửa) | câu hỏi ≤ 500, trả lời ≤ 5000, danh mục ≤ 100 | `loi` + forward |
+| Hồ sơ shop / admin / shipper (`ShopHoSoServlet`, `AdminProfileServlet`, `ShipperHoSoServlet`) | họ tên ≤ 100, SĐT | `?error=invalid_input` (đã thêm thông báo vào `hoSoShop.jsp`, `hoSoAdmin.jsp`, `hoSoShipper.jsp`) |
+| Shipper thông tin + phương tiện + ngân hàng (`ShipperProfileServlet`) | họ tên, SĐT, CCCD/bằng lái ≤ 50, loại xe ≤ 50, biển số ≤ 20, mẫu xe ≤ 100, STK ≤ 30, ngân hàng ≤ 100, chủ TK ≤ 100 | `redirectWithMsg` |
+| Kháng nghị (`AppealServlet`) | nội dung ≤ 1000 | `?appealError=invalid` |
+| Hoàn tiền (`RefundRequestServlet`) | ngân hàng ≤ 100, STK ≤ 50, chủ TK ≤ 200, ghi chú ≤ 500 | `error` + forward |
+| Đánh giá (`FeedbackServlet`) | nhận xét ≤ 1000 | `?error=1` |
+| Từ khóa cấm (`ContentModerationServlet`) | ≤ 100 | bỏ qua, quay lại trang |
+| Admin tạo/sửa tài khoản (`QuanLiTaiKhoanServlet`) | username/email/họ tên ≤ 100, SĐT | `loi` + forward |
+
+Đã test bằng dữ liệu có `<` hoặc quá dài trên 13 form; 95 JSP vẫn biên dịch.
+
+### Bug: `AuditLogServlet`/`AuditLogDAOImpl` nuốt lỗi DB âm thầm + XSS phản chiếu qua `accountId`
+- **Phát hiện qua**: review tự động (skill `code-review-and-quality` + agent `code-reviewer`) khi thử nghiệm bộ Agent Skills mới cài.
+- **Bug 1 (Exception Handling)**: `AuditLogDAOImpl.search()/count()/findDistinctModules()` bắt `Exception` rồi trả về list rỗng/`0` — khi DB lỗi thật, admin chỉ thấy "Không tìm thấy nhật ký nào phù hợp" như thể không có dữ liệu, không biết là hệ thống đang lỗi.
+  - **Fix**: 3 hàm trên vẫn `e.printStackTrace()` để log, nhưng sau đó `throw new RuntimeException(...)` để lỗi không bị nuốt âm thầm. `AuditLogServlet.doGet()` bọc các lời gọi DAO trong `try/catch (RuntimeException e)`, khi lỗi thì set `req.setAttribute("loi", "Khong the tai du lieu audit log, vui long thu lai sau.")` và vẫn forward tới JSP với dữ liệu rỗng an toàn (không crash trang, không giả vờ là "không có kết quả").
+  - Hàm `log()` (ghi audit log) giữ nguyên hành vi nuốt lỗi — đây là chủ đích đã ghi rõ trong Javadoc của interface (ghi log lỗi không được làm fail nghiệp vụ chính).
+- **Bug 2 (XSS phản chiếu)**: `AuditLogs.jsp` dòng filter `accountId` in giá trị `${filterAccountId}` ra thuộc tính `value` của `<input>` mà không escape, khác với các filter khác (`action`, `fromDate`, `toDate`) đã dùng `fn:escapeXml`.
+  - **Fix**: đổi thành `value="${fn:escapeXml(filterAccountId)}"` cho đồng bộ với các trường filter khác trên cùng form.
+  - Thêm banner lỗi `<c:if test="${not empty loi}"><div class="alert alert-danger">⚠️ <c:out value="${loi}"/></div></c:if>` ngay đầu `<div class="content">`, theo đúng convention `loi` + `alert-danger` đã dùng ở các JSP khác (`QuanLyVoucher.jsp`, `yeuCauShop.jsp`,...).
+- **File đã sửa**: `src/main/java/org/example/daos/AuditLogDAOImpl.java`, `src/main/java/org/example/controllers/AuditLogServlet.java`, `src/main/web/admin/AuditLogs.jsp`.
+- **Kiểm chứng**: đọc lại code sau khi sửa (đúng cú pháp Java/JSTL); không chạy được `mvn compile` vì máy không có Maven trên PATH — cần build/test thủ công lại trước khi merge.
+
+### Bug: Trang chủ khách hàng (`user/trangnguoidung.jsp`) — ảnh shop vỡ do CSP + mất điều hướng trên mobile
+- **Phát hiện qua**: agent review UI/UX trang `/user/home` khi đăng nhập role USER (`HienMap`), kiểm chứng lại trực tiếp bằng browser thật (desktop + mobile 375px).
+- **Bug 1 (ảnh vỡ)**: `UserHomeServlet.getDefaultShopLogo()` và 2 chỗ fallback trong `trangnguoidung.jsp` (`onerror` + nhánh `otherwise` khi logo không hợp lệ) đều hardcode URL `images.unsplash.com` — bị `SecurityHeadersFilter` chặn vì CSP `img-src` chỉ cho phép `res.cloudinary.com`/`cdn.jsdelivr.net`/`*.tile.openstreetmap.org`. Xác nhận bằng console: nhiều dòng lỗi "violates ... img-src" khi mở trang với shop `wishe` (chưa có logo/ảnh sản phẩm hợp lệ).
+  - **Phát hiện phụ**: CSS đã có sẵn class `.shop-img .fallback-icon` (70x70, có đổ bóng) nhưng **chưa từng được dùng ở đâu** trong markup — ý định ban đầu rõ ràng là icon cục bộ, không phải ảnh ngoài.
+  - **Fix**: tạo icon SVG local `src/main/web/assets/img/shop-placeholder.svg` (icon cửa hàng, màu `--primary: #FF5722` khớp theme), dùng nó thay cho cả 3 chỗ hardcode unsplash (`UserHomeServlet.getDefaultShopLogo()` trả về `/assets/img/shop-placeholder.svg`; JSP gắn class `fallback-icon` cho ảnh fallback). Vì là asset tĩnh phục vụ từ `'self'`, không cần sửa CSP.
+- **Bug 2 (mất nav mobile)**: ở breakpoint `max-width: 768px`, CSS cũ set `.nav-links, .nav-search { display: none; }` — ẩn hẳn menu điều hướng (Trang chủ/Nhà hàng/Đơn hàng/Địa chỉ/Điểm thưởng) mà không có thay thế nào (không hamburger menu). Đồng thời logo "FOOD MANAGE." + avatar + chuông + giỏ hàng không co giãn nên icon giỏ hàng bị tràn/cắt mất ở viewport 375px, không bấm được.
+  - **Fix**: thêm nút `.menu-toggle` (hamburger, ẩn trên desktop, hiện ở mobile) mở `#navLinks` dưới dạng dropdown full-width (`position:absolute; top:100%`, đóng khi click ra ngoài hoặc chọn 1 mục — JS `toggleNavLinks()`). Thu gọn logo (`font-size` nhỏ hơn, ẩn dấu `.` trang trí, icon 24px) và giảm gap/size icon trong `.nav-actions` ở mobile để toàn bộ header vừa khít 375px, không còn icon nào bị cắt.
+- **File đã sửa**: `src/main/java/org/example/controllers/UserHomeServlet.java`, `src/main/web/user/trangnguoidung.jsp`, thêm mới `src/main/web/assets/img/shop-placeholder.svg`.
+- **Kiểm chứng**: test trực tiếp trên Tomcat thật (role USER, tài khoản `HienMap`) — desktop không đổi gì ngoài ý; mobile 375px: icon shop hiện đúng (không vỡ), hamburger mở/đóng dropdown đúng, header không còn tràn. Riêng phần sửa trong `UserHomeServlet.java` cần rebuild + redeploy Java mới có hiệu lực đầy đủ (JSP thì áp dụng ngay).
+
+### Bug NGHIÊM TRỌNG: Trang chi tiết nhà hàng (`user/menuShop.jsp`) — vòng lặp vô hạn CSP + header tràn y hệt trang chủ
+- **Phát hiện qua**: rà soát thêm các trang khác sau khi sửa trang chủ (`/user/shop?id=1`), do nghi ngờ bug tương tự có thể bị copy-paste sang file khác.
+- **Bug 1 (NGHIÊM TRỌNG — vòng lặp vô hạn, không chỉ là ảnh vỡ)**: `menuShop.jsp` dòng fallback logo có `onerror="this.src='https://images.unsplash.com/...'"` **thiếu `this.onerror=null`** trước khi set lại src. Vì URL thay thế CŨNG bị CSP chặn, `onerror` tự kích hoạt lại vô hạn: set src → bị chặn → onerror → set lại cùng src → bị chặn → ... Xác nhận bằng console: **hơn 600,000 lỗi CSP lặp lại liên tục chỉ trong vài giây** mở 1 trang — ngốn CPU/network liên tục trên máy khách hàng thật, mức độ nặng hơn hẳn bug ảnh vỡ thông thường ở trang chủ.
+  - `UserShopMenuServlet.java` cũng có `getDefaultShopLogo(String shopName)` — **y hệt code đã sửa ở `UserHomeServlet.java`**, bị copy-paste sang, cùng hardcode 5 URL unsplash.
+  - **Fix**: thêm `this.onerror=null;` trước khi set src fallback (chặn triệt để vòng lặp — đây là phần quan trọng nhất, có hiệu lực ngay vì là JSP); đổi fallback sang `assets/img/shop-placeholder.svg` (dùng lại icon đã tạo ở bug trước); xoá `getDefaultShopLogo(String shopName)` ở `UserShopMenuServlet.java`, thay bằng `getDefaultShopLogo()` trả về icon local, giống hệt cách đã sửa ở `UserHomeServlet`.
+- **Bug 2 (header tràn, cùng dạng bug ở trang chủ nhưng là file CSS/markup riêng)**: `menuShop.jsp` có header riêng (không dùng chung component với `trangnguoidung.jsp`), toàn bộ dùng inline `style=""`, **không có bất kỳ media query nào** cho nav/logo/icon — ở độ rộng ~780-800px (chưa tới ngưỡng mobile thực sự), 5 link nav + logo dài + 2 icon action tràn khỏi viewport, cắt mất icon giỏ hàng y hệt lỗi đã sửa ở trang chủ nhưng xảy ra ở ngưỡng rộng hơn (780px so với 375px).
+  - **Fix**: thêm hamburger `.menu-toggle-shop` + dropdown `.nav-links-shop` (breakpoint `900px`, rộng hơn trang chủ vì layout trang này không có gì co giãn sẵn nên vỡ sớm hơn). **Lỗi phụ phát sinh khi tự sửa**: ban đầu chỉ thêm class CSS mà vẫn giữ inline `style="display:flex"` trên `<nav>` — inline style có độ ưu tiên cao hơn class trong `<style>` nên `display:none` trong media query bị vô hiệu hoàn toàn, khiến menu mobile **luôn hiện đè lên nội dung** dù không bấm hamburger. Phát hiện ngay khi tự kiểm tra lại bằng screenshot, sửa bằng cách chuyển `display:flex;gap:20px;align-items:center;` từ inline sang rule CSS riêng cho `.nav-links-shop` và xoá inline style khỏi markup (không cần `!important`).
+- **File đã sửa**: `src/main/java/org/example/controllers/UserShopMenuServlet.java`, `src/main/web/user/menuShop.jsp`.
+- **Kiểm chứng**: mở tab trình duyệt hoàn toàn sạch (không có log tồn đọng), vào `/user/shop?id=1`, đợi 3s, console chỉ còn **đúng 1 lỗi CSP** (từ phần Java chưa kịp rebuild lúc test, không phải lặp vô hạn nữa) — xác nhận vòng lặp đã chặn triệt để. Header không còn tràn ở mọi độ rộng đã test. Cần rebuild + redeploy Java (`UserShopMenuServlet.java`) để hết sạch 100% kể cả lỗi CSP đơn lẻ đó.
+- **Bài học rút ra**: nên `grep -r "unsplash"` (hoặc tổng quát hơn: tên domain lạ không nằm trong CSP `img-src`) trên toàn bộ `src/main/web` mỗi khi sửa 1 bug dạng "hardcode URL ảnh ngoài" — vì pattern này đã bị copy-paste ít nhất 2 nơi (`UserHomeServlet`/`trangnguoidung.jsp` và `UserShopMenuServlet`/`menuShop.jsp`), khả năng còn sót ở các trang khác (shop detail cho role khác, trang tìm kiếm,...) là có thật.
+
+### Bug: `shipper/viTien.jsp` — `Uncaught TypeError` khi shipper chưa cập nhật thông tin ngân hàng
+- **Phát hiện qua**: rà soát vai Shop và Shipper theo yêu cầu, kiểm tra console từng trang qua tab trình duyệt sạch.
+- **Nguyên nhân**: form "Yêu cầu rút tiền" (3 input `amountDisplay`/`amountHidden`/`amountPreview`) chỉ render trong nhánh `<c:otherwise>` của `<c:choose test="${empty profile || !profile.hasBankInfo}">` — khi shipper (vd tài khoản `Hien2008`) **chưa cập nhật thông tin ngân hàng**, nhánh `<c:when>` hiện thay (banner cảnh báo + link "Cập nhật ngay"), nên 3 input đó không tồn tại trong DOM. Script ở cuối trang vẫn chạy `document.getElementById('amountDisplay').addEventListener(...)` không kiểm tra null → `Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')`.
+- **Mức độ**: không crash toàn trang (lỗi nằm trong IIFE của 1 thẻ `<script>` riêng, không ảnh hưởng các `<script>` khác phía sau), nhưng là lỗi JS thật, ảnh hưởng mọi shipper mới chưa cập nhật ngân hàng (nhiều khả năng là đa số tài khoản mới).
+- **Fix**: thêm guard `if (!display || !hidden || !preview) return;` ngay đầu IIFE trước khi dùng các biến đó.
+- **File đã sửa**: `src/main/web/shipper/viTien.jsp`.
+- **Kiểm chứng**: tab trình duyệt hoàn toàn sạch, đăng nhập `Hien2008` (chưa có bank info) → vào `/shipper/vi-tien` → **0 lỗi console**. JSP nên đã có hiệu lực ngay, không cần rebuild Java (file này không đổi phía server).
+- **Lưu ý**: file này đang có thay đổi chưa commit khác của người dùng (ngoài phạm vi bug này) — chỉ sửa đúng đoạn guard, không đụng tới phần còn lại.
+
+### Bug: CSP `img-src` thiếu `unpkg.com` — marker bản đồ Leaflet vỡ trên ít nhất 6 trang
+- **Phát hiện qua**: rà soát vai Super Admin, vào `/admin/heatmap-don-hang` thấy marker trên bản đồ hiện chữ "Mark" (alt text) thay vì icon ghim vị trí.
+- **Nguyên nhân**: `SecurityHeadersFilter.java` khai báo CSP `script-src`/`style-src` đã tin tưởng `https://unpkg.com` (để tải `leaflet.js`/`leaflet.css`) nhưng **`img-src` thì không** — nên bản thân thư viện Leaflet vẫn chạy được (không sập chức năng bản đồ), nhưng 3 ảnh marker mặc định của Leaflet (`marker-icon.png`, `marker-icon-2x.png`, `marker-shadow.png`, đều load từ `unpkg.com`) bị chặn.
+- **Phạm vi ảnh hưởng**: `grep -r "unpkg.com"` tìm thấy marker-icon hardcode ở **6 file**: `admin/HeatmapDonHang.jsp`, `shop/Shopprofile.jsp`, `user/donhang.jsp`, `user/checkoutThanhToan.jsp`, `user/diaChi.jsp`, `shipper/chitietdonhang.jsp` — tất cả trang có bản đồ chọn/hiển thị vị trí trong toàn app đều bị ảnh hưởng.
+- **Fix**: sửa đúng 1 dòng ở `SecurityHeadersFilter.java`, thêm `https://unpkg.com` vào `img-src` — áp dụng cho toàn bộ `/*`, khắc phục cả 6 trang cùng lúc, không cần sửa riêng từng JSP.
+- **File đã sửa**: `src/main/java/org/example/filter/SecurityHeadersFilter.java`.
+- **Kiểm chứng**: đã rebuild Java (JDK 17); **cần restart Tomcat** để có hiệu lực (filter áp dụng lúc response header được set, không sống ngay như JSP).
+
+### Bug: Sidebar Admin trỏ sai route `/admin/ho-so` (không tồn tại) thay vì `/admin/profile`
+- **Phát hiện qua**: click "Hồ sơ Super Admin" / "Hồ sơ Admin" từ sidebar admin → trang báo "Có lỗi xảy ra, Trang bạn cần không truy cập được".
+- **Nguyên nhân**: không có servlet nào map `/admin/ho-so` (chỉ có `/admin/profile` → `AdminProfileServlet` → forward `admin/hoSoAdmin.jsp`). Sidebar (`_adminSidebar.jspf`, 2 chỗ) và chính `hoSoAdmin.jsp` (dòng set `adminActive` để tô sáng menu đang chọn) đều hardcode `/admin/ho-so` — route không tồn tại, trong khi 2 role khác (Shop, Shipper) dùng đúng route `/shop/ho-so`, `/shipper/ho-so` tương ứng (có servlet thật) — khả năng cao route Admin bị đổi tên thành `/admin/profile` ở 1 thời điểm nào đó nhưng sidebar quên cập nhật theo.
+- **Fix**: đổi cả 3 chỗ (`_adminSidebar.jspf` x2, `hoSoAdmin.jsp` x1) từ `/admin/ho-so` sang `/admin/profile`. `grep -r "/admin/ho-so" src` xác nhận sạch hoàn toàn sau khi sửa.
+- **File đã sửa**: `src/main/web/admin/_adminSidebar.jspf`, `src/main/web/admin/hoSoAdmin.jsp`.
+- **Kiểm chứng**: vào `/admin/profile` trực tiếp → load đúng trang hồ sơ; kiểm tra lại href 2 link sidebar qua JS → cả 2 đều trỏ `/admin/profile`. JSP sống ngay, không cần rebuild.

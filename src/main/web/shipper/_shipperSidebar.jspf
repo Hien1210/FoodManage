@@ -1,0 +1,77 @@
+<%-- Sidebar dùng chung cho toàn bộ trang dashboard của role Shipper (roleId = 3).
+     Trang nhúng phải:
+       - <c:set var="shipperActive" value="/shipper/donhang" scope="request"/>
+     rồi nhúng bằng <%@ include file="_shipperSidebar.jspf" %> (nhúng tĩnh). --%>
+<%@ page pageEncoding="UTF-8" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<c:set var="_spCtx" value="${pageContext.request.contextPath}"/>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="logo-mark-dash">🛵</div>
+        <div class="brand-text">
+            <span class="brand-title">POB SHIPPER</span>
+            <c:choose>
+                <c:when test="${sessionScope.account.online}">
+                    <span class="brand-subtitle" style="color:var(--success, #10b981);">● Đang hoạt động</span>
+                </c:when>
+                <c:otherwise>
+                    <span class="brand-subtitle" style="color:var(--danger, #ef4444);">● Ngoại tuyến</span>
+                </c:otherwise>
+            </c:choose>
+        </div>
+        <button type="button" class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="pobToggleSidebar()" title="Thu gọn / mở rộng menu">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+    </div>
+    <div class="menu">
+        <div class="menu-title">Công việc</div>
+        <a href="${_spCtx}/shipper/donhang" class="menu-item${shipperActive eq '/shipper/donhang' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">📋</span><span class="mi-label"> Đơn hàng nhận</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/nhan-don" class="menu-item${shipperActive eq '/shipper/nhan-don' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">📥</span><span class="mi-label"> Nhận đơn mới</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/dashboard" class="menu-item${shipperActive eq '/shipper/dashboard' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">📊</span><span class="mi-label"> Thống kê Dashboard</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/thongbao" class="menu-item${shipperActive eq '/shipper/thongbao' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">🔔</span><span class="mi-label"> Thông báo</span></span>
+        </a>
+
+        <div class="menu-title">Tài khoản &amp; Cá nhân</div>
+        <a href="${_spCtx}/shipper/profile" class="menu-item${shipperActive eq '/shipper/profile' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">🚙</span><span class="mi-label"> Hồ sơ xe &amp; giấy tờ</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/ho-so" class="menu-item${shipperActive eq '/shipper/ho-so' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">👤</span><span class="mi-label"> Hồ sơ cá nhân</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/doi-mat-khau" class="menu-item${shipperActive eq '/shipper/doi-mat-khau' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">🔒</span><span class="mi-label"> Đổi mật khẩu</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/danh-gia" class="menu-item${shipperActive eq '/shipper/danh-gia' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">⭐</span><span class="mi-label"> Đánh giá &amp; Báo cáo</span></span>
+        </a>
+        <a href="${_spCtx}/shipper/vi-tien" class="menu-item${shipperActive eq '/shipper/vi-tien' ? ' active' : ''}">
+            <span class="mi-left"><span class="mi-icon">💰</span><span class="mi-label"> Ví tiền</span></span>
+        </a>
+    </div>
+    <div class="sidebar-foot">
+        <form action="${_spCtx}/shipper/status" method="post">
+            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+            <c:choose>
+                <c:when test="${sessionScope.account.online}">
+                    <button type="submit" class="online-toggle-btn is-online"
+                            onclick="return confirm('Tắt chế độ Online? Bạn sẽ không nhận đơn mới.')">
+                        <span class="toggle-dot online"></span><span class="sf-label">Đang Online — Nhấn để Offline</span>
+                    </button>
+                </c:when>
+                <c:otherwise>
+                    <button type="submit" class="online-toggle-btn is-offline">
+                        <span class="toggle-dot offline"></span><span class="sf-label">Đang Offline — Nhấn để Online</span>
+                    </button>
+                </c:otherwise>
+            </c:choose>
+        </form>
+    </div>
+</aside>

@@ -73,6 +73,7 @@ public class AppFilter implements Filter {
         // SUPER_ADMIN (roleId = 1)
         if (url.contains("/super-admin/") || url.contains("/super_admin/")) {
             if (account.getRoleId() != 1) {
+                AccessDeniedLogger.log(req, account, "Super Admin");
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập!");
                 return;
             }
@@ -84,6 +85,7 @@ public class AppFilter implements Filter {
         if (url.contains("/admin/") || url.startsWith(req.getContextPath() + "/shop")) {
             // Cho phép role 1 (Super Admin) và role 2 (Shop Owner)
             if (account.getRoleId() != 1 && account.getRoleId() != 2) {
+                AccessDeniedLogger.log(req, account, "Chủ shop / Super Admin");
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập!");
                 return;
             }
@@ -94,6 +96,7 @@ public class AppFilter implements Filter {
         // SHIPPER (roleId = 4)
         if (url.contains("/shipper/")) {
             if (account.getRoleId() != 4) {
+                AccessDeniedLogger.log(req, account, "Shipper");
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập!");
                 return;
             }
@@ -104,6 +107,7 @@ public class AppFilter implements Filter {
         // USER (roleId = 3)
         if (url.contains("/user/")) {
             if (account.getRoleId() != 3) {
+                AccessDeniedLogger.log(req, account, "Khách hàng");
                 resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Không có quyền truy cập!");
                 return;
             }

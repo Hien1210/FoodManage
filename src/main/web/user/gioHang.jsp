@@ -226,15 +226,15 @@
                 <button type="button" class="avatar-btn" onclick="toggleDropdown()">
                     <c:choose>
                         <c:when test="${not empty account.avatarUrl}">
-                            <img src="${account.avatarUrl}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            <img src="${fn:escapeXml(account.avatarUrl)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         </c:when>
-                        <c:otherwise>${fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1)}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:substring(not empty account.fullName ? account.fullName : account.userName, 0, 1))}</c:otherwise>
                     </c:choose>
                 </button>
                 <div class="avatar-dropdown" id="avatarDropdown">
                     <div class="dd-head">
-                        <div class="dd-name">${account.fullName}</div>
-                        <div class="dd-email">${account.email}</div>
+                        <div class="dd-name">${fn:escapeXml(account.fullName)}</div>
+                        <div class="dd-email">${fn:escapeXml(account.email)}</div>
                     </div>
                     <a href="${pageContext.request.contextPath}/user/thong-tin-ca-nhan" class="dd-link"><i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
                     <a href="${pageContext.request.contextPath}/user/donhang" class="dd-link"><i class="fa-solid fa-box"></i> Đơn hàng</a>
@@ -348,7 +348,7 @@
                                     <input type="hidden" name="action" value="remove">
                                     <input type="hidden" name="itemId" value="${line.itemId}">
                                     <button type="button" class="btn-remove" title="Xóa"
-                                            onclick="openDeleteConfirm(${line.itemId}, '${fn:escapeXml(line.product.productName)}')">✕</button>
+                                            onclick="openDeleteConfirm(${line.itemId}, '${fn:escapeXml(fn:replace(fn:replace(line.product.productName,'\\','\\\\'),"'","\\'"))}')">✕</button>
                                 </form>
 
                                 <div class="qty-row">

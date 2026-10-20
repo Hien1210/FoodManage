@@ -241,6 +241,8 @@ public class ShopToppingServlet extends HttpServlet {
 
     private String validate(Topping t, long shopId) {
         if (t.getToppingName().isBlank()) return "Tên topping không được để trống!";
+        String toppingNameError = org.example.utils.InputValidationUtil.checkLine("Tên topping", t.getToppingName(), 100);
+        if (toppingNameError != null) return toppingNameError;
         if (t.getToppingCategoryId() <= 0) return "Vui lòng chọn loại topping!";
         if (t.getPrice() < 0) return "Giá topping không hợp lệ!";
         // Kiểm tra loại topping thuộc shop này

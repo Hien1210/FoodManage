@@ -65,6 +65,7 @@ public class AuditLogDAOImpl implements AuditLogDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Loi truy van audit log (search)", e);
         }
         return list;
     }
@@ -84,7 +85,7 @@ public class AuditLogDAOImpl implements AuditLogDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return 0;
+            throw new RuntimeException("Loi truy van audit log (count)", e);
         }
     }
 
@@ -98,6 +99,7 @@ public class AuditLogDAOImpl implements AuditLogDAO {
             while (rs.next()) modules.add(rs.getString(1));
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Loi truy van audit log (findDistinctModules)", e);
         }
         return modules;
     }

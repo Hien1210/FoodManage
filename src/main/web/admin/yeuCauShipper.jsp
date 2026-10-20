@@ -55,9 +55,9 @@
                 <div class="avatar-circle" id="avatarBtn">
                     <c:choose>
                         <c:when test="${not empty sessionScope.account.avatarUrl}">
-                            <img src="${sessionScope.account.avatarUrl}" alt="avatar"/>
+                            <img src="${fn:escapeXml(sessionScope.account.avatarUrl)}" alt="avatar"/>
                         </c:when>
-                        <c:otherwise>${fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2))}</c:otherwise>
+                        <c:otherwise>${fn:escapeXml(fn:toUpperCase(fn:substring(sessionScope.account.userName, 0, 2)))}</c:otherwise>
                     </c:choose>
                 </div>
             </div>
@@ -142,13 +142,13 @@
                                                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                         <input type="hidden" name="action" value="accept">
                                                         <input type="hidden" name="id" value="${s.id}">
-                                                        <button type="button" class="btn btn-sm btn-success" onclick="openApprovalModal(this,'accept','${fn:escapeXml(s.userName)}')">✓ Duyệt</button>
+                                                        <button type="button" class="btn btn-sm btn-success" onclick="openApprovalModal(this,'accept','${fn:escapeXml(fn:replace(fn:replace(s.userName,'\\','\\\\'),"'","\\'"))}')">✓ Duyệt</button>
                                                     </form>
                                                     <form action="${pageContext.request.contextPath}/super-admin/shipper-requests" method="post" style="margin:0">
                                                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                         <input type="hidden" name="action" value="reject">
                                                         <input type="hidden" name="id" value="${s.id}">
-                                                        <button type="button" class="btn btn-sm btn-danger-outline" onclick="openApprovalModal(this,'reject','${fn:escapeXml(s.userName)}')">✕ Từ chối</button>
+                                                        <button type="button" class="btn btn-sm btn-danger-outline" onclick="openApprovalModal(this,'reject','${fn:escapeXml(fn:replace(fn:replace(s.userName,'\\','\\\\'),"'","\\'"))}')">✕ Từ chối</button>
                                                     </form>
                                                 </div>
                                             </td>
@@ -204,7 +204,7 @@
                                                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                         <input type="hidden" name="action" value="reject">
                                                         <input type="hidden" name="id" value="${s.id}">
-                                                        <button type="button" class="btn btn-sm btn-danger-outline" onclick="openApprovalModal(this,'reject','${fn:escapeXml(s.userName)}')">✕ Thu hồi</button>
+                                                        <button type="button" class="btn btn-sm btn-danger-outline" onclick="openApprovalModal(this,'reject','${fn:escapeXml(fn:replace(fn:replace(s.userName,'\\','\\\\'),"'","\\'"))}')">✕ Thu hồi</button>
                                                     </form>
                                                 </div>
                                             </td>
@@ -265,7 +265,7 @@
                                                         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                         <input type="hidden" name="action" value="accept">
                                                         <input type="hidden" name="id" value="${s.id}">
-                                                        <button type="button" class="btn btn-sm btn-success" onclick="openApprovalModal(this,'accept','${fn:escapeXml(s.userName)}')">✓ Duyệt lại</button>
+                                                        <button type="button" class="btn btn-sm btn-success" onclick="openApprovalModal(this,'accept','${fn:escapeXml(fn:replace(fn:replace(s.userName,'\\','\\\\'),"'","\\'"))}')">✓ Duyệt lại</button>
                                                     </form>
                                                 </div>
                                             </td>
@@ -299,8 +299,8 @@
 
 <div class="avatar-dropdown" id="avatarDropdown">
     <div class="dropdown-header">
-        <div class="d-name">${sessionScope.account.userName}</div>
-        <div class="d-email">${sessionScope.account.email}</div>
+        <div class="d-name">${fn:escapeXml(sessionScope.account.userName)}</div>
+        <div class="d-email">${fn:escapeXml(sessionScope.account.email)}</div>
         <span class="d-role">Super Admin</span>
     </div>
     <div class="dropdown-body">

@@ -75,6 +75,18 @@ public class RefundRequestServlet extends HttpServlet {
             return;
         }
 
+        String refundError = org.example.utils.InputValidationUtil.firstError(
+                org.example.utils.InputValidationUtil.checkLine("Tên ngân hàng", bankName, 100),
+                org.example.utils.InputValidationUtil.checkLine("Số tài khoản", bankAccountNumber, 50),
+                org.example.utils.InputValidationUtil.checkLine("Chủ tài khoản", bankAccountHolder, 200),
+                org.example.utils.InputValidationUtil.checkMultiline("Ghi chú", note, 500));
+        if (refundError != null) {
+            req.setAttribute("order", order);
+            req.setAttribute("error", refundError);
+            req.getRequestDispatcher("/user/yeuCauHoanTien.jsp").forward(req, resp);
+            return;
+        }
+
         RefundRequest refund = new RefundRequest();
         refund.setOrderId(orderId);
         refund.setAccountId(account.getId());

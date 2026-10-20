@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${shop.shopName} – FOOD MANAGE</title>
+    <title>${fn:escapeXml(shop.shopName)} – FOOD MANAGE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -565,6 +565,26 @@
         @media (max-width: 400px) {
             .product-grid { grid-template-columns: 1fr; }
         }
+        .menu-toggle-shop {
+            display: none; background: #FFF4EC; border: 1.5px solid #F1E4D6; border-radius: 10px;
+            width: 40px; height: 40px; color: #635752; font-size: 1.05rem; cursor: pointer;
+            align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .nav-links-shop { display: flex; gap: 20px; align-items: center; }
+        @media (max-width: 900px) {
+            .nav-links-shop {
+                display: none; position: absolute; top: 100%; left: 0; right: 0;
+                flex-direction: column; align-items: stretch; gap: 2px;
+                background: #FFFFFF; padding: 10px 20px 16px;
+                box-shadow: 0 16px 30px rgba(0,0,0,.12); border-bottom: 1px solid #F1E4D6;
+            }
+            .nav-links-shop.open { display: flex; }
+            .nav-links-shop a { padding: 12px 14px !important; border-radius: 10px; }
+            .nav-links-shop a:hover { background: #FFF4EC; }
+            .menu-toggle-shop { display: flex; }
+            .navbar-logo-shop h1 { font-size: 1.15rem !important; }
+            .navbar-logo-shop .logo-emoji-shop { width: 24px !important; height: 24px !important; }
+        }
     </style>
 </head>
 <body>
@@ -573,12 +593,12 @@
 <!-- ═══════════════════ NAVBAR ═══════════════════ -->
 <header class="navbar" style="position:sticky;top:0;left:0;width:100%;background:rgba(255,251,248,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:1000;border-bottom:1px solid var(--border-color,#F1E4D6);">
     <div style="max-width:1180px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:76px;gap:16px;">
-        <a href="${pageContext.request.contextPath}/user/home" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
-            <img style="width:30px;height:30px;filter:drop-shadow(0 4px 8px rgba(255,59,31,.4));" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Steaming%20bowl/3D/steaming_bowl_3d.png" alt="FOOD MANAGE">
+        <a href="${pageContext.request.contextPath}/user/home" class="navbar-logo-shop" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;">
+            <img class="logo-emoji-shop" style="width:30px;height:30px;filter:drop-shadow(0 4px 8px rgba(255,59,31,.4));" src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Steaming%20bowl/3D/steaming_bowl_3d.png" alt="FOOD MANAGE">
             <h1 style="font-size:1.55rem;letter-spacing:-.5px;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;">FOOD MANAGE<span style="color:#FF3B1F;">.</span></h1>
         </a>
 
-        <nav style="display:flex;gap:20px;align-items:center;">
+        <nav class="nav-links-shop" id="navLinksShop">
             <a href="${pageContext.request.contextPath}/user/home" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Trang chủ</a>
             <a href="${pageContext.request.contextPath}/user/home#restaurants" style="font-size:.86rem;font-weight:700;color:#FF3B1F;text-decoration:none;">Nhà hàng</a>
             <a href="${pageContext.request.contextPath}/user/donhang" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Đơn hàng</a>
@@ -586,13 +606,17 @@
             <a href="${pageContext.request.contextPath}/user/diem-thuong" style="font-size:.86rem;font-weight:600;color:#635752;text-decoration:none;">Điểm thưởng</a>
         </nav>
 
-        <div style="display:flex;align-items:center;gap:14px;">
-            <a href="${pageContext.request.contextPath}/user/thong-bao" aria-label="Thông báo" style="position:relative;width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <button type="button" class="menu-toggle-shop" onclick="toggleNavLinksShop()" aria-label="Menu" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <a href="${pageContext.request.contextPath}/user/thong-bao" aria-label="Thông báo" style="position:relative;width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;flex-shrink:0;">
                 <i class="fa-solid fa-bell"></i>
                 <span data-notif-badge style="display:${unreadNotifCount > 0 ? 'inline-block' : 'none'};position:absolute;top:2px;right:2px;background:#ef4444;color:#fff;border-radius:999px;font-size:10px;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px;font-weight:700;">${unreadNotifCount}</span>
             </a>
 
-            <a href="${pageContext.request.contextPath}/user/cart" aria-label="Giỏ hàng" style="width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;">
+            <a href="${pageContext.request.contextPath}/user/cart" aria-label="Giỏ hàng" style="width:40px;height:40px;border-radius:50%;background:#FFF4EC;border:1.5px solid #F1E4D6;display:flex;align-items:center;justify-content:center;color:#635752;text-decoration:none;flex-shrink:0;">
                 <i class="fa-solid fa-bag-shopping"></i>
             </a>
         </div>
@@ -606,26 +630,26 @@
             <c:set var="isValidHeroLogoUrl" value="${not empty shop.shopLogo && (fn:startsWith(shop.shopLogo, 'http://') || fn:startsWith(shop.shopLogo, 'https://') || fn:startsWith(shop.shopLogo, '/') || fn:startsWith(shop.shopLogo, 'assets/'))}"/>
             <c:choose>
                 <c:when test="${isValidHeroLogoUrl}">
-                    <img src="${shop.shopLogo}" alt="${shop.shopName}"
-                         onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80'">
+                    <img src="${fn:escapeXml(shop.shopLogo)}" alt="${fn:escapeXml(shop.shopName)}"
+                         onerror="this.onerror=null;this.src='${pageContext.request.contextPath}/assets/img/shop-placeholder.svg'">
                 </c:when>
                 <c:otherwise>
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80" alt="${shop.shopName}">
+                    <img src="${pageContext.request.contextPath}/assets/img/shop-placeholder.svg" alt="${fn:escapeXml(shop.shopName)}">
                 </c:otherwise>
             </c:choose>
         </div>
 
         <div class="shop-info">
-            <h1>${shop.shopName}</h1>
+            <h1>${fn:escapeXml(shop.shopName)}</h1>
             <c:if test="${not empty shop.shopDescription}">
-                <div class="desc">${shop.shopDescription}</div>
+                <div class="desc">${fn:escapeXml(shop.shopDescription)}</div>
             </c:if>
             <div class="shop-meta-row">
                 <c:if test="${not empty shop.shopAddress}">
-                    <span class="shop-meta-item">📍 ${shop.shopAddress}</span>
+                    <span class="shop-meta-item">📍 ${fn:escapeXml(shop.shopAddress)}</span>
                 </c:if>
                 <c:if test="${not empty shop.shopPhone}">
-                    <span class="shop-meta-item">📞 ${shop.shopPhone}</span>
+                    <span class="shop-meta-item">📞 ${fn:escapeXml(shop.shopPhone)}</span>
                 </c:if>
                 <c:choose>
                     <c:when test="${empty shop.openTime || empty shop.closeTime}">
@@ -710,7 +734,7 @@
                 </c:if>
                 <c:forEach var="cat" items="${categories}">
                     <button class="cat-pill" onclick="filterCategory('${cat.id}', this)">
-                        ${cat.categoryName}
+                        ${fn:escapeXml(cat.categoryName)}
                     </button>
                 </c:forEach>
             </div>
@@ -833,7 +857,7 @@
                         <div class="p-thumb">
                             <c:choose>
                                 <c:when test="${not empty p.imageUrl}">
-                                    <img src="${p.imageUrl}" alt="${p.productName}"
+                                    <img src="${fn:escapeXml(p.imageUrl)}" alt="${fn:escapeXml(p.productName)}"
                                          onerror="this.style.display='none';this.nextSibling.style.display='flex'">
                                     <div class="fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">🍜</div>
                                 </c:when>
@@ -878,9 +902,9 @@
 
                         <!-- Nội dung -->
                         <div class="p-body">
-                            <div class="p-name">${p.productName}</div>
+                            <div class="p-name">${fn:escapeXml(p.productName)}</div>
                             <c:if test="${not empty p.description}">
-                                <div class="p-desc">${p.description}</div>
+                                <div class="p-desc">${fn:escapeXml(p.description)}</div>
                             </c:if>
                             <div class="p-rating">
                                 <c:choose>
@@ -927,7 +951,7 @@
                             <button class="btn-add"
                                     <c:if test="${p.staTus eq 'OUT_OF_STOCK'}">disabled title="Hết hàng"</c:if>
                                     <c:if test="${not shopOpenNow}">disabled title="Cửa hàng đang đóng cửa"</c:if>
-                                    onclick="openModal(${p.id}, '${fn:escapeXml(p.productName)}', '${fn:escapeXml(p.description)}', ${shop.id}, ${p.categoryId},
+                                    onclick="openModal(${p.id}, '${fn:escapeXml(fn:replace(fn:replace(p.productName,'\\','\\\\'),"'","\\'"))}', '${fn:escapeXml(fn:replace(fn:replace(p.description,'\\','\\\\'),"'","\\'"))}', ${shop.id}, ${p.categoryId},
                                         [<c:forEach var="s" items="${p.sizes}" varStatus="st">{id:${s.id},name:'${fn:escapeXml(s.sizeName)}',price:${s.price},originalPrice:${s.originalPrice},hasSale:${not empty s.salePrice and s.salePrice > 0},outOfStock:${s.outOfStock}}<c:if test="${!st.last}">,</c:if></c:forEach>])">
                                 +
                             </button>
@@ -988,7 +1012,7 @@
                                                 <input type="checkbox" class="topping-check" id="topping_${t.id}"
                                                        name="toppingId" value="${t.id}" data-price="${t.price}"
                                                        onchange="toggleTopping(this, ${t.id})" ${toppingHetHang ? 'disabled' : ''}>
-                                                <span class="t-name">${t.toppingName}<c:if test="${toppingHetHang}"> (Hết hàng)</c:if></span>
+                                                <span class="t-name">${fn:escapeXml(t.toppingName)}<c:if test="${toppingHetHang}"> (Hết hàng)</c:if></span>
                                                 <span class="t-price">+<fmt:formatNumber value="${t.price}" type="number" groupingUsed="true"/>đ</span>
                                                 <span class="t-qty-row" id="toppingQtyRow_${t.id}" style="display:none;">
                                                     <button type="button" class="t-qty-btn" onclick="event.preventDefault();event.stopPropagation();changeToppingQty(${t.id},-1)">−</button>
@@ -1533,6 +1557,21 @@
     } else {
         initFlashSaleCountdowns();
     }
+
+    function toggleNavLinksShop() {
+        var nav = document.getElementById('navLinksShop');
+        var btn = document.querySelector('.menu-toggle-shop');
+        var open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    document.addEventListener('click', function(e) {
+        var nav = document.getElementById('navLinksShop');
+        var btn = document.querySelector('.menu-toggle-shop');
+        if (nav && nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+            nav.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
 </script>
 <script>window.POB_CONTEXT_PATH = '${pageContext.request.contextPath}';</script>
 <script src="${pageContext.request.contextPath}/assets/js/toast.js"></script>
